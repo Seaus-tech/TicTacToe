@@ -24,6 +24,22 @@ enum GameMode {
     case multiPlayer
 }
 
+enum Difficulty: String, CaseIterable, Identifiable {
+    case easy = "EASY"
+    case medium = "MEDIUM"
+    case hard = "HARD"
+    
+    var id: String { self.rawValue }
+    
+    var description: String {
+        switch self {
+        case .easy: return "Computes purely random quadrant selections. Minimal defensive response."
+        case .medium: return "50% algorithmic awareness. Occasionally disrupts player trajectories."
+        case .hard: return "Full tactical grid mitigation. Prioritizes offensive wins and defensive blocks."
+        }
+    }
+}
+
 struct Square {
     var player: Player?
 }
@@ -34,6 +50,7 @@ struct ContentView: View {
     // Selection & Info States
     @State private var selectedMode: GameMode? = nil
     @State private var showAIPopup: Bool = false
+    @State private var selectedDifficulty: Difficulty = .medium
     
     // Core Game State
     @State private var board: [Square] = Array(repeating: Square(player: nil), count: 9)
@@ -169,7 +186,7 @@ struct ContentView: View {
                     .foregroundColor(Player.x.primaryColor)
                     .shadow(color: Player.x.glowColor, radius: 10)
                 
-                Text(selectedMode == .singlePlayer ? "MODE: HUMAN VS AI" : "MODE: LOCAL VS MODE")
+                Text(selectedMode == .singlePlayer ? "MODE: AI (\(selectedDifficulty.rawValue))" : "MODE: LOCAL VS MODE")
                     .font(.system(.caption2, design: .monospaced))
                     .foregroundColor(.gray)
                     .tracking(2)
@@ -232,10 +249,10 @@ struct ContentView: View {
                             .foregroundColor(.gray)
                         Text(activePlayer.name)
                             .foregroundColor(activePlayer.primaryColor)
+                            .font(.title3)
                             .bold()
                             .shadow(color: activePlayer.glowColor, radius: 8)
                     }
-                    .font(.title3)
                 }
             }
             
@@ -282,35 +299,62 @@ struct ContentView: View {
         .frame(width: geometry.size.width, height: geometry.size.height)
     }
     
-    // Custom Styled Window Popup
+    // Custom Styled Window Popup with Difficulty Selector
     private func aiDetailsPopup(geometry: GeometryProxy) -> some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(alignment: .leading, spacing: 14) {
             HStack {
                 Image(systemName: "cpu.fill")
-                    .font(.title)
+                    .font(.title2)
                     .foregroundColor(Player.o.primaryColor)
-                Text("AI ARCHITECTURE INITIALIZED")
+                Text("AI INITIALIZATION MATRIX")
                     .font(.system(.headline, design: .monospaced))
                     .foregroundColor(.white)
             }
-            .padding(.bottom, 5)
             
-            Text("Single-player mode utilizes a heuristic defense engine designated as NEO-CORE v1.0.")
-                .font(.footnote)
+            Text("Configure runtime operations for NEO-CORE v1.5 below.")
+                .font(.caption)
                 .foregroundColor(.gray)
-                .lineSpacing(4)
+            
+            // Platform agnostic picker layout using modern tabbed look
+            HStack(spacing: 10) {
+                ForEach(Difficulty.allCases) { diff in
+                    Button(action: {
+                        selectedDifficulty = diff
+                    }) {
+                        Text(diff.rawValue)
+                            .font(.system(size: 11, weight: .bold, design: .monospaced))
+                            .foregroundColor(selectedDifficulty == diff ? .black : .white)
+                            .padding(.vertical, 8)
+                            .frame(maxWidth: .infinity)
+                            .background(selectedDifficulty == diff ? Player.x.primaryColor : Color.gray.opacity(0.15))
+                            .cornerRadius(8)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(selectedDifficulty == diff ? Player.x.primaryColor : Color.gray.opacity(0.3), lineWidth: 1)
+                            )
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(.vertical, 5)
+            
+            // Dynamic behavior explanation block
+            VStack(alignment: .leading, spacing: 4) {
+                Text("BEHAVIOR PROFILE:")
+                    .font(.system(size: 10, weight: .bold, design: .monospaced))
+                    .foregroundColor(.gray)
+                Text(selectedDifficulty.description)
+                    .font(.system(size: 11, weight: .regular))
+                    .foregroundColor(.white)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .lineLimit(2)
+            }
+            .padding(12)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(deepSpaceBlue.opacity(0.5))
+            .cornerRadius(10)
             
             Divider().background(gridEdgeColor)
-            
-            VStack(alignment: .leading, spacing: 8) {
-                Text("• SYSTEM LOGISTICS: Tactical Grid-Block Matrix")
-                Text("• ALGORITHM: Reactive Threat Mitigation Engine")
-                Text("• BEHAVIOR: Computes path block lines automatically; falls back onto variable quadrant indexing vectors.")
-            }
-            .font(.system(size: 11, weight: .regular, design: .monospaced))
-            .foregroundColor(Player.x.primaryColor)
-            
-            Spacer()
             
             // Bottom Right Aligned OK Button
             HStack {
@@ -333,8 +377,8 @@ struct ContentView: View {
                 .focused($focusedIndex, equals: 200)
             }
         }
-        .padding(25)
-        .frame(width: min(geometry.size.width - 40, 380), height: 320)
+        .padding(22)
+        .frame(width: min(geometry.size.width - 40, 400), height: 350)
         .background(
             RoundedRectangle(cornerRadius: 24)
                 .fill(deepSpaceBlue.opacity(0.95))
@@ -345,7 +389,7 @@ struct ContentView: View {
         )
         .shadow(color: Player.o.glowColor.opacity(0.3), radius: 30)
         .onAppear {
-            focusedIndex = 200 // Instantly focus the OK button for remote access
+            focusedIndex = 200
         }
     }
     
@@ -371,39 +415,32 @@ struct ContentView: View {
     private func runAIEngineLoop() {
         isAITinking = true
         
-        // Artificial delay simulating processor workload computation
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
             let winPatterns: [[Int]] = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]]
             var chosenMove: Int? = nil
             
-            // Phase A: Offensive check. Can AI win right now?
-            for pattern in winPatterns {
-                let aiCount = pattern.filter { board[$0].player == .o }.count
-                let emptyCount = pattern.filter { board[$0].player == nil }.count
-                if aiCount == 2 && emptyCount == 1 {
-                    chosenMove = pattern.first(where: { board[$0].player == nil })
-                    break
+            // Determine execution path based on difficulty state configuration
+            switch selectedDifficulty {
+            case .easy:
+                // Pure randomness
+                chosenMove = getRandomMove()
+                
+            case .medium:
+                // 50% chance to execute tactical checks, otherwise drops onto casual placement
+                if Double.random(in: 0...1) > 0.5 {
+                    chosenMove = computeTacticalMove(winPatterns: winPatterns)
+                } else {
+                    chosenMove = getRandomMove()
                 }
+                
+            case .hard:
+                // Always evaluate matrix lines for optimal plays
+                chosenMove = computeTacticalMove(winPatterns: winPatterns)
             }
             
-            // Phase B: Defensive check. Is human about to win? Block them.
+            // Fallback safety layer: if tactical processing returned nil, pick a random slot
             if chosenMove == nil {
-                for pattern in winPatterns {
-                    let humanCount = pattern.filter { board[$0].player == .x }.count
-                    let emptyCount = pattern.filter { board[$0].player == nil }.count
-                    if humanCount == 2 && emptyCount == 1 {
-                        chosenMove = pattern.first(where: { board[$0].player == nil })
-                        break
-                    }
-                }
-            }
-            
-            // Phase C: Fallback. Choose open quadrant matrix index
-            if chosenMove == nil {
-                let availableMoves = board.indices.filter { board[$0].player == nil }
-                if !availableMoves.isEmpty {
-                    chosenMove = availableMoves.randomElement()
-                }
+                chosenMove = getRandomMove()
             }
             
             // Execute AI move payload
@@ -419,11 +456,39 @@ struct ContentView: View {
         }
     }
     
+    // Helper processing engines
+    private func getRandomMove() -> Int? {
+        let availableMoves = board.indices.filter { board[$0].player == nil }
+        return availableMoves.randomElement()
+    }
+    
+    private func computeTacticalMove(winPatterns: [[Int]]) -> Int? {
+        // Phase A: Offensive check (Can AI win right now?)
+        for pattern in winPatterns {
+            let aiCount = pattern.filter { board[$0].player == .o }.count
+            let emptyCount = pattern.filter { board[$0].player == nil }.count
+            if aiCount == 2 && emptyCount == 1 {
+                return pattern.first(where: { board[$0].player == nil })
+            }
+        }
+        
+        // Phase B: Defensive check (Block the player)
+        for pattern in winPatterns {
+            let humanCount = pattern.filter { board[$0].player == .x }.count
+            let emptyCount = pattern.filter { board[$0].player == nil }.count
+            if humanCount == 2 && emptyCount == 1 {
+                return pattern.first(where: { board[$0].player == nil })
+            }
+        }
+        
+        return nil
+    }
+    
     private func checkGameState() -> Bool {
         if checkWin(for: activePlayer) {
             winMessage = selectedMode == .singlePlayer && activePlayer == .o ? "AI Core Wins!" : "Player \(activePlayer.name) Wins!"
             isGameOver = true
-            focusedIndex = 10 // focus down onto system actions reset row
+            focusedIndex = 10
             return true
         } else if checkDraw() {
             winMessage = "It's a Tie Matrix!"
