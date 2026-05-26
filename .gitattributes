@@ -1,0 +1,8 @@
+*.swift !text !filter !merge !diff
+*.js !text !filter !merge !diff
+*.json !text !filter !merge !diff
+*.md !text !filter !merge !diff
+*.sh !text !filter !merge !diff
+*.yaml !text !filter !merge !diff
+README !text !filter !merge !diff
+.gitignore !text !filter !merge !diff
