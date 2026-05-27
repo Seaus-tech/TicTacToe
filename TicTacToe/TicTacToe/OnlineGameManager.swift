@@ -8,6 +8,7 @@ class OnlineGameManager: ObservableObject {
     @Published var isMyTurn = false
     @Published var opponentName: String = "Searching..."
     @Published var showMatchmaker = false
+    @Published var alertMessage: String? = nil // Tracks network alerts dynamically
     
     var localPlayerPiece: Player = .x
     var onReceiveMove: ((Int) -> Void)?
@@ -23,9 +24,7 @@ class OnlineGameManager: ObservableObject {
         let opponent: String?
     }
 
-    init() {
-        // All properties are safely initialized before return!
-    }
+    init() {}
     
     func findMatch() {
         showMatchmaker = true
@@ -37,6 +36,15 @@ class OnlineGameManager: ObservableObject {
         webSocketTask?.resume()
         
         listenForData()
+    }
+    
+    func disconnect() {
+        webSocketTask?.cancel(with: .goingAway, reason: nil)
+        webSocketTask = nil
+        DispatchQueue.main.async {
+            self.match = nil
+            self.showMatchmaker = false
+        }
     }
     
     func sendMove(at index: Int) {
@@ -113,9 +121,13 @@ class OnlineGameManager: ObservableObject {
             self.isMyTurn = (self.localPlayerPiece == .x)
             
         case "opponent_disconnected":
+            // AUTOMATIC LOBBY RECOVERY: Reset local game states but don't close the socket connection!
             self.match = nil
-            self.showMatchmaker = false
-            self.webSocketTask?.cancel(with: .goingAway, reason: nil)
+            self.showMatchmaker = true
+            self.opponentName = "Opponent disconnected. Waiting for new challenger..."
+            
+        case "lobby_full":
+            self.disconnect()
             
         default: break
         }
