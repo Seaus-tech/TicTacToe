@@ -3,54 +3,121 @@ import SwiftUI
 import Combine
 
 class OnlineGameManager: ObservableObject {
-    let objectWillChange = ObservableObjectPublisher()
-    
     @Published var isAuthenticated = true
     @Published var match: Bool? = nil
-    @Published var isMyTurn = true
-    @Published var opponentName: String = "NEO-NET Enemy"
+    @Published var isMyTurn = false
+    @Published var opponentName: String = "Searching..."
     @Published var showMatchmaker = false
     
     var localPlayerPiece: Player = .x
     var onReceiveMove: ((Int) -> Void)?
     var onReceiveReset: (() -> Void)?
+    
+    private var webSocketTask: URLSessionWebSocketTask?
+    
+    struct NetworkPacket: Codable {
+        let type: String
+        let index: Int?
+        let piece: String?
+        let yourTurn: Bool?
+        let opponent: String?
+    }
 
     init() {
-        // No super.init() required here anymore!
+        // All properties are safely initialized before return!
     }
     
     func findMatch() {
         showMatchmaker = true
+        opponentName = "Connecting to Core..."
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-            self.showMatchmaker = false
-            self.match = true
-            self.localPlayerPiece = .x
-            self.isMyTurn = true
-            self.opponentName = "Quantum_Player"
-        }
+        let url = URL(string: "ws://localhost:8080")!
+        let session = URLSession(configuration: .default)
+        webSocketTask = session.webSocketTask(with: url)
+        webSocketTask?.resume()
+        
+        listenForData()
     }
     
     func sendMove(at index: Int) {
         isMyTurn = false
+        let packet = NetworkPacket(type: "move", index: index, piece: nil, yourTurn: nil, opponent: nil)
+        sendPacket(packet)
+    }
+    
+    func sendResetRequest() {
+        let packet = NetworkPacket(type: "reset", index: nil, piece: nil, yourTurn: nil, opponent: nil)
+        sendPacket(packet)
+    }
+    
+    private func sendPacket(_ packet: NetworkPacket) {
+        guard let data = try? JSONEncoder().encode(packet),
+              let jsonString = String(data: data, encoding: .utf8) else { return }
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            self.isMyTurn = true
-            let mockMove = self.getMockNetworkOpponentMove()
-            if mockMove != -1 {
-                self.onReceiveMove?(mockMove)
+        let message = URLSessionWebSocketTask.Message.string(jsonString)
+        webSocketTask?.send(message) { error in
+            if let error = error {
+                print("Network transmit failure: \(error.localizedDescription)")
             }
         }
     }
     
-    func sendResetRequest() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            self.onReceiveReset?()
+    private func listenForData() {
+        webSocketTask?.receive { [weak self] result in
+            guard let self = self else { return }
+            
+            switch result {
+            case .failure(let error):
+                print("Socket connection lost: \(error.localizedDescription)")
+                DispatchQueue.main.async {
+                    self.match = nil
+                    self.showMatchmaker = false
+                }
+            case .success(let message):
+                switch message {
+                case .string(let text):
+                    if let data = text.data(using: .utf8),
+                       let packet = try? JSONDecoder().decode(NetworkPacket.self, from: data) {
+                        DispatchQueue.main.async {
+                            self.handleIncomingPacket(packet)
+                        }
+                    }
+                default: break
+                }
+                self.listenForData()
+            }
         }
     }
     
-    private func getMockNetworkOpponentMove() -> Int {
-        return -1
+    private func handleIncomingPacket(_ packet: NetworkPacket) {
+        switch packet.type {
+        case "assign_piece":
+            if let pieceStr = packet.piece {
+                self.localPlayerPiece = pieceStr == "X" ? .x : .o
+            }
+            
+        case "start_game":
+            self.showMatchmaker = false
+            self.match = true
+            self.isMyTurn = packet.yourTurn ?? false
+            self.opponentName = packet.opponent ?? "Remote Player"
+            
+        case "move":
+            if let moveIndex = packet.index {
+                self.onReceiveMove?(moveIndex)
+                self.isMyTurn = true
+            }
+            
+        case "reset":
+            self.onReceiveReset?()
+            self.isMyTurn = (self.localPlayerPiece == .x)
+            
+        case "opponent_disconnected":
+            self.match = nil
+            self.showMatchmaker = false
+            self.webSocketTask?.cancel(with: .goingAway, reason: nil)
+            
+        default: break
+        }
     }
 }
-
