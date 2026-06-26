@@ -6,13 +6,30 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		C374779A2FCCB72900BBDEBB /* SocketIO in Frameworks */ = {isa = PBXBuildFile; productRef = C37477992FCCB72900BBDEBB /* SocketIO */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		C390434C2FC52523000E6001 /* TicTacToe.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TicTacToe.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		C369C0232FC7E02C00A6EDD7 /* Exceptions for "TicTacToe" folder in "TicTacToe" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = C390434B2FC52523000E6001 /* TicTacToe */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		C390434E2FC52523000E6001 /* TicTacToe */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				C369C0232FC7E02C00A6EDD7 /* Exceptions for "TicTacToe" folder in "TicTacToe" target */,
+			);
 			path = TicTacToe;
 			sourceTree = "<group>";
 		};
@@ -23,6 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C374779A2FCCB72900BBDEBB /* SocketIO in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -52,7 +70,6 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = C39043572FC52524000E6001 /* Build configuration list for PBXNativeTarget "TicTacToe" */;
 			buildPhases = (
-				C369BFE52FC68FA700A6EDD7 /* ShellScript */,
 				C39043482FC52523000E6001 /* Sources */,
 				C39043492FC52523000E6001 /* Frameworks */,
 				C390434A2FC52523000E6001 /* Resources */,
@@ -66,6 +83,7 @@
 			);
 			name = TicTacToe;
 			packageProductDependencies = (
+				C37477992FCCB72900BBDEBB /* SocketIO */,
 			);
 			productName = TicTacToe;
 			productReference = C390434C2FC52523000E6001 /* TicTacToe.app */;
@@ -95,6 +113,9 @@
 			);
 			mainGroup = C39043432FC52523000E6001;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				C37477982FCCB72900BBDEBB /* XCRemoteSwiftPackageReference "socket" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = C390434D2FC52523000E6001 /* Products */;
 			projectDirPath = "";
@@ -114,26 +135,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		C369BFE52FC68FA700A6EDD7 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"$SRCROOT/launch_server.sh\"\n";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		C39043482FC52523000E6001 /* Sources */ = {
@@ -264,7 +265,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = "";
 				CODE_SIGN_ENTITLEMENTS = TicTacToe/TicTacToe.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
@@ -313,7 +314,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = "";
 				CODE_SIGN_ENTITLEMENTS = TicTacToe/TicTacToe.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
@@ -380,6 +381,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		C37477982FCCB72900BBDEBB /* XCRemoteSwiftPackageReference "socket" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/socketio/socket.io-client-swift";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		C37477992FCCB72900BBDEBB /* SocketIO */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C37477982FCCB72900BBDEBB /* XCRemoteSwiftPackageReference "socket" */;
+			productName = SocketIO;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = C39043442FC52523000E6001 /* Project object */;
 }

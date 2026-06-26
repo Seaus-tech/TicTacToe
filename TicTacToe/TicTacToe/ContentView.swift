@@ -1,493 +1,474 @@
 import SwiftUI
 
-// MARK: - Game Data
-
-enum Player {
-    case x
-    case o
-    
-    var name: String {
-        self == .x ? "X" : "O"
-    }
-    
-    var primaryColor: Color {
-        self == .x ? Color(red: 0.1, green: 0.8, blue: 0.9) : Color(red: 1.0, green: 0.3, blue: 0.3)
-    }
-    
-    var glowColor: Color {
-        primaryColor.opacity(0.6)
-    }
-}
-
-enum GameMode {
-    case singlePlayer
-    case multiPlayer
-    case onlinePlayer
-}
-
-enum Difficulty: String, CaseIterable, Identifiable {
-    case easy = "EASY"
-    case medium = "MEDIUM"
-    case hard = "HARD"
-    var id: String { self.rawValue }
-    
-    var description: String {
-        switch self {
-        case .easy: return "Computes purely random quadrant selections. Minimal defensive response."
-        case .medium: return "50% algorithmic awareness. Occasionally disrupts player trajectories."
-        case .hard: return "Full tactical grid mitigation. Prioritizes offensive wins and defensive blocks."
-        }
-    }
-}
-
-struct Square {
-    var player: Player?
-}
-
-// MARK: - Main UI View
-
 struct ContentView: View {
-    @StateObject private var onlineManager = OnlineGameManager()
+    @ObservedObject var gameManager: OnlineGameManager
     
-    // Selection & Info States
-    @State private var selectedMode: GameMode? = nil
-    @State private var showAIPopup: Bool = false
-    @State private var showMultiplayerPopup: Bool = false
-    @State private var selectedDifficulty: Difficulty = .medium
+    // Navigation Screens: "menu", "online_match", "local_play", "ai_play"
+    @State private var currentScreen = "menu"
+    @State private var aiDifficulty = "Medium"
     
-    // Core Game State
-    @State private var board: [Square] = Array(repeating: Square(player: nil), count: 9)
-    @State private var activePlayer: Player = .x
-    @State private var winMessage: String? = nil
-    @State private var isGameOver: Bool = false
-    @State private var isAITinking: Bool = false
+    // Offline State Engines
+    @State private var localBoard: [String] = Array(repeating: "", count: 9)
+    @State private var isLocalXTurn = true
+    @State private var localStatusMessage = "Player X's Turn"
+    @State private var localWinner: String? = nil
     
-    @FocusState private var focusedIndex: Int?
-    
-    let deepSpaceBlue = Color(red: 0.02, green: 0.05, blue: 0.1)
-    let gridEdgeColor = Color(red: 0.1, green: 0.8, blue: 1.0, opacity: 0.3)
-    private let columns: [GridItem] = Array(repeating: GridItem(.flexible(), spacing: 14), count: 3)
+    @State private var pulseVector = false
     
     var body: some View {
-        GeometryReader { geometry in
-            ZStack {
-                // Background Layer
-                #if os(visionOS)
-                deepSpaceBlue.opacity(0.4)
-                    .edgesIgnoringSafeArea(.all)
-                #else
-                LinearGradient(gradient: Gradient(colors: [deepSpaceBlue, .black]), startPoint: .top, endPoint: .bottom)
-                    .edgesIgnoringSafeArea(.all)
-                #endif
+        ZStack {
+            // --- DEEP LIQUID GLOW BACKDROP ---
+            Color(red: 0.05, green: 0.04, blue: 0.08)
+                .edgesIgnoringSafeArea(.all)
+            
+            Circle()
+                .fill(Color.purple.opacity(0.35))
+                .frame(width: 450, height: 450)
+                .blur(radius: 90)
+                .offset(x: pulseVector ? -200 : 200, y: pulseVector ? 150 : -150)
                 
-                if selectedMode == nil {
-                    modeSelectionMenu(geometry: geometry)
-                } else {
-                    gameplayInterface(geometry: geometry)
-                }
+            Circle()
+                .fill(Color.blue.opacity(0.3))
+                .frame(width: 400, height: 400)
+                .blur(radius: 80)
+                .offset(x: pulseVector ? 250 : -250, y: pulseVector ? -120 : 120)
+            
+            // --- FRONT COMPOSITE GLASS PANEL LAYER ---
+            VStack(spacing: 0) {
                 
-                // Popups Layer
-                if showAIPopup || showMultiplayerPopup {
-                    Color.black.opacity(0.6).edgesIgnoringSafeArea(.all)
-                }
-                
-                if showAIPopup {
-                    aiDetailsPopup(geometry: geometry).transition(.scale.combined(with: .opacity))
-                }
-                
-                if showMultiplayerPopup {
-                    multiplayerSelectionPopup(geometry: geometry).transition(.scale.combined(with: .opacity))
-                }
-                
-                // Custom Simulating Connection Screen Modal
-                if onlineManager.showMatchmaker {
-                    Color.black.opacity(0.85).edgesIgnoringSafeArea(.all)
-                    VStack(spacing: 20) {
-                        ProgressView()
-                            .scaleEffect(1.5)
-                        Text("CONNECTING TO NEO-NET MATRIX...")
-                            .font(.system(.body, design: .monospaced))
-                            .foregroundColor(.white)
-                        Text("Searching for available network switchboards...")
+                // HEADER STATUS DASHBOARD
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("ARCADE MATRIX LINK")
+                            .font(.system(.headline, design: .monospaced))
+                            .foregroundColor(.purple)
+                            .shadow(color: .purple.opacity(0.5), radius: 4)
+                        Text("Operator ID: \(gameManager.currentUsername)")
                             .font(.caption)
-                            .foregroundColor(.gray)
+                            .foregroundColor(.secondary)
+                    }
+                    Spacer()
+                    
+                    Button(action: {
+                        if currentScreen != "menu" {
+                            exitToMainMenu()
+                        } else {
+                            gameManager.logOut()
+                        }
+                    }) {
+                        Text(currentScreen != "menu" ? "Main Menu" : "Disconnect")
+                            .font(.caption)
+                            .bold()
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 7)
+                            .background(currentScreen != "menu" ? Color.blue.opacity(0.2) : Color.red.opacity(0.2))
+                            .foregroundColor(currentScreen != "menu" ? .blue : .red)
+                            .cornerRadius(8)
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                }
+                .padding()
+                .background(Color.white.opacity(0.03))
+                
+                Divider().background(Color.white.opacity(0.1))
+                
+                // --- CONTAINER FRAME ---
+                VStack {
+                    switch currentScreen {
+                    case "menu":
+                        mainPortalMenuView
+                        
+                    case "online_match":
+                        onlineMatchmakingArenaView
+                        
+                    case "local_play", "ai_play":
+                        offlineArenaView
+                        
+                    default:
+                        EmptyView()
                     }
                 }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            .onChange(of: onlineManager.match) { oldMatch, newMatch in
-                if newMatch != nil {
-                    selectedMode = .onlinePlayer
-                    resetGame()
-                } else if selectedMode == .onlinePlayer {
-                    selectedMode = nil
-                }
+            .liquidGlassStyle()
+            .padding(24)
+        }
+        .onAppear {
+            // Keep matchmaking off on launch until explicit menu selection
+            gameManager.showMatchmaker = false
+            
+            withAnimation(.linear(duration: 8.0).repeatForever(autoreverses: true)) {
+                pulseVector = true
             }
-            .onAppear {
-                setupNetworkCallbacks()
+            
+            // Link socket update streams to local display board matrix
+            gameManager.onReceiveMove = { enemyIndex in
+                let enemyPiece = gameManager.localPlayerPiece == .x ? "O" : "X"
+                localBoard[enemyIndex] = enemyPiece
+            }
+            gameManager.onReceiveReset = { resetLocalBoard() }
+        }
+        .onChange(of: gameManager.match) { _, isMatched in
+            if isMatched == true && currentScreen == "online_match" {
+                resetLocalBoard()
             }
         }
-        .animation(.spring(response: 0.4, dampingFraction: 0.75), value: selectedMode)
-        .animation(.easeInOut(duration: 0.25), value: showAIPopup)
-        .animation(.easeInOut(duration: 0.25), value: showMultiplayerPopup)
     }
     
-    // MARK: - Subviews
-    
-    private func modeSelectionMenu(geometry: GeometryProxy) -> some View {
-        VStack(spacing: 25) {
-            VStack(spacing: 8) {
-                Text("TIC-TAC-TOE")
-                    .font(.system(.largeTitle, design: .monospaced))
-                    .fontWeight(.black)
-                    .foregroundColor(Player.x.primaryColor)
-                    .shadow(color: Player.x.glowColor, radius: 15)
-                
-                Text("SELECT OPERATING MODE")
-                    .font(.system(.caption, design: .monospaced))
-                    .foregroundColor(.gray)
-                    .tracking(3)
-            }
-            .padding(.top, 40)
-            
+    // MARK: - Sub-View: Main Menu Portal
+    private var mainPortalMenuView: some View {
+        VStack(spacing: 28) {
             Spacer()
+            
+            Text("SELECT OPERATIONS MODE")
+                .font(.system(.title3, design: .monospaced))
+                .bold()
+                .foregroundColor(.white)
+                .tracking(2)
             
             VStack(spacing: 16) {
-                Button(action: { showAIPopup = true }) {
-                    HStack { Image(systemName: "cpu"); Text("SINGLE PLAYER (VS AI)") }
-                    .font(.headline).foregroundColor(.white).frame(maxWidth: .infinity).padding(.vertical, 14)
-                    .background(Player.x.primaryColor.opacity(0.15)).cornerRadius(16)
-                    .overlay(RoundedRectangle(cornerRadius: 16).stroke(Player.x.primaryColor, lineWidth: 1.5))
-                }
-                .buttonStyle(.plain).focused($focusedIndex, equals: 101)
+                MenuActionButton(
+                    title: "SINGLE PLAYER (VS AI)",
+                    subtitle: "Challenge the grid processing bot matrix",
+                    iconName: "cpu",
+                    glowColor: .blue,
+                    isDisabled: false,
+                    action: {
+                        currentScreen = "ai_play"
+                        resetLocalBoard()
+                    }
+                )
                 
-                Button(action: { showMultiplayerPopup = true }) {
-                    HStack { Image(systemName: "person.2.fill"); Text("MULTIPLAYER OPTIONS") }
-                    .font(.headline).foregroundColor(.white).frame(maxWidth: .infinity).padding(.vertical, 14)
-                    .background(Player.o.primaryColor.opacity(0.15)).cornerRadius(16)
-                    .overlay(RoundedRectangle(cornerRadius: 16).stroke(Player.o.primaryColor, lineWidth: 1.5))
-                }
-                .buttonStyle(.plain).focused($focusedIndex, equals: 102)
+                MenuActionButton(
+                    title: "LOCAL MULTIPLAYER",
+                    subtitle: "Pass and play session matrix locally",
+                    iconName: "person.2.fill",
+                    glowColor: .green,
+                    isDisabled: false,
+                    action: {
+                        currentScreen = "local_play"
+                        resetLocalBoard()
+                    }
+                )
+                
+                MenuActionButton(
+                    title: "ONLINE MATCHMAKING",
+                    subtitle: "Connect through ngrok global relay server",
+                    iconName: "globe",
+                    glowColor: .purple,
+                    isDisabled: gameManager.currentUsername == "Local Guest",
+                    action: {
+                        currentScreen = "online_match"
+                        gameManager.showMatchmaker = true
+                        
+                        // 🌐 FIXED: Explicitly trigger the connection pipeline so terminal catches socket streams!
+                        gameManager.connect()
+                    }
+                )
             }
-            .padding(.horizontal, 20)
+            .frame(maxWidth: 440)
             
             Spacer()
         }
-        .padding(30)
-        .frame(maxWidth: 450, maxHeight: 750)
-        .frame(width: geometry.size.width, height: geometry.size.height)
-        .onAppear { focusedIndex = 101 }
     }
     
-    private func gameplayInterface(geometry: GeometryProxy) -> some View {
-        VStack(spacing: geometry.size.height > 500 ? 30 : 15) {
-            VStack(spacing: 6) {
-                Text("TIC-TAC-TOE")
-                    .font(.system(.title, design: .monospaced)).fontWeight(.heavy)
-                    .foregroundColor(Player.x.primaryColor).shadow(color: Player.x.glowColor, radius: 10)
-                
-                if selectedMode == .onlinePlayer {
-                    Text("VS \(onlineManager.opponentName) (\(onlineManager.localPlayerPiece == .x ? "YOU ARE X" : "YOU ARE O"))")
-                        .font(.system(.caption2, design: .monospaced)).foregroundColor(.green).tracking(1)
-                } else {
-                    Text(selectedMode == .singlePlayer ? "MODE: AI (\(selectedDifficulty.rawValue))" : "MODE: LOCAL VS MODE")
-                        .font(.system(.caption2, design: .monospaced)).foregroundColor(.gray).tracking(2)
-                }
-            }
-            .padding(.top, 25)
-            
+    // MARK: - Sub-View: Online Lobby Search Frame
+    private var onlineMatchmakingArenaView: some View {
+        VStack {
             Spacer()
-            
-            // Game Grid
-            LazyVGrid(columns: columns, spacing: 14) {
-                ForEach(0..<9, id: \.self) { index in
-                    Button(action: { handleTap(at: index) }) {
-                        ZStack {
-                            RoundedRectangle(cornerRadius: 18)
-                                .stroke(focusedIndex == index ? Player.x.primaryColor : gridEdgeColor, lineWidth: focusedIndex == index ? 3 : 1.5)
-                                .background(RoundedRectangle(cornerRadius: 18).fill(focusedIndex == index ? deepSpaceBlue.opacity(0.9) : deepSpaceBlue.opacity(0.6)))
-                                .aspectRatio(1.0, contentMode: .fit)
-                                .shadow(color: focusedIndex == index ? Player.x.glowColor : Color.clear, radius: focusedIndex == index ? 12 : 0)
-                            
-                            if let player = board[index].player {
-                                NeonPieceView(player: player)
-                            }
+            if gameManager.showMatchmaker {
+                VStack(spacing: 16) {
+                    ProgressView()
+                        .scaleEffect(1.2)
+                    Text("Lobby Standby")
+                        .font(.headline)
+                        .foregroundColor(.secondary)
+                    Text(gameManager.opponentName)
+                        .font(.subheadline)
+                        .foregroundColor(.purple)
+                        .bold()
+                }
+            } else {
+                gameGridMatrixView
+            }
+            Spacer()
+        }
+    }
+    
+    // MARK: - Sub-View: Offline Board Modes Frame
+    private var offlineArenaView: some View {
+        VStack(spacing: 0) {
+            if currentScreen == "ai_play" {
+                HStack(spacing: 12) {
+                    Text("Bot Intensity:")
+                        .font(.caption)
+                        .bold()
+                        .foregroundColor(.secondary)
+                    
+                    ForEach(["Easy", "Medium", "Hard"], id: \.self) { diff in
+                        Button(action: { aiDifficulty = diff }) {
+                            Text(diff)
+                                .font(.caption2)
+                                .bold()
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 5)
+                                .background(aiDifficulty == diff ? Color.purple.opacity(0.6) : Color.white.opacity(0.08))
+                                .foregroundColor(.white)
+                                .cornerRadius(5)
                         }
-                    }
-                    .buttonStyle(GridSquareButtonStyle())
-                    .focused($focusedIndex, equals: index)
-                }
-            }
-            .padding(.horizontal, 20)
-            .disabled(isGameOver || isAITinking || (selectedMode == .onlinePlayer && !onlineManager.isMyTurn))
-            
-            Spacer()
-            
-            // Status turn / connection banner
-            Group {
-                if let message = winMessage {
-                    Text(message).font(.title3).bold().foregroundColor(.green).shadow(color: .green, radius: 8)
-                } else if selectedMode == .onlinePlayer {
-                    Text(onlineManager.isMyTurn ? "YOUR TURN" : "WAITING FOR OPPONENT...")
-                        .font(.title3).bold()
-                        .foregroundColor(onlineManager.isMyTurn ? Player.x.primaryColor : .gray)
-                        .shadow(color: onlineManager.isMyTurn ? Player.x.glowColor : .clear, radius: 8)
-                } else if isAITinking {
-                    Text("AI IS COMPUTING...").font(.title3).bold().foregroundColor(Player.o.primaryColor).shadow(color: Player.o.glowColor, radius: 8)
-                } else {
-                    HStack(spacing: 8) {
-                        Text("Turn:").foregroundColor(.gray)
-                        Text(activePlayer.name).foregroundColor(activePlayer.primaryColor).font(.title3).bold().shadow(color: activePlayer.glowColor, radius: 8)
+                        .buttonStyle(PlainButtonStyle())
                     }
                 }
+                .padding(.top, 14)
             }
             
             Spacer()
-            
-            HStack(spacing: 15) {
-                Button(action: {
-                    if selectedMode == .onlinePlayer { onlineManager.sendResetRequest() }
-                    resetGame()
-                }) {
-                    Text("RESET").font(.callout).fontWeight(.bold).foregroundColor(.white).frame(maxWidth: .infinity).padding(.vertical, 14)
-                        .background(Color.gray.opacity(0.2)).cornerRadius(18)
-                }
-                .buttonStyle(.plain).focused($focusedIndex, equals: 10)
-                
-                Button(action: { selectedMode = nil; onlineManager.match = nil; resetGame() }) {
-                    Text("MAIN MENU").font(.callout).fontWeight(.bold).foregroundColor(.white).frame(maxWidth: .infinity).padding(.vertical, 14)
-                        .background(LinearGradient(gradient: Gradient(colors: [Player.x.primaryColor, Player.o.primaryColor]), startPoint: .leading, endPoint: .trailing)).cornerRadius(18)
-                }
-                .buttonStyle(.plain).focused($focusedIndex, equals: 11)
-            }
-            .padding(.bottom, 25)
+            gameGridMatrixView
+            Spacer()
         }
-        .padding(.horizontal, 30).frame(maxWidth: 450, maxHeight: 750).frame(width: geometry.size.width, height: geometry.size.height)
     }
     
-    private func aiDetailsPopup(geometry: GeometryProxy) -> some View {
-        VStack(alignment: .leading, spacing: 14) {
-            HStack {
-                Image(systemName: "cpu.fill").font(.title2).foregroundColor(Player.o.primaryColor)
-                Text("AI INITIALIZATION MATRIX").font(.system(.headline, design: .monospaced)).foregroundColor(.white)
-            }
-            Text("Configure runtime operations for NEO-CORE v1.5 below.").font(.caption).foregroundColor(.gray)
-            HStack(spacing: 10) {
-                ForEach(Difficulty.allCases) { diff in
-                    Button(action: { selectedDifficulty = diff }) {
-                        Text(diff.rawValue).font(.system(size: 11, weight: .bold, design: .monospaced)).foregroundColor(selectedDifficulty == diff ? .black : .white)
-                            .padding(.vertical, 8).frame(maxWidth: .infinity).background(selectedDifficulty == diff ? Player.x.primaryColor : Color.gray.opacity(0.15)).cornerRadius(8)
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-            VStack(alignment: .leading, spacing: 4) {
-                Text("BEHAVIOR PROFILE:").font(.system(size: 10, weight: .bold, design: .monospaced)).foregroundColor(.gray)
-                Text(selectedDifficulty.description).font(.system(size: 11)).foregroundColor(.white).fixedSize(horizontal: false, vertical: true).lineLimit(2)
-            }
-            .padding(12).frame(maxWidth: .infinity, alignment: .leading).background(deepSpaceBlue.opacity(0.5)).cornerRadius(10)
-            Divider().background(gridEdgeColor)
-            HStack {
-                Spacer()
-                Button(action: { showAIPopup = false; selectedMode = .singlePlayer; focusedIndex = 0 }) {
-                    Text("OK").font(.subheadline).fontWeight(.bold).foregroundColor(.black).padding(.horizontal, 30).padding(.vertical, 10).background(Player.x.primaryColor).cornerRadius(10)
-                }
-                .buttonStyle(.plain).focused($focusedIndex, equals: 200)
-            }
-        }
-        .padding(22).frame(width: min(geometry.size.width - 40, 400), height: 350).background(RoundedRectangle(cornerRadius: 24).fill(deepSpaceBlue.opacity(0.95)))
-        .overlay(RoundedRectangle(cornerRadius: 24).stroke(Player.o.primaryColor.opacity(0.5), lineWidth: 2)).shadow(color: Player.o.glowColor.opacity(0.3), radius: 30)
-        .onAppear { focusedIndex = 200 }
-    }
-
-    private func multiplayerSelectionPopup(geometry: GeometryProxy) -> some View {
+    // MARK: - Shared Component: Core Game Board Frame
+    private var gameGridMatrixView: some View {
         VStack(spacing: 20) {
-            HStack {
-                Image(systemName: "network").font(.title2).foregroundColor(Player.x.primaryColor)
-                Text("MULTIPLAYER ROUTER").font(.system(.headline, design: .monospaced)).foregroundColor(.white)
-            }
-            Text("Select matchmaking pipeline to link target clients.").font(.caption).foregroundColor(.gray)
+            Text(currentStatusText)
+                .font(.title3)
+                .bold()
+                .foregroundColor(statusColor)
+                .shadow(color: statusColor.opacity(0.4), radius: 6)
             
             VStack(spacing: 12) {
-                Button(action: { showMultiplayerPopup = false; selectedMode = .multiPlayer; focusedIndex = 0 }) {
-                    HStack {
-                        Image(systemName: "person.2.fill")
-                        Text("LOCAL DOUBLE PLAYER")
-                    }
-                    .font(.subheadline).bold().foregroundColor(.white).frame(maxWidth: .infinity).padding(.vertical, 12)
-                    .background(Color.gray.opacity(0.15)).cornerRadius(12)
-                    .overlay(RoundedRectangle(cornerRadius: 12).stroke(Player.o.primaryColor.opacity(0.5), lineWidth: 1))
-                }
-                .buttonStyle(.plain)
-                
-                Button(action: { showMultiplayerPopup = false; onlineManager.findMatch() }) {
-                    HStack {
-                        Image(systemName: "globe")
-                        Text("QUANTUM ONLINE MATRIX")
-                    }
-                    .font(.subheadline).bold().foregroundColor(.black).frame(maxWidth: .infinity).padding(.vertical, 12)
-                    .background(Player.x.primaryColor).cornerRadius(12)
-                }
-                .buttonStyle(.plain)
-            }
-            
-            Divider().background(gridEdgeColor)
-            
-            Button(action: { showMultiplayerPopup = false }) {
-                Text("CANCEL").font(.caption).bold().foregroundColor(.gray)
-            }
-            .buttonStyle(.plain)
-        }
-        .padding(22).frame(width: min(geometry.size.width - 40, 380), height: 300).background(RoundedRectangle(cornerRadius: 24).fill(deepSpaceBlue.opacity(0.95)))
-        .overlay(RoundedRectangle(cornerRadius: 24).stroke(Player.x.primaryColor.opacity(0.5), lineWidth: 2)).shadow(color: Player.x.glowColor.opacity(0.3), radius: 30)
-    }
-    
-    // MARK: - Core Operations & Match Logic
-    
-    private func setupNetworkCallbacks() {
-        onlineManager.onReceiveMove = { remoteIndex in
-            withAnimation {
-                let opponentPiece: Player = (onlineManager.localPlayerPiece == .x) ? .o : .x
-                if board[remoteIndex].player == nil {
-                    board[remoteIndex].player = opponentPiece
-                    
-                    // Run win evaluations immediately on the incoming network packet
-                    if !checkGameState() {
-                        activePlayer = onlineManager.localPlayerPiece
+                ForEach(0..<3, id: \.self) { row in
+                    HStack(spacing: 12) {
+                        ForEach(0..<3, id: \.self) { col in
+                            let index = row * 3 + col
+                            GridCell(
+                                title: localBoard[index],
+                                isEnabled: isCellActionable(at: index),
+                                action: { handleCellTap(at: index) }
+                            )
+                        }
                     }
                 }
             }
-        }
-        
-        onlineManager.onReceiveReset = {
-            self.resetGame()
-        }
-    }
-    
-    private func handleTap(at index: Int) {
-        guard board[index].player == nil && !isAITinking && !isGameOver else { return }
-        
-        if selectedMode == .onlinePlayer {
-            guard onlineManager.isMyTurn else { return }
             
-            // 1. Mark tile locally
-            board[index].player = onlineManager.localPlayerPiece
-            
-            // 2. Transmit packet data through the node server
-            onlineManager.sendMove(at: index)
-            
-            // 3. Immediately evaluate if this placement ended the game
-            if checkGameState() { return }
-            
-            // 4. Pass turn state to opponent
-            activePlayer = (onlineManager.localPlayerPiece == .x) ? .o : .x
-        } else {
-            board[index].player = activePlayer
-            if checkGameState() { return }
-            activePlayer = (activePlayer == .x) ? .o : .x
-            if selectedMode == .singlePlayer && activePlayer == .o { runAIEngineLoop() }
-        }
-    }
-    
-    private func runAIEngineLoop() {
-        isAITinking = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-            let winPatterns: [[Int]] = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]]
-            var chosenMove: Int? = nil
-            
-            switch selectedDifficulty {
-            case .easy: chosenMove = getRandomMove()
-            case .medium: chosenMove = Double.random(in: 0...1) > 0.5 ? computeTacticalMove(winPatterns: winPatterns) : getRandomMove()
-            case .hard: chosenMove = computeTacticalMove(winPatterns: winPatterns)
+            Button(action: { triggerResetAction() }) {
+                Text("Reset Current Grid")
+                    .font(.body)
+                    .bold()
+                    .frame(maxWidth: 180)
+                    .padding(.vertical, 10)
+                    .background(Color.blue.opacity(0.15))
+                    .foregroundColor(.blue)
+                    .cornerRadius(8)
+                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.blue.opacity(0.4), lineWidth: 1))
             }
-            
-            if chosenMove == nil { chosenMove = getRandomMove() }
-            if let aiIndex = chosenMove { board[aiIndex].player = .o }
-            isAITinking = false
-            if !checkGameState() { activePlayer = .x }
+            .buttonStyle(PlainButtonStyle())
+            .padding(.top, 5)
         }
     }
     
-    private func getRandomMove() -> Int? {
-        board.indices.filter { board[$0].player == nil }.randomElement()
+    // MARK: - Control Helpers
+    
+    private func exitToMainMenu() {
+        if currentScreen == "online_match" {
+            gameManager.disconnect()
+        }
+        currentScreen = "menu"
     }
     
-    private func computeTacticalMove(winPatterns: [[Int]]) -> Int? {
+    private var currentStatusText: String {
+        switch currentScreen {
+        case "online_match":
+            if gameManager.match != true { return "Connecting Matrix..." }
+            return gameManager.isMyTurn ? "Your Turn (Piece: \(gameManager.localPlayerPiece == .x ? "X" : "O"))" : "Opponent is thinking..."
+        default:
+            return localStatusMessage
+        }
+    }
+    
+    private var statusColor: Color {
+        switch currentScreen {
+        case "online_match":
+            if gameManager.match != true { return .secondary }
+            return gameManager.isMyTurn ? .green : .orange
+        default:
+            if localWinner != nil { return .yellow }
+            if !localBoard.contains("") { return .secondary }
+            return isLocalXTurn ? .green : .purple
+        }
+    }
+    
+    private func isCellActionable(at index: Int) -> Bool {
+        if !localBoard[index].isEmpty { return false }
+        switch currentScreen {
+        case "online_match": return gameManager.match == true && gameManager.isMyTurn
+        case "local_play": return localWinner == nil
+        case "ai_play": return localWinner == nil && isLocalXTurn
+        default: return false
+        }
+    }
+    
+    private func handleCellTap(at index: Int) {
+        switch currentScreen {
+        case "online_match":
+            localBoard[index] = gameManager.localPlayerPiece == .x ? "X" : "O"
+            gameManager.sendMove(at: index)
+            
+        case "local_play":
+            // 👥 FIXED: Clean state rotation for real local pass-and-play operations
+            localBoard[index] = isLocalXTurn ? "X" : "O"
+            if evaluateOfflineState() { return }
+            isLocalXTurn.toggle() // Flips gracefully back and forth now!
+            localStatusMessage = isLocalXTurn ? "Player X's Turn" : "Player O's Turn"
+            
+        case "ai_play":
+            localBoard[index] = "X"
+            isLocalXTurn = false
+            localStatusMessage = "Bot is calculating..."
+            if evaluateOfflineState() { return }
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                if let aiMove = AILogic.computeMove(board: localBoard, difficulty: aiDifficulty, aiPiece: "O") {
+                    localBoard[aiMove] = "O"
+                }
+                isLocalXTurn = true
+                _ = evaluateOfflineState()
+            }
+        default: break
+        }
+    }
+    
+    private func triggerResetAction() {
+        if currentScreen == "online_match" { gameManager.sendResetRequest() } else { resetLocalBoard() }
+    }
+    
+    private func resetLocalBoard() {
+        localBoard = Array(repeating: "", count: 9)
+        isLocalXTurn = true
+        localWinner = nil
+        localStatusMessage = currentScreen == "ai_play" ? "Your Turn (Piece: X)" : "Player X's Turn"
+    }
+    
+    private func evaluateOfflineState() -> Bool {
+        let winPatterns = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]]
         for pattern in winPatterns {
-            if pattern.filter({ board[$0].player == .o }).count == 2 && pattern.filter({ board[$0].player == nil }).count == 1 {
-                return pattern.first(where: { board[$0].player == nil })
+            let p1 = localBoard[pattern[0]], p2 = localBoard[pattern[1]], p3 = localBoard[pattern[2]]
+            if !p1.isEmpty && p1 == p2 && p2 == p3 {
+                localWinner = p1
+                if currentScreen == "ai_play" {
+                    localStatusMessage = p1 == "X" ? "🎉 Victory! You beat the bot!" : "🤖 Bot wins! Better luck next time."
+                } else {
+                    localStatusMessage = "🏆 Player \(p1) Wins!"
+                }
+                return true
             }
         }
-        for pattern in winPatterns {
-            if pattern.filter({ board[$0].player == .x }).count == 2 && pattern.filter({ board[$0].player == nil }).count == 1 {
-                return pattern.first(where: { board[$0].player == nil })
-            }
-        }
-        return nil
-    }
-    
-    private func checkGameState() -> Bool {
-        // Evaluate based on who just finished laying down their tile
-        let currentTurner: Player = (selectedMode == .onlinePlayer) ? (onlineManager.isMyTurn ? onlineManager.localPlayerPiece : (onlineManager.localPlayerPiece == .x ? .o : .x)) : activePlayer
-        
-        if checkWin(for: currentTurner) {
-            if selectedMode == .onlinePlayer {
-                winMessage = currentTurner == onlineManager.localPlayerPiece ? "YOU WIN!" : "\(onlineManager.opponentName) WINS!"
-            } else {
-                winMessage = selectedMode == .singlePlayer && currentTurner == .o ? "AI Core Wins!" : "Player \(currentTurner.name) Wins!"
-            }
-            isGameOver = true
-            focusedIndex = 10
-            return true
-        } else if board.allSatisfy({ $0.player != nil }) {
-            winMessage = "It's a Tie Matrix!"
-            isGameOver = true
-            focusedIndex = 10
+        if !localBoard.contains("") {
+            localStatusMessage = "🤝 Grid locked down! It's a tie."
             return true
         }
         return false
     }
+}
+
+// MARK: - CORE INTERACTIVE GRID CELL MODULE
+struct GridCell: View {
+    let title: String
+    let isEnabled: Bool
+    let action: () -> Void
     
-    private func checkWin(for player: Player) -> Bool {
-        let winPatterns: [[Int]] = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]]
-        return winPatterns.contains { pattern in pattern.allSatisfy { board[$0].player == player } }
+    private var cellBackgroundColor: Color {
+        return title.isEmpty ? Color.white.opacity(0.04) : Color.white.opacity(0.09)
     }
     
-    private func resetGame() {
-        board = Array(repeating: Square(player: nil), count: 9)
-        activePlayer = .x
-        winMessage = nil
-        isGameOver = false
-        isAITinking = false
-        focusedIndex = 0
-        if selectedMode == .onlinePlayer {
-            activePlayer = .x
-            onlineManager.isMyTurn = (onlineManager.localPlayerPiece == .x)
+    private var pieceTextColor: Color {
+        return title == "X" ? Color.green : Color.purple
+    }
+    
+    private var frameStrokeColor: Color {
+        if title.isEmpty {
+            return Color.white.opacity(0.1)
+        } else if title == "X" {
+            return Color.green.opacity(0.4)
+        } else {
+            return Color.purple.opacity(0.4)
         }
     }
-}
-
-// MARK: - Subcomponents
-
-struct GridSquareButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .scaleEffect(configuration.isPressed ? 0.92 : 1.0)
-            .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
+    
+    private var neonShadowColor: Color {
+        if title == "X" {
+            return Color.green.opacity(0.2)
+        } else if title == "O" {
+            return Color.purple.opacity(0.2)
+        } else {
+            return Color.clear
+        }
     }
-}
-
-struct NeonPieceView: View {
-    let player: Player
+    
     var body: some View {
-        GeometryReader { pieceGeo in
-            Group {
-                if player == .x {
-                    Image(systemName: "xmark").resizable().aspectRatio(contentMode: .fit).padding(pieceGeo.size.width * 0.24)
-                } else {
-                    Circle().stroke(lineWidth: pieceGeo.size.width * 0.09).padding(pieceGeo.size.width * 0.18)
-                }
-            }
-            .foregroundColor(player.primaryColor).shadow(color: player.glowColor, radius: 12)
+        Button(action: action) {
+            Text(title)
+                .font(.system(size: 45, weight: .bold, design: .monospaced))
+                .frame(width: 95, height: 95)
+                .background(cellBackgroundColor)
+                .foregroundColor(pieceTextColor)
+                .cornerRadius(12)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(frameStrokeColor, lineWidth: 1)
+                )
+                .shadow(color: neonShadowColor, radius: 8)
         }
+        .buttonStyle(PlainButtonStyle())
+        .disabled(!isEnabled)
+    }
+}
+
+// MARK: - EXPANDABLE ACTION BUTTON MODULE
+struct MenuActionButton: View {
+    let title: String
+    let subtitle: String
+    let iconName: String
+    let glowColor: Color
+    var isDisabled: Bool = false
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 16) {
+                Image(systemName: iconName)
+                    .font(.title2)
+                    .foregroundColor(isDisabled ? .secondary : glowColor)
+                    .frame(width: 30)
+                
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .font(.system(.body, design: .monospaced))
+                        .bold()
+                        .foregroundColor(isDisabled ? .secondary : .white)
+                    Text(subtitle)
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
+                }
+                Spacer()
+                
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            .padding(.horizontal, 18)
+            .padding(.vertical, 14)
+            .background(Color.white.opacity(isDisabled ? 0.01 : 0.04))
+            .cornerRadius(12)
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(isDisabled ? Color.white.opacity(0.05) : Color.white.opacity(0.1), lineWidth: 1)
+            )
+            .shadow(color: isDisabled ? .clear : glowColor.opacity(0.1), radius: 6)
+        }
+        .buttonStyle(PlainButtonStyle())
+        .disabled(isDisabled)
+        .opacity(isDisabled ? 0.5 : 1.0)
     }
 }

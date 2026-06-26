@@ -37,6 +37,7 @@ else
 fi
 
 # Create a diagnostic log right in your project folder to catch any silent errors
+# If WORKSPACE_DIR is parent, then TicTacToe folder is WORKSPACE_DIR/TicTacToe
 if [ -d "$WORKSPACE_DIR/TicTacToe" ]; then
     DEBUG_LOG="$WORKSPACE_DIR/TicTacToe/server_launch_debug.log"
     OUTPUT_LOG="$WORKSPACE_DIR/TicTacToe/server_output.log"
@@ -49,17 +50,18 @@ echo "🚀 Target Initialization: $(date)" > "$DEBUG_LOG"
 echo "Resolved Node binary to: $NODE_BIN" >> "$DEBUG_LOG"
 echo "Resolved Workspace Directory to: $WORKSPACE_DIR" >> "$DEBUG_LOG"
 
-# 2. Check if a server session is already active on port 8080
+# 2. Clear out old background tasks on port 8080 silently
 PID=$(lsof -t -i:8080)
 if [ ! -z "$PID" ]; then
-    # Server is alive! Preserve it so both clients can connect to the same engine instance
-    echo "✅ Active core server detected on port 8080 (PID: $PID). Preserving instance for multiplayer pairing." >> "$DEBUG_LOG"
-else
-    # 3. Spin up Node.js silently into the deep background ONLY if port 8080 is empty
-    echo "Spawning background engine..." >> "$DEBUG_LOG"
+    echo "Found ghost process ($PID) camping on 8080. Evicting..." >> "$DEBUG_LOG"
+    kill -9 $PID 2>/dev/null
+fi
 
-    if command -v python3 >/dev/null 2>&1; then
-        python3 -c "
+# 3. Spin up Node.js silently into the deep background
+echo "Spawning background engine..." >> "$DEBUG_LOG"
+
+if command -v python3 >/dev/null 2>&1; then
+    python3 -c "
 import os, sys, subprocess
 try:
     os.setsid() # Breaks out of Xcode's process-reaper group completely
@@ -70,11 +72,10 @@ try:
 except Exception as e:
     print(f'Python execution crash: {e}')
 " "$WORKSPACE_DIR" "$NODE_BIN" "$OUTPUT_LOG" >> "$DEBUG_LOG" 2>&1
-    else
-        # Fallback to pure shell backgrounding if python3 is missing
-        nohup "$NODE_BIN" "$WORKSPACE_DIR/server.js" > "$OUTPUT_LOG" 2>&1 &
-        echo "Success: Backgrounded server using nohup." >> "$DEBUG_LOG"
-    fi
+else
+    # Fallback to pure shell backgrounding if python3 is missing
+    nohup "$NODE_BIN" "$WORKSPACE_DIR/server.js" > "$OUTPUT_LOG" 2>&1 &
+    echo "Success: Backgrounded server using nohup." >> "$DEBUG_LOG"
 fi
 
 echo "🏁 Build phase script complete." >> "$DEBUG_LOG"
