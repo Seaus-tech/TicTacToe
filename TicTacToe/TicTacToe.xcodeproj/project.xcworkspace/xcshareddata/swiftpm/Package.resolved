@@ -1,6 +1,24 @@
 {
-  "originHash" : "c9fb241c5f575df8f20b39649006995779013948e60c51c3f85b729f83b054e7",
+  "originHash" : "f26d1325a53721962eca999cfcfb4355a6e12677716cbfda34fed7a8f717508c",
   "pins" : [
+    {
+      "identity" : "grdb.swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/groue/GRDB.swift",
+      "state" : {
+        "branch" : "master",
+        "revision" : "0d8cf958b4b66a0473ec6e6986eb9da462171da9"
+      }
+    },
+    {
+      "identity" : "lottie-spm",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/airbnb/lottie-spm",
+      "state" : {
+        "branch" : "main",
+        "revision" : "0aff16288f8dc1e3dab35cbf5cf45979673fd3df"
+      }
+    },
     {
       "identity" : "socket.io-client-swift",
       "kind" : "remoteSourceControl",
@@ -15,8 +33,26 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/daltoniam/Starscream",
       "state" : {
-        "revision" : "c6bfd1af48efcc9a9ad203665db12375ba6b145a",
-        "version" : "4.0.8"
+        "branch" : "master",
+        "revision" : "c6bfd1af48efcc9a9ad203665db12375ba6b145a"
+      }
+    },
+    {
+      "identity" : "swift-algorithms",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-algorithms",
+      "state" : {
+        "branch" : "main",
+        "revision" : "5b7143f8e291dee0e14c118fd0212487f0b37af5"
+      }
+    },
+    {
+      "identity" : "swift-numerics",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-numerics.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "a7d826ead09420d5e38221ff76c3e0ec9ea4ea8b"
       }
     }
   ],

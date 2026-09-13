@@ -7,7 +7,14 @@
       "layers" : [
         {
           "image-name" : "Image 2.png",
-          "name" : "Image 2"
+          "name" : "Image 2",
+          "position" : {
+            "scale" : 0.7,
+            "translation-in-points" : [
+              0,
+              0
+            ]
+          }
         }
       ],
       "shadow" : {
