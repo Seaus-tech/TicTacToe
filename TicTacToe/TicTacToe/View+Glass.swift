@@ -1,67 +1,33 @@
 import SwiftUI
 
-#if os(macOS)
-import AppKit
-
-struct VisualEffectBlur: NSViewRepresentable {
-    var material: NSVisualEffectView.Material = .hudWindow
-    var blendingMode: NSVisualEffectView.BlendingMode = .withinWindow
-    var state: NSVisualEffectView.State = .active
-
-    func makeNSView(context: Context) -> NSVisualEffectView {
-        let view = NSVisualEffectView()
-        view.material = material
-        view.blendingMode = blendingMode
-        view.state = state
-        return view
-    }
-
-    func updateNSView(_ nsView: NSVisualEffectView, context: Context) {
-        nsView.material = material
-        nsView.blendingMode = blendingMode
-        nsView.state = state
-    }
-}
-#endif
-
 extension View {
+    @ViewBuilder
     func liquidGlassStyle(cornerRadius: CGFloat = 16) -> some View {
-        // 🧼 Break complex linear stroke math out into distinct sub-expressions
-        let borderGradientColors = [
-            Color.white.opacity(0.25),
-            Color.white.opacity(0.05),
-            Color.purple.opacity(0.1),
-            Color.purple.opacity(0.3)
-        ]
-        let borderGradient = LinearGradient(
-            gradient: Gradient(colors: borderGradientColors),
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
-        
-        let backgroundGradientColors = [
-            Color.white.opacity(0.08),
-            Color.clear,
-            Color.black.opacity(0.15)
-        ]
-        let backgroundGradient = LinearGradient(
-            gradient: Gradient(colors: backgroundGradientColors),
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
+        if #available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *) {
+            glassEffect(.regular, in: .rect(cornerRadius: cornerRadius))
+        } else {
+            background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .strokeBorder(.white.opacity(0.18), lineWidth: 1)
+            }
+        }
+    }
 
-        return self
-            #if os(macOS)
-            .background(VisualEffectBlur(material: .hudWindow, blendingMode: .withinWindow))
-            #else
-            .background(Color.black.opacity(0.25))
-            #endif
-            .background(backgroundGradient)
-            .cornerRadius(cornerRadius)
-            .overlay(
-                RoundedRectangle(cornerRadius: cornerRadius)
-                    .stroke(borderGradient, lineWidth: 1)
-            )
-            .shadow(color: Color.purple.opacity(0.15), radius: 15, x: 0, y: 10)
+    @ViewBuilder
+    func liquidGlassButtonStyle(isProminent: Bool = false) -> some View {
+        if #available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *) {
+            if isProminent {
+                buttonStyle(GlassProminentButtonStyle())
+            } else {
+                buttonStyle(GlassButtonStyle())
+            }
+        } else {
+            if isProminent {
+                buttonStyle(BorderedProminentButtonStyle())
+            } else {
+                buttonStyle(BorderedButtonStyle())
+            }
+        }
     }
 }

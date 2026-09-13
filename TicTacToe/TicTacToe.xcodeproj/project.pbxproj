@@ -7,7 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		C374779A2FCCB72900BBDEBB /* SocketIO in Frameworks */ = {isa = PBXBuildFile; productRef = C37477992FCCB72900BBDEBB /* SocketIO */; };
+		C3A78745302940A800C77CF0 /* SocketIO in Frameworks */ = {isa = PBXBuildFile; productRef = C3A78744302940A800C77CF0 /* SocketIO */; };
+		C3B6D41B3050F53200E43342 /* Starscream in Frameworks */ = {isa = PBXBuildFile; productRef = C3B6D41A3050F53200E43342 /* Starscream */; };
+		C3BF849830563E94009BBCB3 /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = C3BF849730563E94009BBCB3 /* Algorithms */; };
+		C3BF849B30571AD7009BBCB3 /* ComplexModule in Frameworks */ = {isa = PBXBuildFile; productRef = C3BF849A30571AD7009BBCB3 /* ComplexModule */; };
+		C3BF849D30571AD7009BBCB3 /* Numerics in Frameworks */ = {isa = PBXBuildFile; productRef = C3BF849C30571AD7009BBCB3 /* Numerics */; };
+		C3BF849F30571AD7009BBCB3 /* RealModule in Frameworks */ = {isa = PBXBuildFile; productRef = C3BF849E30571AD7009BBCB3 /* RealModule */; };
+		C3BF84A730571B5E009BBCB3 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = C3BF84A630571B5E009BBCB3 /* Lottie */; };
+		C3BF84AF30571D1E009BBCB3 /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = C3BF84AE30571D1E009BBCB3 /* GRDB */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,7 +47,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C374779A2FCCB72900BBDEBB /* SocketIO in Frameworks */,
+				C3BF849830563E94009BBCB3 /* Algorithms in Frameworks */,
+				C3A78745302940A800C77CF0 /* SocketIO in Frameworks */,
+				C3BF84A730571B5E009BBCB3 /* Lottie in Frameworks */,
+				C3BF84AF30571D1E009BBCB3 /* GRDB in Frameworks */,
+				C3BF849F30571AD7009BBCB3 /* RealModule in Frameworks */,
+				C3B6D41B3050F53200E43342 /* Starscream in Frameworks */,
+				C3BF849B30571AD7009BBCB3 /* ComplexModule in Frameworks */,
+				C3BF849D30571AD7009BBCB3 /* Numerics in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -83,7 +97,14 @@
 			);
 			name = TicTacToe;
 			packageProductDependencies = (
-				C37477992FCCB72900BBDEBB /* SocketIO */,
+				C3A78744302940A800C77CF0 /* SocketIO */,
+				C3B6D41A3050F53200E43342 /* Starscream */,
+				C3BF849730563E94009BBCB3 /* Algorithms */,
+				C3BF849A30571AD7009BBCB3 /* ComplexModule */,
+				C3BF849C30571AD7009BBCB3 /* Numerics */,
+				C3BF849E30571AD7009BBCB3 /* RealModule */,
+				C3BF84A630571B5E009BBCB3 /* Lottie */,
+				C3BF84AE30571D1E009BBCB3 /* GRDB */,
 			);
 			productName = TicTacToe;
 			productReference = C390434C2FC52523000E6001 /* TicTacToe.app */;
@@ -114,7 +135,12 @@
 			mainGroup = C39043432FC52523000E6001;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				C37477982FCCB72900BBDEBB /* XCRemoteSwiftPackageReference "socket" */,
+				C3A78743302940A800C77CF0 /* XCRemoteSwiftPackageReference "socket" */,
+				C3B6D4193050F53200E43342 /* XCRemoteSwiftPackageReference "Starscream" */,
+				C3BF849630563E94009BBCB3 /* XCRemoteSwiftPackageReference "swift-algorithms" */,
+				C3BF849930571AD7009BBCB3 /* XCRemoteSwiftPackageReference "swift-numerics" */,
+				C3BF84A530571B5E009BBCB3 /* XCRemoteSwiftPackageReference "lottie-spm" */,
+				C3BF84AD30571D1E009BBCB3 /* XCRemoteSwiftPackageReference "GRDB" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = C390434D2FC52523000E6001 /* Products */;
@@ -264,15 +290,26 @@
 		C39043582FC52524000E6001 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = "";
+				AUTOMATION_APPLE_EVENTS = YES;
 				CODE_SIGN_ENTITLEMENTS = TicTacToe/TicTacToe.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 25X4VXN3L2;
+				DRIVERKIT_DEPLOYMENT_TARGET = "$(RECOMMENDED_DRIVERKIT_DEPLOYMENT_TARGET)";
 				ENABLE_APP_SANDBOX = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = YES;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = YES;
+				ENABLE_RESOURCE_ACCESS_CAMERA = YES;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = YES;
+				ENABLE_RESOURCE_ACCESS_LOCATION = YES;
+				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -285,18 +322,24 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.5;
+				IPHONEOS_DEPLOYMENT_TARGET = "$(RECOMMENDED_IPHONEOS_DEPLOYMENT_TARGET)";
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 26.5;
+				MACOSX_DEPLOYMENT_TARGET = "$(RECOMMENDED_MACOSX_DEPLOYMENT_TARGET)";
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.yashb.TicTacToe;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				REGISTER_APP_GROUPS = YES;
+				RUNTIME_EXCEPTION_ALLOW_DYLD_ENVIRONMENT_VARIABLES = YES;
+				RUNTIME_EXCEPTION_ALLOW_JIT = YES;
+				RUNTIME_EXCEPTION_ALLOW_UNSIGNED_EXECUTABLE_MEMORY = YES;
+				RUNTIME_EXCEPTION_DEBUGGING_TOOL = YES;
+				RUNTIME_EXCEPTION_DISABLE_EXECUTABLE_PAGE_PROTECTION = NO;
+				RUNTIME_EXCEPTION_DISABLE_LIBRARY_VALIDATION = NO;
 				SDKROOT = auto;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTED_PLATFORMS = "xrsimulator xros watchsimulator watchos macosx iphonesimulator iphoneos driverkit appletvsimulator appletvos";
 				SUPPORTS_MACCATALYST = YES;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = YES;
@@ -305,23 +348,36 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,3,7";
-				XROS_DEPLOYMENT_TARGET = 26.5;
+				TARGETED_DEVICE_FAMILY = "1,2,3,4,6,7";
+				TVOS_DEPLOYMENT_TARGET = "$(RECOMMENDED_TVOS_DEPLOYMENT_TARGET)";
+				WATCHOS_DEPLOYMENT_TARGET = "$(RECOMMENDED_WATCHOS_DEPLOYMENT_TARGET)";
+				XROS_DEPLOYMENT_TARGET = "$(RECOMMENDED_XROS_DEPLOYMENT_TARGET)";
 			};
 			name = Debug;
 		};
 		C39043592FC52524000E6001 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALLOW_TARGET_PLATFORM_SPECIALIZATION = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = "";
+				AUTOMATION_APPLE_EVENTS = YES;
 				CODE_SIGN_ENTITLEMENTS = TicTacToe/TicTacToe.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 25X4VXN3L2;
+				DRIVERKIT_DEPLOYMENT_TARGET = "$(RECOMMENDED_DRIVERKIT_DEPLOYMENT_TARGET)";
 				ENABLE_APP_SANDBOX = NO;
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = YES;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = YES;
+				ENABLE_RESOURCE_ACCESS_CAMERA = YES;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = YES;
+				ENABLE_RESOURCE_ACCESS_LOCATION = YES;
+				ENABLE_RESOURCE_ACCESS_PHOTO_LIBRARY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -334,18 +390,24 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.5;
+				IPHONEOS_DEPLOYMENT_TARGET = "$(RECOMMENDED_IPHONEOS_DEPLOYMENT_TARGET)";
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 26.5;
+				MACOSX_DEPLOYMENT_TARGET = "$(RECOMMENDED_MACOSX_DEPLOYMENT_TARGET)";
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.yashb.TicTacToe;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				REGISTER_APP_GROUPS = YES;
+				RUNTIME_EXCEPTION_ALLOW_DYLD_ENVIRONMENT_VARIABLES = YES;
+				RUNTIME_EXCEPTION_ALLOW_JIT = YES;
+				RUNTIME_EXCEPTION_ALLOW_UNSIGNED_EXECUTABLE_MEMORY = YES;
+				RUNTIME_EXCEPTION_DEBUGGING_TOOL = YES;
+				RUNTIME_EXCEPTION_DISABLE_EXECUTABLE_PAGE_PROTECTION = NO;
+				RUNTIME_EXCEPTION_DISABLE_LIBRARY_VALIDATION = NO;
 				SDKROOT = auto;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SUPPORTED_PLATFORMS = "appletvos appletvsimulator iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTED_PLATFORMS = "xrsimulator xros watchsimulator watchos macosx iphonesimulator iphoneos driverkit appletvsimulator appletvos";
 				SUPPORTS_MACCATALYST = YES;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = YES;
 				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = YES;
@@ -354,8 +416,10 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,3,7";
-				XROS_DEPLOYMENT_TARGET = 26.5;
+				TARGETED_DEVICE_FAMILY = "1,2,3,4,6,7";
+				TVOS_DEPLOYMENT_TARGET = "$(RECOMMENDED_TVOS_DEPLOYMENT_TARGET)";
+				WATCHOS_DEPLOYMENT_TARGET = "$(RECOMMENDED_WATCHOS_DEPLOYMENT_TARGET)";
+				XROS_DEPLOYMENT_TARGET = "$(RECOMMENDED_XROS_DEPLOYMENT_TARGET)";
 			};
 			name = Release;
 		};
@@ -383,9 +447,49 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		C37477982FCCB72900BBDEBB /* XCRemoteSwiftPackageReference "socket" */ = {
+		C3A78743302940A800C77CF0 /* XCRemoteSwiftPackageReference "socket" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/socketio/socket.io-client-swift";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+		C3B6D4193050F53200E43342 /* XCRemoteSwiftPackageReference "Starscream" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/daltoniam/Starscream";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
+		C3BF849630563E94009BBCB3 /* XCRemoteSwiftPackageReference "swift-algorithms" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-algorithms";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+		C3BF849930571AD7009BBCB3 /* XCRemoteSwiftPackageReference "swift-numerics" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-numerics.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+		C3BF84A530571B5E009BBCB3 /* XCRemoteSwiftPackageReference "lottie-spm" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/airbnb/lottie-spm";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+		C3BF84AD30571D1E009BBCB3 /* XCRemoteSwiftPackageReference "GRDB" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/groue/GRDB.swift";
 			requirement = {
 				branch = master;
 				kind = branch;
@@ -394,10 +498,45 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		C37477992FCCB72900BBDEBB /* SocketIO */ = {
+		C3A78744302940A800C77CF0 /* SocketIO */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = C37477982FCCB72900BBDEBB /* XCRemoteSwiftPackageReference "socket" */;
+			package = C3A78743302940A800C77CF0 /* XCRemoteSwiftPackageReference "socket" */;
 			productName = SocketIO;
+		};
+		C3B6D41A3050F53200E43342 /* Starscream */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C3B6D4193050F53200E43342 /* XCRemoteSwiftPackageReference "Starscream" */;
+			productName = Starscream;
+		};
+		C3BF849730563E94009BBCB3 /* Algorithms */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C3BF849630563E94009BBCB3 /* XCRemoteSwiftPackageReference "swift-algorithms" */;
+			productName = Algorithms;
+		};
+		C3BF849A30571AD7009BBCB3 /* ComplexModule */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C3BF849930571AD7009BBCB3 /* XCRemoteSwiftPackageReference "swift-numerics" */;
+			productName = ComplexModule;
+		};
+		C3BF849C30571AD7009BBCB3 /* Numerics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C3BF849930571AD7009BBCB3 /* XCRemoteSwiftPackageReference "swift-numerics" */;
+			productName = Numerics;
+		};
+		C3BF849E30571AD7009BBCB3 /* RealModule */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C3BF849930571AD7009BBCB3 /* XCRemoteSwiftPackageReference "swift-numerics" */;
+			productName = RealModule;
+		};
+		C3BF84A630571B5E009BBCB3 /* Lottie */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C3BF84A530571B5E009BBCB3 /* XCRemoteSwiftPackageReference "lottie-spm" */;
+			productName = Lottie;
+		};
+		C3BF84AE30571D1E009BBCB3 /* GRDB */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C3BF84AD30571D1E009BBCB3 /* XCRemoteSwiftPackageReference "GRDB" */;
+			productName = GRDB;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

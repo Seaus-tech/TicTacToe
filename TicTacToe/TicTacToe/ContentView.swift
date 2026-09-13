@@ -1,474 +1,425 @@
 import SwiftUI
 
+// Lightweight enum to handle our three game styles
+enum MatchMode {
+    case online, bot, localPassAndPlay
+}
+
+private enum AppAppearance: String, CaseIterable, Identifiable {
+    case system
+    case light
+    case dark
+
+    var id: Self { self }
+
+    var colorScheme: ColorScheme? {
+        switch self {
+        case .system: nil
+        case .light: .light
+        case .dark: .dark
+        }
+    }
+
+    var title: LocalizedStringKey {
+        switch self {
+        case .system: "System"
+        case .light: "Light"
+        case .dark: "Dark"
+        }
+    }
+}
+
 struct ContentView: View {
-    @ObservedObject var gameManager: OnlineGameManager
+    @EnvironmentObject var gameManager: OnlineGameManager
     
-    // Navigation Screens: "menu", "online_match", "local_play", "ai_play"
-    @State private var currentScreen = "menu"
-    @State private var aiDifficulty = "Medium"
+    // Core game state arrays
+    @State private var board: [String] = Array(repeating: "", count: 9)
+    @State private var isYourTurn: Bool = true
+    @State private var localToken: String = "X"
+    @State private var winMessage: String? = nil
+    @State private var winStreak: Int = 0
+    @State private var totalCareerWins: Int = 0
+    @AppStorage("appAppearance") private var appearance = AppAppearance.system.rawValue
     
-    // Offline State Engines
-    @State private var localBoard: [String] = Array(repeating: "", count: 9)
-    @State private var isLocalXTurn = true
-    @State private var localStatusMessage = "Player X's Turn"
-    @State private var localWinner: String? = nil
-    
-    @State private var pulseVector = false
+    // Default to Bot match when offline, automatically shifts to .online when Game Center connects
+    @State private var activeMode: MatchMode = .bot
     
     var body: some View {
-        ZStack {
-            // --- DEEP LIQUID GLOW BACKDROP ---
-            Color(red: 0.05, green: 0.04, blue: 0.08)
-                .edgesIgnoringSafeArea(.all)
-            
-            Circle()
-                .fill(Color.purple.opacity(0.35))
-                .frame(width: 450, height: 450)
-                .blur(radius: 90)
-                .offset(x: pulseVector ? -200 : 200, y: pulseVector ? 150 : -150)
-                
-            Circle()
-                .fill(Color.blue.opacity(0.3))
-                .frame(width: 400, height: 400)
-                .blur(radius: 80)
-                .offset(x: pulseVector ? 250 : -250, y: pulseVector ? -120 : 120)
-            
-            // --- FRONT COMPOSITE GLASS PANEL LAYER ---
-            VStack(spacing: 0) {
-                
-                // HEADER STATUS DASHBOARD
-                HStack {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("ARCADE MATRIX LINK")
-                            .font(.system(.headline, design: .monospaced))
-                            .foregroundColor(.purple)
-                            .shadow(color: .purple.opacity(0.5), radius: 4)
-                        Text("Operator ID: \(gameManager.currentUsername)")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                    Spacer()
-                    
-                    Button(action: {
-                        if currentScreen != "menu" {
-                            exitToMainMenu()
-                        } else {
-                            gameManager.logOut()
+        NavigationStack {
+            ZStack {
+                Color.primary.opacity(0.045)
+                    .ignoresSafeArea()
+
+                GeometryReader { geometry in
+                    let horizontalPadding = min(20, geometry.size.width * 0.06)
+                    let compactLayout = geometry.size.height < 620
+                    // Keep controls visible first; only the board contracts in short windows.
+                    let reservedHeight: CGFloat = gameManager.currentMatch == nil ? 340 : 235
+                    let boardSide = max(
+                        110,
+                        min(
+                            420,
+                            geometry.size.width - (horizontalPadding * 2),
+                            geometry.size.height - reservedHeight
+                        )
+                    )
+
+                    VStack(spacing: compactLayout ? 12 : 20) {
+                        LiquidHeaderCard
+
+                        if gameManager.currentMatch == nil {
+                            ModeSelectionTabs
                         }
-                    }) {
-                        Text(currentScreen != "menu" ? "Main Menu" : "Disconnect")
-                            .font(.caption)
-                            .bold()
-                            .padding(.horizontal, 14)
-                            .padding(.vertical, 7)
-                            .background(currentScreen != "menu" ? Color.blue.opacity(0.2) : Color.red.opacity(0.2))
-                            .foregroundColor(currentScreen != "menu" ? .blue : .red)
-                            .cornerRadius(8)
+
+                        MatrixGameBoard(sideLength: boardSide)
+                        LiquidActionControls
                     }
-                    .buttonStyle(PlainButtonStyle())
+                    .frame(maxWidth: 600)
+                    .padding(.horizontal, horizontalPadding)
+                    .padding(.vertical, compactLayout ? 10 : 16)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
                 }
-                .padding()
-                .background(Color.white.opacity(0.03))
-                
-                Divider().background(Color.white.opacity(0.1))
-                
-                // --- CONTAINER FRAME ---
-                VStack {
-                    switch currentScreen {
-                    case "menu":
-                        mainPortalMenuView
-                        
-                    case "online_match":
-                        onlineMatchmakingArenaView
-                        
-                    case "local_play", "ai_play":
-                        offlineArenaView
-                        
-                    default:
-                        EmptyView()
-                    }
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            .liquidGlassStyle()
-            .padding(24)
+            .navigationTitle("Tic-Tac-Toe")
+            .toolbar {
+                ToolbarItem {
+                    Menu {
+                        Picker("Appearance", selection: $appearance) {
+                            ForEach(AppAppearance.allCases) { option in
+                                Text(option.title)
+                                    .tag(option.rawValue)
+                            }
+                        }
+                    } label: {
+                        Label("Appearance", systemImage: "circle.lefthalf.filled")
+                    }
+                    .accessibilityLabel("Appearance")
+                }
+            }
         }
+        .tint(.blue)
+        .preferredColorScheme(AppAppearance(rawValue: appearance)?.colorScheme)
         .onAppear {
-            // Keep matchmaking off on launch until explicit menu selection
-            gameManager.showMatchmaker = false
-            
-            withAnimation(.linear(duration: 8.0).repeatForever(autoreverses: true)) {
-                pulseVector = true
-            }
-            
-            // Link socket update streams to local display board matrix
-            gameManager.onReceiveMove = { enemyIndex in
-                let enemyPiece = gameManager.localPlayerPiece == .x ? "O" : "X"
-                localBoard[enemyIndex] = enemyPiece
-            }
-            gameManager.onReceiveReset = { resetLocalBoard() }
+            setupIncomingMoveListener()
         }
-        .onChange(of: gameManager.match) { _, isMatched in
-            if isMatched == true && currentScreen == "online_match" {
-                resetLocalBoard()
+        .onChange(of: gameManager.currentMatch) { _, newMatch in
+            if newMatch != nil {
+                activeMode = .online
             }
         }
     }
     
-    // MARK: - Sub-View: Main Menu Portal
-    private var mainPortalMenuView: some View {
-        VStack(spacing: 28) {
-            Spacer()
-            
-            Text("SELECT OPERATIONS MODE")
-                .font(.system(.title3, design: .monospaced))
-                .bold()
-                .foregroundColor(.white)
-                .tracking(2)
-            
-            VStack(spacing: 16) {
-                MenuActionButton(
-                    title: "SINGLE PLAYER (VS AI)",
-                    subtitle: "Challenge the grid processing bot matrix",
-                    iconName: "cpu",
-                    glowColor: .blue,
-                    isDisabled: false,
-                    action: {
-                        currentScreen = "ai_play"
-                        resetLocalBoard()
-                    }
-                )
-                
-                MenuActionButton(
-                    title: "LOCAL MULTIPLAYER",
-                    subtitle: "Pass and play session matrix locally",
-                    iconName: "person.2.fill",
-                    glowColor: .green,
-                    isDisabled: false,
-                    action: {
-                        currentScreen = "local_play"
-                        resetLocalBoard()
-                    }
-                )
-                
-                MenuActionButton(
-                    title: "ONLINE MATCHMAKING",
-                    subtitle: "Connect through ngrok global relay server",
-                    iconName: "globe",
-                    glowColor: .purple,
-                    isDisabled: gameManager.currentUsername == "Local Guest",
-                    action: {
-                        currentScreen = "online_match"
-                        gameManager.showMatchmaker = true
-                        
-                        // 🌐 FIXED: Explicitly trigger the connection pipeline so terminal catches socket streams!
-                        gameManager.connect()
-                    }
-                )
+    // MARK: - Game status
+    private var LiquidHeaderCard: some View {
+        HStack(spacing: 14) {
+            Image(systemName: "gamecontroller.fill")
+                .font(.title2)
+                .foregroundStyle(.white)
+                .frame(width: 48, height: 48)
+                .background(Color.accentColor, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(gameManager.currentMatch == nil ? "Ready to play" : "Online game")
+                    .font(.headline)
+                Text(gameManager.isPlayerAuthenticated ? gameManager.localPlayerName : "Play on this device or find an opponent")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
             }
-            .frame(maxWidth: 440)
-            
-            Spacer()
+
+            Spacer(minLength: 0)
+
+            Circle()
+                .fill(gameManager.isPlayerAuthenticated ? Color.green : Color.secondary)
+                .frame(width: 10, height: 10)
+                .accessibilityLabel(gameManager.isPlayerAuthenticated ? "Game Center connected" : "Playing locally")
         }
+        .padding()
+        .liquidGlassStyle(cornerRadius: 20)
+        .shadow(color: .black.opacity(0.08), radius: 12, y: 4)
     }
     
-    // MARK: - Sub-View: Online Lobby Search Frame
-    private var onlineMatchmakingArenaView: some View {
-        VStack {
-            Spacer()
-            if gameManager.showMatchmaker {
-                VStack(spacing: 16) {
-                    ProgressView()
-                        .scaleEffect(1.2)
-                    Text("Lobby Standby")
-                        .font(.headline)
-                        .foregroundColor(.secondary)
-                    Text(gameManager.opponentName)
-                        .font(.subheadline)
-                        .foregroundColor(.purple)
-                        .bold()
-                }
-            } else {
-                gameGridMatrixView
+    // MARK: - Game mode
+    private var ModeSelectionTabs: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Game mode")
+                .font(.headline)
+
+            HStack(spacing: 8) {
+            Button(action: { activeMode = .bot; resetMatchBoard() }) {
+                Label("Play Bot", systemImage: "cpu")
+                    .font(.subheadline.weight(.semibold))
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 36)
             }
-            Spacer()
+            .liquidGlassButtonStyle(isProminent: activeMode == .bot)
+            .tint(activeMode == .bot ? .blue : .gray)
+            
+            Button(action: { activeMode = .localPassAndPlay; resetMatchBoard() }) {
+                Label("Two Players", systemImage: "person.2")
+                    .font(.subheadline.weight(.semibold))
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 36)
+            }
+            .liquidGlassButtonStyle(isProminent: activeMode == .localPassAndPlay)
+            .tint(activeMode == .localPassAndPlay ? .blue : .secondary)
+            }
         }
+        .padding()
+        .liquidGlassStyle(cornerRadius: 20)
     }
     
-    // MARK: - Sub-View: Offline Board Modes Frame
-    private var offlineArenaView: some View {
-        VStack(spacing: 0) {
-            if currentScreen == "ai_play" {
+    // MARK: - Board
+    private func MatrixGameBoard(sideLength: CGFloat) -> some View {
+        VStack(spacing: 12) {
+            ForEach(0..<3, id: \.self) { row in
                 HStack(spacing: 12) {
-                    Text("Bot Intensity:")
-                        .font(.caption)
-                        .bold()
-                        .foregroundColor(.secondary)
-                    
-                    ForEach(["Easy", "Medium", "Hard"], id: \.self) { diff in
-                        Button(action: { aiDifficulty = diff }) {
-                            Text(diff)
-                                .font(.caption2)
-                                .bold()
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 5)
-                                .background(aiDifficulty == diff ? Color.purple.opacity(0.6) : Color.white.opacity(0.08))
-                                .foregroundColor(.white)
-                                .cornerRadius(5)
-                        }
-                        .buttonStyle(PlainButtonStyle())
-                    }
-                }
-                .padding(.top, 14)
-            }
-            
-            Spacer()
-            gameGridMatrixView
-            Spacer()
-        }
-    }
-    
-    // MARK: - Shared Component: Core Game Board Frame
-    private var gameGridMatrixView: some View {
-        VStack(spacing: 20) {
-            Text(currentStatusText)
-                .font(.title3)
-                .bold()
-                .foregroundColor(statusColor)
-                .shadow(color: statusColor.opacity(0.4), radius: 6)
-            
-            VStack(spacing: 12) {
-                ForEach(0..<3, id: \.self) { row in
-                    HStack(spacing: 12) {
-                        ForEach(0..<3, id: \.self) { col in
-                            let index = row * 3 + col
-                            GridCell(
-                                title: localBoard[index],
-                                isEnabled: isCellActionable(at: index),
-                                action: { handleCellTap(at: index) }
-                            )
-                        }
+                    ForEach(0..<3, id: \.self) { column in
+                        let index = row * 3 + column
+                        MatrixCell(at: index)
                     }
                 }
             }
-            
-            Button(action: { triggerResetAction() }) {
-                Text("Reset Current Grid")
-                    .font(.body)
-                    .bold()
-                    .frame(maxWidth: 180)
-                    .padding(.vertical, 10)
-                    .background(Color.blue.opacity(0.15))
-                    .foregroundColor(.blue)
-                    .cornerRadius(8)
-                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.blue.opacity(0.4), lineWidth: 1))
+        }
+        .padding(16)
+        .animation(.easeInOut(duration: 0.2), value: isYourTurn)
+        .liquidGlassStyle(cornerRadius: 28)
+        .shadow(color: .black.opacity(0.08), radius: 14, y: 5)
+        .frame(width: sideLength, height: sideLength)
+    }
+    
+    // MARK: - Board cell
+    @ViewBuilder
+    private func MatrixCell(at index: Int) -> some View {
+        Button(action: {
+            handleCellTap(at: index)
+        }) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 16, style: .continuous)
+                    .fill(Color.secondary.opacity(0.10))
+                
+                if board[index] == "X" {
+                    Text("X")
+                        .font(.system(size: 42, weight: .bold, design: .rounded))
+                        .foregroundStyle(.blue)
+                } else if board[index] == "O" {
+                    Text("O")
+                        .font(.system(size: 42, weight: .bold, design: .rounded))
+                        .foregroundStyle(.orange)
+                }
             }
-            .buttonStyle(PlainButtonStyle())
-            .padding(.top, 5)
+            .frame(maxWidth: .infinity)
+            .aspectRatio(1.0, contentMode: .fit)
         }
+        .buttonStyle(.plain)
+        .accessibilityLabel(board[index].isEmpty ? "Empty square" : "\(board[index])")
+        .disabled(!board[index].isEmpty || winMessage != nil || !isYourTurn)
+    }
+}
+extension ContentView {
+    
+    // MARK: - Game controls
+    private var LiquidActionControls: some View {
+        VStack(spacing: 16) {
+            if let winMessage = winMessage {
+                Text(winMessage)
+                    .font(.headline)
+                    .foregroundStyle(.primary)
+            } else {
+                Group {
+                    switch activeMode {
+                    case .online:
+                        Label(isYourTurn ? "Your turn" : "Opponent's turn", systemImage: isYourTurn ? "hand.tap.fill" : "hourglass")
+                    case .bot:
+                        Label(isYourTurn ? "Your turn" : "Bot is thinking", systemImage: isYourTurn ? "hand.tap.fill" : "cpu")
+                    case .localPassAndPlay:
+                        Label("Player \(localToken)'s turn", systemImage: "person.fill")
+                    }
+                }
+                .font(.subheadline.weight(.medium))
+                .foregroundStyle(.secondary)
+            }
+            
+            HStack(spacing: 12) {
+                if gameManager.currentMatch == nil {
+                    Button(action: {
+                        gameManager.presentMatchmakerInterface()
+                    }) {
+                        Label("Play Online", systemImage: "person.2.fill")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .liquidGlassButtonStyle()
+                }
+                
+                Button(action: resetMatchBoard) {
+                    Label("New Game", systemImage: "arrow.counterclockwise")
+                        .frame(maxWidth: .infinity)
+                }
+                .liquidGlassButtonStyle(isProminent: true)
+            }
+            .controlSize(.large)
+        }
+        .padding()
+        .frame(maxWidth: .infinity)
+        .liquidGlassStyle(cornerRadius: 20)
+    }
+
+    // MARK: - Multiplatform Haptic Configurations
+    private func triggerImpactFeedback() {
+        #if os(iOS)
+        let generator = UIImpactFeedbackGenerator(style: .medium)
+        generator.prepare()
+        generator.impactOccurred()
+        #endif
     }
     
-    // MARK: - Control Helpers
-    
-    private func exitToMainMenu() {
-        if currentScreen == "online_match" {
-            gameManager.disconnect()
-        }
-        currentScreen = "menu"
+    private func triggerSuccessFeedback() {
+        #if os(iOS)
+        let generator = UINotificationFeedbackGenerator()
+        generator.prepare()
+        generator.notificationOccurred(.success)
+        #endif
     }
     
-    private var currentStatusText: String {
-        switch currentScreen {
-        case "online_match":
-            if gameManager.match != true { return "Connecting Matrix..." }
-            return gameManager.isMyTurn ? "Your Turn (Piece: \(gameManager.localPlayerPiece == .x ? "X" : "O"))" : "Opponent is thinking..."
-        default:
-            return localStatusMessage
-        }
-    }
-    
-    private var statusColor: Color {
-        switch currentScreen {
-        case "online_match":
-            if gameManager.match != true { return .secondary }
-            return gameManager.isMyTurn ? .green : .orange
-        default:
-            if localWinner != nil { return .yellow }
-            if !localBoard.contains("") { return .secondary }
-            return isLocalXTurn ? .green : .purple
-        }
-    }
-    
-    private func isCellActionable(at index: Int) -> Bool {
-        if !localBoard[index].isEmpty { return false }
-        switch currentScreen {
-        case "online_match": return gameManager.match == true && gameManager.isMyTurn
-        case "local_play": return localWinner == nil
-        case "ai_play": return localWinner == nil && isLocalXTurn
-        default: return false
-        }
-    }
-    
+    // MARK: - Dynamic Game Tap Handlers
     private func handleCellTap(at index: Int) {
-        switch currentScreen {
-        case "online_match":
-            localBoard[index] = gameManager.localPlayerPiece == .x ? "X" : "O"
-            gameManager.sendMove(at: index)
-            
-        case "local_play":
-            // 👥 FIXED: Clean state rotation for real local pass-and-play operations
-            localBoard[index] = isLocalXTurn ? "X" : "O"
-            if evaluateOfflineState() { return }
-            isLocalXTurn.toggle() // Flips gracefully back and forth now!
-            localStatusMessage = isLocalXTurn ? "Player X's Turn" : "Player O's Turn"
-            
-        case "ai_play":
-            localBoard[index] = "X"
-            isLocalXTurn = false
-            localStatusMessage = "Bot is calculating..."
-            if evaluateOfflineState() { return }
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
-                if let aiMove = AILogic.computeMove(board: localBoard, difficulty: aiDifficulty, aiPiece: "O") {
-                    localBoard[aiMove] = "O"
-                }
-                isLocalXTurn = true
-                _ = evaluateOfflineState()
+        board[index] = localToken
+        triggerImpactFeedback()
+        processMatrixState(for: board[index])
+        
+        guard winMessage == nil else { return }
+        
+        // Split Engine Routing Logic
+        if activeMode == .online {
+            gameManager.sendGameMove(cellIndex: index)
+            isYourTurn = false
+        } else if activeMode == .bot {
+            isYourTurn = false
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+                self.executeBotMove()
             }
-        default: break
+        } else if activeMode == .localPassAndPlay {
+            // Swap turns and tokens instantly for offline pass-and-play matches
+            localToken = (localToken == "X") ? "O" : "X"
+            isYourTurn = true
         }
     }
     
-    private func triggerResetAction() {
-        if currentScreen == "online_match" { gameManager.sendResetRequest() } else { resetLocalBoard() }
+    private func setupIncomingMoveListener() {
+        gameManager.onMoveReceived = { opponentIndex in
+            let opponentToken = (localToken == "X") ? "O" : "X"
+            if board[opponentIndex].isEmpty && winMessage == nil {
+                board[opponentIndex] = opponentToken
+                triggerImpactFeedback()
+                isYourTurn = true
+                processMatrixState(for: opponentToken)
+            }
+        }
     }
     
-    private func resetLocalBoard() {
-        localBoard = Array(repeating: "", count: 9)
-        isLocalXTurn = true
-        localWinner = nil
-        localStatusMessage = currentScreen == "ai_play" ? "Your Turn (Piece: X)" : "Player X's Turn"
-    }
-    
-    private func evaluateOfflineState() -> Bool {
-        let winPatterns = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]]
-        for pattern in winPatterns {
-            let p1 = localBoard[pattern[0]], p2 = localBoard[pattern[1]], p3 = localBoard[pattern[2]]
-            if !p1.isEmpty && p1 == p2 && p2 == p3 {
-                localWinner = p1
-                if currentScreen == "ai_play" {
-                    localStatusMessage = p1 == "X" ? "🎉 Victory! You beat the bot!" : "🤖 Bot wins! Better luck next time."
+    private func processMatrixState(for token: String) {
+        if checkWinCondition(for: token) {
+            winMessage = "MATRIX RESOLVED: \(token) WINS"
+            triggerSuccessFeedback()
+            
+            // Only report achievements to the live Game Center dashboard if playing online or vs the Bot
+            if activeMode != .localPassAndPlay {
+                if token == localToken {
+                    winStreak += 1
+                    totalCareerWins += 1
+                    gameManager.reportScoreToLeaderboard(wins: totalCareerWins)
+                    gameManager.reportWinAchievement(currentStreakCount: winStreak)
                 } else {
-                    localStatusMessage = "🏆 Player \(p1) Wins!"
+                    winStreak = 0
                 }
-                return true
+            }
+        } else if !board.contains("") {
+            winMessage = "QUANTUM STALEMATE DETECTED"
+        }
+    }
+    
+    // MARK: - Evaluation Logic (Glitch Resistant Layout)
+    private func checkWinCondition(for player: String) -> Bool {
+        let zero = 0;  let one = 1;   let two = 2
+        let three = 3; let four = 4;  let five = 5
+        let six = 6;   let seven = 7; let eight = 8
+        
+        let row1 = board[zero] == player && board[one] == player && board[two] == player
+        let row2 = board[three] == player && board[four] == player && board[five] == player
+        let row3 = board[six] == player && board[seven] == player && board[eight] == player
+        
+        let col1 = board[zero] == player && board[three] == player && board[six] == player
+        let col2 = board[one] == player && board[four] == player && board[seven] == player
+        let col3 = board[two] == player && board[five] == player && board[eight] == player
+        
+        let diag1 = board[zero] == player && board[four] == player && board[eight] == player
+        let diag2 = board[two] == player && board[four] == player && board[six] == player
+        
+        return row1 || row2 || row3 || col1 || col2 || col3 || diag1 || diag2
+    }
+    
+    // MARK: - Strategic Bot Engine Routine
+    private func executeBotMove() {
+        guard winMessage == nil && board.contains("") else { return }
+        let botToken = (localToken == "X") ? "O" : "X"
+        
+        if let winningMove = findStrategicCell(for: botToken) {
+            board[winningMove] = botToken
+            processMatrixState(for: botToken)
+            isYourTurn = true
+            return
+        }
+        
+        if let defensiveBlockMove = findStrategicCell(for: localToken) {
+            board[defensiveBlockMove] = botToken
+            processMatrixState(for: botToken)
+            isYourTurn = true
+            return
+        }
+        
+        let centerIndex = 4
+        if board[centerIndex].isEmpty {
+            board[centerIndex] = botToken
+            processMatrixState(for: botToken)
+            isYourTurn = true
+            return
+        }
+        
+        let openCells = board.enumerated().filter { $0.element.isEmpty }.map { $0.offset }
+        if let randomChoice = openCells.randomElement() {
+            board[randomChoice] = botToken
+            processMatrixState(for: botToken)
+            isYourTurn = true
+        }
+    }
+    
+    private func findStrategicCell(for token: String) -> Int? {
+        let zero = 0;  let one = 1;   let two = 2
+        let three = 3; let four = 4;  let five = 5
+        let six = 6;   let seven = 7; let eight = 8
+        
+        let lines = [
+            (zero, one, two), (three, four, five), (six, seven, eight),
+            (zero, three, six), (one, four, seven), (two, five, eight),
+            (zero, four, eight), (two, four, six)
+        ]
+        
+        for (a, b, c) in lines {
+            let cells = [board[a], board[b], board[c]]
+            if cells.filter({ $0 == token }).count == 2 && cells.contains("") {
+                if board[a].isEmpty { return a }
+                if board[b].isEmpty { return b }
+                if board[c].isEmpty { return c }
             }
         }
-        if !localBoard.contains("") {
-            localStatusMessage = "🤝 Grid locked down! It's a tie."
-            return true
-        }
-        return false
-    }
-}
-
-// MARK: - CORE INTERACTIVE GRID CELL MODULE
-struct GridCell: View {
-    let title: String
-    let isEnabled: Bool
-    let action: () -> Void
-    
-    private var cellBackgroundColor: Color {
-        return title.isEmpty ? Color.white.opacity(0.04) : Color.white.opacity(0.09)
+        return nil
     }
     
-    private var pieceTextColor: Color {
-        return title == "X" ? Color.green : Color.purple
-    }
-    
-    private var frameStrokeColor: Color {
-        if title.isEmpty {
-            return Color.white.opacity(0.1)
-        } else if title == "X" {
-            return Color.green.opacity(0.4)
-        } else {
-            return Color.purple.opacity(0.4)
-        }
-    }
-    
-    private var neonShadowColor: Color {
-        if title == "X" {
-            return Color.green.opacity(0.2)
-        } else if title == "O" {
-            return Color.purple.opacity(0.2)
-        } else {
-            return Color.clear
-        }
-    }
-    
-    var body: some View {
-        Button(action: action) {
-            Text(title)
-                .font(.system(size: 45, weight: .bold, design: .monospaced))
-                .frame(width: 95, height: 95)
-                .background(cellBackgroundColor)
-                .foregroundColor(pieceTextColor)
-                .cornerRadius(12)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(frameStrokeColor, lineWidth: 1)
-                )
-                .shadow(color: neonShadowColor, radius: 8)
-        }
-        .buttonStyle(PlainButtonStyle())
-        .disabled(!isEnabled)
-    }
-}
-
-// MARK: - EXPANDABLE ACTION BUTTON MODULE
-struct MenuActionButton: View {
-    let title: String
-    let subtitle: String
-    let iconName: String
-    let glowColor: Color
-    var isDisabled: Bool = false
-    let action: () -> Void
-    
-    var body: some View {
-        Button(action: action) {
-            HStack(spacing: 16) {
-                Image(systemName: iconName)
-                    .font(.title2)
-                    .foregroundColor(isDisabled ? .secondary : glowColor)
-                    .frame(width: 30)
-                
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(title)
-                        .font(.system(.body, design: .monospaced))
-                        .bold()
-                        .foregroundColor(isDisabled ? .secondary : .white)
-                    Text(subtitle)
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
-                }
-                Spacer()
-                
-                Image(systemName: "chevron.right")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-            .padding(.horizontal, 18)
-            .padding(.vertical, 14)
-            .background(Color.white.opacity(isDisabled ? 0.01 : 0.04))
-            .cornerRadius(12)
-            .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(isDisabled ? Color.white.opacity(0.05) : Color.white.opacity(0.1), lineWidth: 1)
-            )
-            .shadow(color: isDisabled ? .clear : glowColor.opacity(0.1), radius: 6)
-        }
-        .buttonStyle(PlainButtonStyle())
-        .disabled(isDisabled)
-        .opacity(isDisabled ? 0.5 : 1.0)
+    private func resetMatchBoard() {
+        board = Array(repeating: "", count: 9)
+        winMessage = nil
+        isYourTurn = true
+        localToken = "X"
+        triggerImpactFeedback()
     }
 }

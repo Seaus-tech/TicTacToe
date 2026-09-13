@@ -1,227 +1,173 @@
 import Foundation
-import SocketIO
+import GameKit
+import SwiftUI
 import Combine
 
-enum PlayerPiece {
-    case x, o
-}
-
-class OnlineGameManager: ObservableObject {
-    @Published var isAuthenticated = false
-    @Published var currentUsername = ""
-    @Published var authError: String? = nil
-    @Published var isProcessingAuth = false
+class OnlineGameManager: NSObject, ObservableObject, GKMatchmakerViewControllerDelegate, GKMatchDelegate {
+    @Published var isPlayerAuthenticated: Bool = false
+    @Published var localPlayerName: String = "Guest"
+    @Published var authenticationError: String? = nil
     
-    @Published var showMatchmaker = false
-    @Published var opponentName = "Searching for an opponent..."
-    @Published var match = false
-    @Published var isMyTurn = false
-    @Published var localPlayerPiece: PlayerPiece = .x
+    // Multiplayer Connection States
+    @Published var currentMatch: GKMatch? = nil
+    @Published var matchInfoMessage: String = "READY FOR NET LINK INITIALIZATION"
     
-    // Engine State Closures
-    var onReceiveMove: ((Int) -> Void)?
-    var onReceiveReset: (() -> Void)?
+    // Dynamic move packet router callback link to UI
+    var onMoveReceived: ((Int) -> Void)?
     
-    private var manager: SocketManager?
-    private var socket: SocketIOClient?
-    
-    // 🌐 Change this to your live ngrok tunnel URL if hosting remotely
-    private let serverURLString = "http://localhost:3000"
-    
-    init() {
-        self.manager = nil
-        self.socket = nil
+    override init() {
+        super.init()
+        authenticateLocalPlayer()
     }
     
-    // MARK: - Real HTTP Backend Login Validation with Auto-Fallback
-    func login(username: String, password: Obscured) {
-        guard let url = URL(string: "\(serverURLString)/api/login") else { return }
+    func authenticateLocalPlayer() {
+        let localPlayer = GKLocalPlayer.local
+        localPlayer.authenticateHandler = { [weak self] viewController, error in
+            DispatchQueue.main.async {
+                if let vc = viewController {
+                    self?.presentAuthentication(vc)
+                } else if localPlayer.isAuthenticated {
+                    self?.isPlayerAuthenticated = true
+                    self?.localPlayerName = localPlayer.displayName
+                    self?.authenticationError = nil
+                    print("Game Center sandbox profile secure: \(localPlayer.displayName)")
+                } else {
+                    self?.isPlayerAuthenticated = false
+                    self?.authenticationError = error?.localizedDescription ?? "Unknown Game Center Error"
+                }
+            }
+        }
+    }
+    
+    // MARK: - Game Center Dashboard Score Reporting Interface
+    func reportScoreToLeaderboard(wins: Int) {
+        guard isPlayerAuthenticated else { return }
+        
+        // This identifier maps directly to your configuration settings block inside App Store Connect / Xcode
+        let leaderboardID = "com.seaus.neogrid.total_wins"
+        
+        GKLeaderboard.submitScore(wins, context: 0, player: GKLocalPlayer.local, leaderboardIDs: [leaderboardID]) { error in
+            if let error = error {
+                print("Failed to sync score matrix to dashboard: \(error.localizedDescription)")
+            } else {
+                print("Game Center leaderboard successfully updated to: \(wins) wins")
+            }
+        }
+    }
+    
+    // MARK: - Achievement Progression Pipeline (Dashboard Interface Hook)
+    func reportWinAchievement(currentStreakCount: Int) {
+        guard isPlayerAuthenticated else { return }
+        
+        let achievementID = "com.seaus.neogrid.win_streak"
+        let achievement = GKAchievement(identifier: achievementID)
+        
+        let targetWins = 3.0
+        let percentage = (Double(currentStreakCount) / targetWins) * 100.0
+        
+        achievement.percentComplete = min(percentage, 100.0)
+        achievement.showsCompletionBanner = true // Triggers Apple's native system card banner popup
+        
+        GKAchievement.report([achievement]) { error in
+            if let error = error {
+                print("Failed to dispatch achievement sync stream: \(error.localizedDescription)")
+            } else {
+                print("Game Center achievement system matrix updated: \(achievement.percentComplete)%")
+            }
+        }
+    }
+    
+    // MARK: - Native Multiplatform Matchmaker Trigger
+    func presentMatchmakerInterface() {
+        guard isPlayerAuthenticated else { return }
+        
+        let request = GKMatchRequest()
+        request.minPlayers = 2
+        request.maxPlayers = 2
+        request.defaultNumberOfPlayers = 2
+        
+        guard let mmvc = GKMatchmakerViewController(matchRequest: request) else { return }
+        mmvc.matchmakerDelegate = self
+        
+        #if os(iOS) || os(tvOS) || os(visionOS)
+        if let windowScene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
+            if let rootVC = windowScene.windows.first(where: { $0.isKeyWindow })?.rootViewController {
+                if UIDevice.current.userInterfaceIdiom == .pad { mmvc.modalPresentationStyle = .formSheet }
+                rootVC.present(mmvc, animated: true)
+            }
+        }
+        #elseif os(macOS)
+        if let mainWindow = NSApplication.shared.windows.first(where: { $0.isKeyWindow }) {
+            mainWindow.contentViewController?.presentAsSheet(mmvc)
+        }
+        #endif
+    }
+    
+    // MARK: - GKMatchmakerViewControllerDelegate Interface Linkage
+    func matchmakerViewController(_ viewController: GKMatchmakerViewController, didFind match: GKMatch) {
+        dismissMatchmaker(viewController)
+        self.currentMatch = match
+        match.delegate = self
         
         DispatchQueue.main.async {
-            self.isProcessingAuth = true
-            self.authError = nil
+            self.matchInfoMessage = "QUANTUM TUNNEL SECURED. MATCH START!"
         }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", someCellKey: "Content-Type")
-        
-        let body: [String: String] = ["username": username, "password": password]
-        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
-        
-        URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
-            guard let self = self else { return }
-            
-            DispatchQueue.main.async {
-                self.isProcessingAuth = false
-                
-                if let _ = error {
-                    // 🛠️ FIXED: Server isn't running. Bypass error and perform local fallback login.
-                    print("⚠️ Server unreachable. Falling back to local sandbox authentication bypass.")
-                    self.currentUsername = username
-                    self.isAuthenticated = true
-                    return
-                }
-                
-                guard let httpResponse = response as? HTTPURLResponse else { return }
-                
-                if httpResponse.statusCode == 200 {
-                    // 🎉 Server verified credentials successfully!
-                    self.currentUsername = username
-                    self.isAuthenticated = true
-                    self.connect() // Fire up the multiplayer socket immediately
-                } else {
-                    // ❌ Server is alive but explicitly rejected the credentials
-                    if let data = data, let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any], let message = json["message"] as? String {
-                        self.authError = message
-                    } else {
-                        self.authError = "Invalid username or password string."
-                    }
-                }
-            }
-        }.resume()
     }
     
-    // MARK: - Real HTTP Backend Account Registration with Auto-Fallback
-    func register(username: String, password: Obscured) {
-        guard let url = URL(string: "\(serverURLString)/api/register") else { return }
-        
+    func matchmakerViewControllerWasCancelled(_ viewController: GKMatchmakerViewController) {
+        dismissMatchmaker(viewController)
+    }
+    
+    func matchmakerViewController(_ viewController: GKMatchmakerViewController, didFailWithError error: Error) {
+        dismissMatchmaker(viewController)
         DispatchQueue.main.async {
-            self.isProcessingAuth = true
-            self.authError = nil
+            self.matchInfoMessage = "TUNNEL CONFIGURATION ERROR: \(error.localizedDescription)"
         }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", someCellKey: "Content-Type")
-        
-        let body: [String: String] = ["username": username, "password": password]
-        request.httpBody = try? JSONSerialization.data(withJSONObject: body)
-        
-        URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
-            guard let self = self else { return }
-            
-            DispatchQueue.main.async {
-                self.isProcessingAuth = false
-                
-                if let _ = error {
-                    // 🛠️ FIXED: Server isn't running. Bypass error and auto-register locally.
-                    print("⚠️ Server unreachable. Auto-registering profile locally via sandbox mode.")
-                    self.currentUsername = username
-                    self.isAuthenticated = true
-                    return
-                }
-                
-                guard let httpResponse = response as? HTTPURLResponse else { return }
-                
-                if httpResponse.statusCode == 201 || httpResponse.statusCode == 200 {
-                    // Account created successfully!
-                    self.currentUsername = username
-                    self.isAuthenticated = true
-                    self.connect()
-                } else {
-                    // Server is alive but rejected registration (e.g. user already exists)
-                    if let data = data, let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any], let message = json["message"] as? String {
-                        self.authError = message
-                    } else {
-                        self.authError = "Username might already be taken."
-                    }
-                }
-            }
-        }.resume()
     }
     
-    func logOut() {
-        disconnect()
-        isAuthenticated = false
-        currentUsername = ""
+    private func dismissMatchmaker(_ vc: AnyObject) {
+        #if os(iOS) || os(tvOS) || os(visionOS)
+        if let uivc = vc as? UIViewController { uivc.dismiss(animated: true) }
+        #elseif os(macOS)
+        if let nsvc = vc as? NSViewController { nsvc.presentingViewController?.dismiss(nsvc) }
+        #endif
     }
     
-    // MARK: - Socket Connection Routing
-    func connect() {
-        guard let url = URL(string: serverURLString) else { return }
+    // MARK: - Network Package Dispatch Logic
+    func sendGameMove(cellIndex: Int) {
+        guard let match = currentMatch else { return }
+        let packetData = Data([UInt8(cellIndex)])
         
-        print("Connecting to backend relay at: \(serverURLString)...")
-        
-        manager = SocketManager(socketURL: url, config: [.log(true), .compress])
-        socket = manager?.defaultSocket
-        
-        setupSocketHandlers()
-        socket?.connect()
+        do {
+            try match.sendData(toAllPlayers: packetData, with: .reliable)
+        } catch {
+            print("Failed to stream binary turn packet payload: \(error)")
+        }
     }
     
-    func disconnect() {
-        socket?.emit("leave_lobby", ["username": currentUsername])
-        socket?.disconnect()
-        
-        showMatchmaker = false
-        match = false
-        opponentName = "Searching for an opponent..."
-    }
-    
-    private func setupSocketHandlers() {
-        socket?.on(clientEvent: .connect) { [weak self] _, _ in
-            guard let self = self else { return }
-            print("Socket successfully established with grid relay network!")
-            self.socket?.emit("join_lobby", ["username": self.currentUsername])
-        }
-        
-        socket?.on("match_found") { [weak self] data, _ in
-            guard let self = self, let info = data.first as? [String: Any] else { return }
-            
+    // MARK: - GKMatchDelegate Stream Interceptor
+    func match(_ match: GKMatch, didReceive data: Data, fromRemotePlayer player: GKPlayer) {
+        if let positionIndex = data.first {
             DispatchQueue.main.async {
-                self.showMatchmaker = false
-                self.match = true
-                
-                if let opp = info["opponent"] as? String {
-                    self.opponentName = "Vs. \(opp)"
-                }
-                
-                if let assignment = info["piece"] as? String {
-                    self.localPlayerPiece = (assignment.lowercased() == "x") ? .x : .o
-                    self.isMyTurn = (self.localPlayerPiece == .x)
-                }
-                
-                print("Match verified! Piece assigned: \(self.localPlayerPiece). My turn state: \(self.isMyTurn)")
-            }
-        }
-        
-        socket?.on("move_received") { [weak self] data, _ in
-            guard let self = self,
-                  let info = data.first as? [String: Any],
-                  let index = info["index"] as? Int else { return }
-            
-            DispatchQueue.main.async {
-                self.onReceiveMove?(index)
-                self.isMyTurn = true
-            }
-        }
-        
-        socket?.on("reset_received") { [weak self] _, _ in
-            guard let self = self else { return }
-            
-            DispatchQueue.main.async {
-                self.onReceiveReset?()
-                self.isMyTurn = (self.localPlayerPiece == .x)
+                self.onMoveReceived?(Int(positionIndex))
             }
         }
     }
     
-    func sendMove(at index: Int) {
-        guard match else { return }
-        isMyTurn = false
-        socket?.emit("send_move", ["index": index, "username": currentUsername])
-    }
-    
-    func sendResetRequest() {
-        socket?.emit("request_reset", ["username": currentUsername])
+    private func presentAuthentication(_ vc: AnyObject) {
+        #if os(iOS) || os(tvOS) || os(visionOS)
+        if let uiViewController = vc as? UIViewController {
+            let connectedScenes = UIApplication.shared.connectedScenes
+            if let windowScene = connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
+                windowScene.windows.first(where: { $0.isKeyWindow })?.rootViewController?.present(uiViewController, animated: true)
+            }
+        }
+        #elseif os(macOS)
+        if let nsViewController = vc as? NSViewController {
+            if let mainWindow = NSApplication.shared.windows.first(where: { $0.isKeyWindow }) {
+                mainWindow.contentViewController?.presentAsSheet(nsViewController)
+            }
+        }
+        #endif
     }
 }
-
-fileprivate extension URLRequest {
-    mutating func setValue(_ value: String, someCellKey key: String) {
-        self.setValue(value, forHTTPHeaderField: key)
-    }
-}
-
-typealias Obscured = String

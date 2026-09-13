@@ -2,16 +2,16 @@ import SwiftUI
 
 @main
 struct TicTacToeApp: App {
+    // Initialize the manager state right at launch
+    @StateObject private var gameManager = OnlineGameManager()
+    
     var body: some Scene {
         WindowGroup {
-            AuthView()
-                #if os(macOS)
-                // Set flexible minimum constraints while allowing infinite stretching expansion
-                .frame(minWidth: 700, maxWidth: .infinity, minHeight: 550, maxHeight: .infinity)
-                #endif
+            ContentView()
+                .environmentObject(gameManager) // Makes it accessible everywhere
         }
         #if os(macOS)
-        .windowStyle(.hiddenTitleBar) // Ensures a true borderless glass aesthetic
+        .defaultSize(width: 360, height: 720)
         #endif
     }
 }
