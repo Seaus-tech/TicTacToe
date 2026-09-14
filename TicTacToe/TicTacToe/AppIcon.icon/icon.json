@@ -6,6 +6,19 @@
     {
       "layers" : [
         {
+          "hidden" : false,
+          "image-name" : "image_8fc3b4f3.jpg",
+          "name" : "image_8fc3b4f3",
+          "position" : {
+            "scale" : 1.1,
+            "translation-in-points" : [
+              0,
+              0
+            ]
+          }
+        },
+        {
+          "hidden" : true,
           "image-name" : "Image 2.png",
           "name" : "Image 2",
           "position" : {
