@@ -423,3 +423,8 @@ extension ContentView {
         triggerImpactFeedback()
     }
 }
+
+#Preview {
+    ContentView()
+        .environmentObject(OnlineGameManager())
+}
