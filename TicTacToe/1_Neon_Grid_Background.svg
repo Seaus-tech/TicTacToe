@@ -1,0 +1,19 @@
+<svg xmlns="http://w3.org" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Deep Space Midnight Base -->
+    <linearGradient id="gridBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#0E131F" />
+      <stop offset="100%" stop-color="#05070A" />
+    </linearGradient>
+
+    <!-- Subtle Ambient Techno Ring -->
+    <radialGradient id="ambientGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1E293B" stop-opacity="0.2" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  
+  <!-- Outer Apple-Style Squircle Frame -->
+  <rect width="512" height="512" rx="115" fill="url(#gridBg)" />
+  <rect width="512" height="512" rx="115" fill="url(#ambientGlow)" />
+</svg>
