@@ -1,101 +1,96 @@
 import SwiftUI
 
-struct WhatsNewFeature: Identifiable {
-    let id = UUID()
-    let icon: String
-    let iconColor: Color
-    let title: String
-    let description: String
-}
-
 struct WhatsNewView: View {
     @Binding var isPresented: Bool
     
-    // Feature array dynamically handling multiplatform capabilities
-    let features = [
-        WhatsNewFeature(icon: "cpu", iconColor: .green, title: "Single Player Engine", description: "Algorithmic defensive-offensive evaluation core with customizable difficulty modes."),
-        WhatsNewFeature(icon: "bolt.horizontal.icloud", iconColor: .purple, title: "Quantum Online Mode", description: "Custom WebSocket tunnel layer for lightning-fast, zero-config move relays."),
-        WhatsNewFeature(icon: "person.2", iconColor: .blue, title: "Local Double Player", description: "Native shared-device multiplayer utilizing adaptive focus tracking."),
-        WhatsNewFeature(icon: "square.stack.3d.glass", iconColor: .cyan, title: "Liquid Glass Design", description: "A fresh, futuristic neon grid interface optimized for iOS 26 and modern Apple operating systems.")
-    ]
-    
     var body: some View {
         VStyleContainer {
-            ScrollView(showsIndicators: false) {
-                VStack(spacing: 32) {
-                    // Header Section
-                    VStack(spacing: 8) {
-                        Text("Welcome to")
-                            .font(.system(.title2, design: .rounded))
-                            .fontWeight(.bold)
-                            .foregroundColor(.secondary)
-                        
-                        Text("NEO-GRID")
-                            .font(.system(.largeTitle, design: .rounded))
-                            .fontWeight(.black)
-                            .foregroundColor(.primary)
-                    }
-                    .padding(.top, 40)
+            VStack(spacing: 0) {
+                // Persistent Title Header Section
+                VStack(spacing: 8) {
+                    Text("Welcome to")
+                        .font(.system(.title2, design: .rounded))
+                        .fontWeight(.bold)
+                        .foregroundColor(.secondary)
                     
-                    // Features List
+                    Text("NEO-GRID")
+                        .font(.system(.largeTitle, design: .rounded))
+                        .fontWeight(.black)
+                        .foregroundColor(.primary)
+                    
+                    Text(ReleaseNotesRegistry.currentVersion)
+                        .font(.caption.monospaced())
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 4)
+                        .background(Color.primary.opacity(0.08), in: Capsule())
+                        .foregroundColor(.secondary)
+                }
+                .padding(.top, 45)
+                .padding(.bottom, 20)
+                
+                // Pure Native Type-Safe List Feed
+                ScrollView(showsIndicators: true) {
                     VStack(alignment: .leading, spacing: 28) {
-                        ForEach(features) { feature in
-                            HStack(alignment: .top, spacing: 16) {
-                                Image(systemName: feature.icon)
-                                    .font(.title2)
-                                    .fontWeight(.semibold)
-                                    .foregroundColor(feature.iconColor)
-                                    .frame(width: 36, alignment: .center)
+                        ForEach(ReleaseNotesRegistry.latestNotes) { group in
+                            VStack(alignment: .leading, spacing: 14) {
+                                // Section Title Header Label
+                                Text(group.sectionTitle)
+                                    .font(.system(.caption, design: .rounded))
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.secondary)
+                                    .tracking(1.5)
                                 
-                                VStack(alignment: .leading, spacing: 4) {
-                                    Text(feature.title)
-                                        .font(.headline)
-                                        .foregroundColor(.primary)
-                                    
-                                    Text(feature.description)
-                                        .font(.subheadline)
-                                        .foregroundColor(.secondary)
-                                        .fixedSize(horizontal: false, vertical: true)
+                                // Grouped Feature Feeds
+                                VStack(alignment: .leading, spacing: 16) {
+                                    ForEach(group.items) { item in
+                                        HStack(alignment: .top, spacing: 14) {
+                                            Text(item.emoji)
+                                                .font(.title3)
+                                                .frame(width: 28, alignment: .center)
+                                            
+                                            Text(item.text)
+                                                .font(.system(.body, design: .rounded))
+                                                .foregroundColor(.primary)
+                                                .lineSpacing(3)
+                                                .fixedSize(horizontal: false, vertical: true)
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
+                    .padding(.horizontal, 32)
+                    .padding(.bottom, 20)
+                }
+                
+                // Bottom Fixed CTA Action Area
+                VStack(spacing: 16) {
+                    Button(action: { isPresented = false }) {
+                        Text("Continue")
+                            .fontWeight(.bold)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 14)
+                    }
+                    .liquidGlassButtonStyle(isProminent: true)
                     .padding(.horizontal, 24)
+                    .padding(.bottom, 24)
+                    .padding(.top, 16)
                 }
-            }
-            
-            // Footer Section with Action Button
-            VStack(spacing: 16) {
-                Button(action: { isPresented = false }) {
-                    Text("Continue")
-                        .fontWeight(.bold)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
-                }
-                .liquidGlassButtonStyle(isProminent: true) // Hooks into your custom operating system extensions
-                .padding(.horizontal, 24)
-                .padding(.bottom, 24)
             }
         }
-        .frame(minWidth: 400, minHeight: 600) // Optimal bounding container sizing across iOS & macOS platforms
+        .frame(minWidth: 460, minHeight: 680)
     }
 }
 
-// Multiplatform background wrapper helper
+// Multiplatform background wrapper helper container frame
 struct VStyleContainer<Content: View>: View {
     let content: Content
-    
-    init(@ViewBuilder content: () -> Content) {
-        self.content = content()
-    }
-    
+    init(@ViewBuilder content: () -> Content) { self.content = content() }
     var body: some View {
         #if os(macOS)
-        content
-            .background(VisualEffectView().ignoresSafeArea())
+        content.background(VisualEffectView().ignoresSafeArea())
         #else
-        content
-            .background(Color(.systemBackground).ignoresSafeArea())
+        content.background(Color(.systemBackground).ignoresSafeArea())
         #endif
     }
 }
