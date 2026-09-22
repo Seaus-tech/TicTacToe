@@ -1,17 +1,20 @@
 import { execSync } from 'child_process';
 import fs from 'fs';
+import { generateText } from 'ai';
+import { google } from '@ai-sdk/google';
 
-try {
-    console.log("🔍 Fetching target commit logs from branch dev...");
-    // Pulls raw git commit messages between your last production tag and your development target branch
-    const gitLog = execSync('git log origin/main..origin/dev --oneline').toString();
-    
-    if (!gitLog.trim()) {
-        console.log("✅ No new changes detected between main and dev branch.");
-        process.exit(0);
-    }
+async function main() {
+    try {
+        console.log("🔍 Fetching target commit logs from branch dev...");
+        // Pulls raw git commit messages between your last production tag and your development target branch
+        const gitLog = execSync('git log origin/dev -n 20 --oneline').toString();
+        
+        if (!gitLog.trim()) {
+            console.log("✅ No new changes detected.");
+            process.exit(0);
+        }
 
-    const aiPrompt = `
+        const aiPrompt = `
 You are an expert technical release writer for Seaus Tech. 
 Review the following raw git commit log from our 'dev' branch and transform it into official, polished Release Notes.
 
@@ -30,16 +33,21 @@ Format the output strictly like this:
 - List stability tweaks.
 `;
 
-    fs.writeFileSync('prompt_input.txt', aiPrompt);
-    console.log("🤖 Generating production-ready release notes using AI engine...");
-    
-    // Executes using an integrated AI CLI module (like the ai-cli utility package inside your environment)
-    execSync('ai-cli < prompt_input.txt > RELEASE_NOTES.md');
-    
-    // Clean up temporary workspace layout scratch files
-    fs.unlinkSync('prompt_input.txt');
-    console.log("🎉 Done! Open RELEASE_NOTES.md to view your multiplatform notes.");
+        console.log("🤖 Generating production-ready release notes using Google Gemini Pro...");
+        
+        // Native SDK execution using your active shell API environment variable
+        const { text } = await generateText({
+            model: google('gemini-3.6-flash'),
+            prompt: aiPrompt,
+        });
 
-} catch (error) {
-    console.error("❌ Failed to compile automated release logs:", error.message);
+        // Write out the pristine markdown output file
+        fs.writeFileSync('RELEASE_NOTES.md', text);
+        console.log("🎉 Done! Open RELEASE_NOTES.md to view your multiplatform notes.");
+
+    } catch (error) {
+        console.error("❌ Failed to compile automated release logs:", error.message);
+    }
 }
+
+main();

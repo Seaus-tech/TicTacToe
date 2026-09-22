@@ -1,0 +1,32 @@
+
+You are an expert technical release writer for Seaus Tech. 
+Review the following raw git commit log from our 'dev' branch and transform it into official, polished Release Notes.
+
+The app is completely multiplatform (iOS, macOS, tvOS, and visionOS). Group features logically by platform if specific, or general game ecosystem enhancements. Use clean markdown formatting with emojis.
+
+Raw Git Logs:
+4e32f47 small improvements
+6ce78f8 small improvements
+95a882f small improvements
+10ad4d4 small improvements
+3114484 small improvements
+3d9a049 small improvements
+892e007 small improvements
+c6d1867 small improvements
+9f90d93 Chore: Force GitHub PR refresh
+cfae475 Merge remote-tracking branch 'origin/main' into dev
+f33202d Fix: Stop tracking UserInterfaceState
+2041dc5 small improvements
+fd6307a small improvements
+16169b7 small improvements
+cb7a97d small improvements
+
+
+Format the output strictly like this:
+# 🌌 NEO-GRID Release Notes [Version]
+## 🚀 What's New
+- Short summary of major milestones.
+## 📱 Platform Updates
+- **macOS / iOS / visionOS / tvOS**: Group technical changes here.
+## 🔧 Bug Fixes & Refinements
+- List stability tweaks.
