@@ -1,8 +1,8 @@
 {
   "fill" : {
     "linear-gradient" : [
-      "extended-gray:1.00000,1.00000",
-      "extended-gray:0.00000,1.00000"
+      "extended-srgb:0.20392,0.78039,0.34902,1.00000",
+      "extended-srgb:0.00000,0.53333,1.00000,1.00000"
     ],
     "orientation" : {
       "start" : {
