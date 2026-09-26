@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <clipPath id="squircle">
+      <rect width="512" height="512" rx="115" ry="115" />
+    </clipPath>
+    <!-- Neon cyan glow on grid lines -->
+    <filter id="lineGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="4" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <g clip-path="url(#squircle)">
+    <!-- Grid line base (dim) -->
+    <g stroke="#1A3A4A" stroke-width="10" stroke-linecap="round">
+      <line x1="186" y1="96"  x2="186" y2="416" />
+      <line x1="326" y1="96"  x2="326" y2="416" />
+      <line x1="96"  y1="186" x2="416" y2="186" />
+      <line x1="96"  y1="326" x2="416" y2="326" />
+    </g>
+    <!-- Grid line neon top coat -->
+    <g stroke="#00C8B0" stroke-width="4" stroke-linecap="round"
+       opacity="0.75" filter="url(#lineGlow)">
+      <line x1="186" y1="96"  x2="186" y2="416" />
+      <line x1="326" y1="96"  x2="326" y2="416" />
+      <line x1="96"  y1="186" x2="416" y2="186" />
+      <line x1="96"  y1="326" x2="416" y2="326" />
+    </g>
+  </g>
+</svg>

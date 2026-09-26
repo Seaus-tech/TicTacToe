@@ -1,0 +1,29 @@
+<svg xmlns="http://w3.org" viewBox="0 0 512 512" width="100%" height="100%">
+  <defs>
+    <!-- Cyber Neon Pink/Purple Piece Gradient -->
+    <linearGradient id="neonX" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF2E93" />
+      <stop offset="100%" stop-color="#A100FF" />
+    </linearGradient>
+
+    <!-- Cyber Neon Cyan/Blue Piece Gradient -->
+    <linearGradient id="neonO" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00F5D4" />
+      <stop offset="100%" stop-color="#00BBF9" />
+    </linearGradient>
+  </defs>
+
+  <!-- The Winning Move Vector Tokens -->
+  <g stroke-linecap="round" stroke-linejoin="round">
+    <!-- Neon 'X' Token (Top Left Quadrant) -->
+    <path d="M 136,136 L 174,174 M 174,136 L 136,174" 
+          stroke="url(#neonX)" 
+          stroke-width="24" />
+
+    <!-- Neon 'O' Token (Center Position) -->
+    <circle cx="256" cy="256" r="26" 
+            fill="none" 
+            stroke="url(#neonO)" 
+            stroke-width="24" />
+  </g>
+</svg>
