@@ -71,10 +71,25 @@
         },
       ],
     }, {
+      "kind": "folder",
+      "path": "NEO-GRID Clip",
+      "target-membership": [
+        "NEO-GRID Clip",
+      ],
+      "membership-exceptions": [
+        {
+          "target": "NEO-GRID Clip",
+          "exclusions": [
+            "Info.plist",
+          ],
+        },
+      ],
+    }, {
       "kind": "group",
       "name": "Products",
       "children": [
         { "path": "<PRODUCTS>/TicTacToe.app", "id": "C390434C2FC52523000E6001", "type": "wrapper.application", "index": false },
+        { "path": "<PRODUCTS>/NEO-GRID Clip.app", "id": "C3F4C91B30685D9E00E3B915", "type": "wrapper.application", "index": false, "target-membership": [ { "build-phase": "TicTacToe/copy/Embed App Clips", "header-preservation": "remove-on-copy" } ] },
       ],
     },
   ],
@@ -84,10 +99,19 @@
       "id": "C390434B2FC52523000E6001",
       "product": "Products/TicTacToe.app",
       "product-type": "application",
+      "dependencies": [
+        "NEO-GRID Clip",
+      ],
       "build-phases": [
         "compile-sources",
         "frameworks",
         "resources",
+        {
+          "kind": "copy",
+          "name": "Embed App Clips",
+          "bundle-base-path": "build-products-directory",
+          "relative-path": "$(CONTENTS_FOLDER_PATH)/AppClips",
+        },
       ],
       "package-product-members": [
         {
@@ -198,6 +222,54 @@
         "WATCHOS_DEPLOYMENT_TARGET": "$(RECOMMENDED_WATCHOS_DEPLOYMENT_TARGET)",
         "XROS_DEPLOYMENT_TARGET": "$(RECOMMENDED_XROS_DEPLOYMENT_TARGET)",
       },
+    }, {
+      "name": "NEO-GRID Clip",
+      "id": "C3F4C91A30685D9E00E3B915",
+      "product": "Products/NEO-GRID Clip.app",
+      "product-type": "application.on-demand-install-capable",
+      "build-phases": [
+        "compile-sources",
+        "frameworks",
+        "resources",
+      ],
+      "build-settings": {
+        "ASSETCATALOG_COMPILER_APPICON_NAME": "AppIcon",
+        "ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME": "AccentColor",
+        "CODE_SIGN_ENTITLEMENTS": "NEO-GRID Clip/NEO_GRID_Clip.entitlements",
+        "CODE_SIGN_IDENTITY": "Apple Development",
+        "CODE_SIGN_IDENTITY[sdk=macosx*]": "Apple Development",
+        "CODE_SIGN_STYLE": "Automatic",
+        "CURRENT_PROJECT_VERSION": "1",
+        "DEVELOPMENT_TEAM[config=Debug]": "B349HZ9624",
+        "DEVELOPMENT_TEAM[config=Release]": "25X4VXN3L2",
+        "ENABLE_PREVIEWS": "YES",
+        "GENERATE_INFOPLIST_FILE": "YES",
+        "INFOPLIST_FILE": "NEO-GRID Clip/Info.plist",
+        "INFOPLIST_KEY_CFBundleDisplayName": "TicTacToe",
+        "INFOPLIST_KEY_UIApplicationSceneManifest_Generation": "YES",
+        "INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents": "YES",
+        "INFOPLIST_KEY_UILaunchScreen_Generation": "YES",
+        "INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad": "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight",
+        "INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone": "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight",
+        "IPHONEOS_DEPLOYMENT_TARGET": "27.2",
+        "LD_RUNPATH_SEARCH_PATHS": [
+          "$(inherited)",
+          "@executable_path/Frameworks",
+        ],
+        "MARKETING_VERSION": "1.0",
+        "PRODUCT_BUNDLE_IDENTIFIER[config=Debug]": "com.seaus.TicTacToe.Clip",
+        "PRODUCT_BUNDLE_IDENTIFIER[config=Release]": "com.yashb.TicTacToe.Clip",
+        "PRODUCT_NAME": "$(TARGET_NAME)",
+        "SDKROOT": "iphoneos",
+        "STRING_CATALOG_GENERATE_SYMBOLS": "YES",
+        "SWIFT_APPROACHABLE_CONCURRENCY": "YES",
+        "SWIFT_DEFAULT_ACTOR_ISOLATION": "MainActor",
+        "SWIFT_EMIT_LOC_STRINGS": "YES",
+        "SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY": "YES",
+        "SWIFT_VERSION": "5.0",
+        "TARGETED_DEVICE_FAMILY": "1,2",
+        "VALIDATE_PRODUCT[config=Release]": "YES",
+      },
     },
   ],
   "build-settings": {
@@ -264,5 +336,5 @@
     "SWIFT_OPTIMIZATION_LEVEL[config=Debug]": "-Onone",
   },
   "last-upgrade": "27.2",
-  "last-swift-update": "26.5",
+  "last-swift-update": "27.2",
 }
