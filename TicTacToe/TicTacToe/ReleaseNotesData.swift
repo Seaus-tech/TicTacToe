@@ -36,7 +36,7 @@ struct ReleaseNotesRegistry {
             sectionTitle: "WHAT'S NEW",
             items: [
                 FeatureItem(emoji: "🔧", tintColor: .purple,
-                            text: "Update 3.7.2 is going to fix a bug where the 'Your turn' indicator dot would sometimes move diagonally in the first game.")
+                            text: "Update 3.7.2 is going to fix a bug where the 'Your turn' indicator dot would sometimes move diagonally in the first game and that it will automatically reset the game when changing bot difficultys.")
             ]
         ),
         FeatureGroup(
