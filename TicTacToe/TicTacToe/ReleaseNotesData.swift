@@ -14,7 +14,7 @@ struct FeatureGroup: Identifiable {
 }
 
 struct ReleaseNotesRegistry {
-    static let currentVersion = "ver732V1wa"
+    static let currentVersion = "version 7.3.2 Beta"
 
     static let latestNotes: [FeatureGroup] = [
         FeatureGroup(
