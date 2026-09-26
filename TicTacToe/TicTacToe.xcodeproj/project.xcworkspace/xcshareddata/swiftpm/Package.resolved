@@ -1,5 +1,5 @@
 {
-  "originHash" : "2a0af822fbb5567d9d1adceae495683d98b3d958e573956588ad937eb0612e5d",
+  "originHash" : "de3ba1b4806997ff4786b376a0c70452d3bf574c9d714fa1ced9eee94c991067",
   "pins" : [
     {
       "identity" : "grdb.swift",
@@ -17,6 +17,15 @@
       "state" : {
         "branch" : "main",
         "revision" : "0aff16288f8dc1e3dab35cbf5cf45979673fd3df"
+      }
+    },
+    {
+      "identity" : "networkimage",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/gonzalezreal/NetworkImage",
+      "state" : {
+        "branch" : "main",
+        "revision" : "2849f5323265386e200484b0d0f896e73c3411b9"
       }
     },
     {

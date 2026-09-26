@@ -1,0 +1,8 @@
+{
+  "name": "neogrid-tools",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "notes": "node generate_notes.js"
+  }
+}
