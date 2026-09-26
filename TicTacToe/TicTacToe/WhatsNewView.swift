@@ -90,7 +90,7 @@ struct VStyleContainer<Content: View>: View {
         #if os(macOS)
         content.background(VisualEffectView().ignoresSafeArea())
         #else
-        content.background(Color(.systemBackground).ignoresSafeArea())
+        content.background(Color(light: Color(white: 1.0), dark: Color(white: 0.11)).ignoresSafeArea())
         #endif
     }
 }

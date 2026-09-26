@@ -1,4 +1,5 @@
 import SwiftUI
+import GameKit
 
 enum MatchMode {
     case online
@@ -7,73 +8,51 @@ enum MatchMode {
 }
 
 struct ContentView: View {
-    @StateObject private var gameManager = OnlineGameManager()
+    @EnvironmentObject private var gameManager: OnlineGameManager
+    @StateObject private var game             = GameViewModel()
     @StateObject private var difficultyManager = BotDifficultyManager()
-    
-    @State private var board: [String] = Array(repeating: "", count: 9)
-    @State private var isYourTurn: Bool = true
-    @State private var localToken: String = "X"
-    @State private var winMessage: String? = nil
-    @State private var winStreak: Int = 0
-    @State private var totalCareerWins: Int = 0
+
+    @State private var activeMode: MatchMode  = .bot
     @AppStorage("appAppearance") private var appearance = 0
-    @State private var showWhatsNew: Bool = false
+    @State private var showWhatsNew: Bool     = false
     @AppStorage("lastTrackedVersion") private var lastTrackedVersion: String = ""
-    @State private var activeMode: MatchMode = .bot
-    
+
+    // Piece picker sheet
+    @State private var showPiecePicker: Bool  = false
+
+    // Pulse animation state for turn indicator
+    @State private var pulseActive: Bool      = false
+
     var body: some View {
         NavigationStack {
             ZStack {
-                Color.primary.opacity(0.045)
+                // Proper adaptive background — light grey in light mode, near-black in dark mode
+                Color(light: Color(white: 0.94), dark: Color(white: 0.09))
                     .ignoresSafeArea()
-                
-                GeometryReader { geometry in
-                    let horizontalPadding = min(20, geometry.size.width * 0.06)
-                    let compactLayout = geometry.size.height < 620
-                    let reservedHeight: CGFloat = activeMode == .bot ? 420 : 340
-                    let boardSide = max(110, min(420, min(geometry.size.width - (horizontalPadding * 2), geometry.size.height - reservedHeight)))
-                    
-                    VStack(spacing: compactLayout ? 12 : 20) {
-                        LiquidHeaderCard
-                        
-                        if gameManager.currentMatch == nil {
-                            ModeSelectionTabs
-                        }
-                        
-                        if gameManager.currentMatch == nil && activeMode == .bot {
-                            DifficultySelectorView(
-                                difficultyManager: difficultyManager,
-                                saveAction: { tier in difficultyManager.saveDifficultyToCloud(level: tier) },
-                                selectedLevel: difficultyManager.selectedLevel
-                            )
-                            .padding(.horizontal, 4)
-                        }
-                        
-                        MatrixGameBoard(sideLength: boardSide)
-                        LiquidActionControls
-                    }
-                    .frame(maxWidth: 600)
-                    .padding(.horizontal, horizontalPadding)
-                    .padding(.vertical, compactLayout ? 10 : 16)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+
+                GeometryReader { geo in
+                    #if os(macOS)
+                    macOSLayout(geo: geo)
+                    #else
+                    iOSLayout(geo: geo)
+                    #endif
                 }
             }
-            .navigationTitle("Tic-Tac-Toe")
+            .navigationTitle("NEO-GRID")
             .toolbar {
                 #if os(macOS)
                 ToolbarItem(placement: .navigation) {
-                    Button(action: { showWhatsNew = true }) {
+                    Button { showWhatsNew = true } label: {
                         Label("What's New", systemImage: "sparkles")
                     }
                 }
                 #else
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button(action: { showWhatsNew = true }) {
+                    Button { showWhatsNew = true } label: {
                         Label("What's New", systemImage: "sparkles")
                     }
                 }
                 #endif
-                
                 ToolbarItem(placement: .primaryAction) {
                     Menu {
                         Picker("Appearance", selection: $appearance) {
@@ -90,49 +69,176 @@ struct ContentView: View {
         .tint(.blue)
         .sheet(isPresented: $showWhatsNew) {
             WhatsNewView(isPresented: $showWhatsNew)
+                .preferredColorScheme(appearance == 1 ? .light : appearance == 2 ? .dark : nil)
+        }
+        .sheet(isPresented: $showPiecePicker) {
+            PiecePickerSheet(humanPiece: $game.humanPiece) {
+                showPiecePicker = false
+                startFreshGame()
+            }
+            .preferredColorScheme(appearance == 1 ? .light : appearance == 2 ? .dark : nil)
+        }
+        .alert("Opponent Disconnected", isPresented: $game.opponentDisconnected) {
+            Button("OK") { endOnlineMatch() }
+        } message: {
+            Text("Your opponent left the game.")
         }
         .onAppear {
-            setupIncomingMoveListener()
-            difficultyManager.fetchDifficulty()
-            if let currentVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
-                if lastTrackedVersion != currentVersion {
-                    showWhatsNew = true
-                    lastTrackedVersion = currentVersion
-                }
+            setupGame()
+        }
+        .onChange(of: gameManager.currentMatch == nil) { _, isNil in
+            if !isNil {
+                activeMode = .online
+                game.matchMode = .online
+                setupOnlineMoveListener()
             }
         }
     }
-    
-    private var LiquidHeaderCard: some View {
+
+    // MARK: - macOS: Side-by-side layout
+    @ViewBuilder
+    private func macOSLayout(geo: GeometryProxy) -> some View {
+        let pad: CGFloat    = 20
+        let panelW: CGFloat = 260
+        // Board fills the left square, capped so it never exceeds the height
+        let boardSide = min(geo.size.width - panelW - pad * 3, geo.size.height - pad * 2 - 50)
+        let safeSide  = max(200, boardSide)
+
+        HStack(alignment: .top, spacing: pad) {
+            // Left: the board, score bar, and turn indicator centred vertically
+            VStack(spacing: 12) {
+                Spacer(minLength: 0)
+                scoreBar
+                turnIndicator
+                gameBoard(sideLength: safeSide)
+                Spacer(minLength: 0)
+            }
+            .frame(maxHeight: .infinity)
+
+            // Right: controls panel
+            VStack(spacing: 12) {
+                headerCard
+                if gameManager.currentMatch == nil {
+                    modeSelectionTabs
+                }
+                if gameManager.currentMatch == nil && activeMode == .bot {
+                    DifficultySelectorView(
+                        difficultyManager: difficultyManager,
+                        saveAction: { tier in
+                            difficultyManager.saveDifficultyToCloud(level: tier)
+                            game.botLevel = tier
+                        },
+                        selectedLevel: difficultyManager.selectedLevel
+                    )
+                }
+                Spacer(minLength: 0)
+                actionControls
+            }
+            .frame(width: panelW, alignment: .top)
+            .frame(maxHeight: .infinity)
+        }
+        .padding(pad)
+    }
+
+    // MARK: - iOS: Vertical stacked layout
+    @ViewBuilder
+    private func iOSLayout(geo: GeometryProxy) -> some View {
+        let hPad: CGFloat    = min(20, geo.size.width * 0.05)
+        let compact          = geo.size.height < 600
+        let spacing: CGFloat = compact ? 8 : 12
+
+        let headerH: CGFloat    = 74
+        let modeH: CGFloat      = gameManager.currentMatch == nil ? 68 : 0
+        let diffH: CGFloat      = (gameManager.currentMatch == nil && activeMode == .bot) ? 76 : 0
+        let scoreH: CGFloat     = 60
+        let indicatorH: CGFloat = 28
+        let controlsH: CGFloat  = activeMode == .bot ? 120 : 100
+        let totalFixed          = headerH + modeH + diffH + scoreH + indicatorH + controlsH
+                                  + spacing * 6
+        let navBarH: CGFloat    = 50
+        let boardSide = max(180, min(
+            geo.size.width  - hPad * 2,
+            geo.size.height - totalFixed - navBarH
+        ))
+
+        VStack(spacing: spacing) {
+            headerCard
+            if gameManager.currentMatch == nil {
+                modeSelectionTabs
+            }
+            if gameManager.currentMatch == nil && activeMode == .bot {
+                DifficultySelectorView(
+                    difficultyManager: difficultyManager,
+                    saveAction: { tier in
+                        difficultyManager.saveDifficultyToCloud(level: tier)
+                        game.botLevel = tier
+                    },
+                    selectedLevel: difficultyManager.selectedLevel
+                )
+                .padding(.horizontal, 4)
+            }
+            scoreBar
+            turnIndicator
+            gameBoard(sideLength: boardSide)
+            actionControls
+        }
+        .frame(maxWidth: 560)
+        .padding(.horizontal, hPad)
+        .padding(.vertical, compact ? 6 : 10)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+    }
+
+    // MARK: - Header Card
+    private var headerCard: some View {
         HStack(spacing: 14) {
             Image(systemName: "gamecontroller.fill")
                 .font(.title2)
                 .foregroundColor(.white)
                 .frame(width: 48, height: 48)
                 .background(Color.accentColor, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-            
+
             VStack(alignment: .leading, spacing: 4) {
-                Text(gameManager.currentMatch == nil ? "Ready to play" : "Online game")
+                Text(gameManager.currentMatch != nil ? "Online game" : "Ready to play")
                     .font(.headline)
                 Text(gameManager.isPlayerAuthenticated ? gameManager.localPlayerName : "Play on this device")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }
             Spacer()
+
+            // Win streak badge
+            if game.winStreak > 1 {
+                VStack(spacing: 2) {
+                    Text("🔥")
+                    Text("\(game.winStreak)")
+                        .font(.caption.bold())
+                        .foregroundColor(.orange)
+                }
+            }
         }
         .padding()
         .liquidGlassStyle(cornerRadius: 20)
     }
-    
-    private var ModeSelectionTabs: some View {
+
+    // MARK: - Mode Selection
+    private var modeSelectionTabs: some View {
         HStack(spacing: 8) {
-            Button(action: { activeMode = .bot; resetMatchBoard() }) {
+            Button {
+                activeMode = .bot
+                game.matchMode = .bot
+                showPiecePicker = true
+            } label: {
                 Label("Play Bot", systemImage: "cpu")
                     .frame(maxWidth: .infinity)
             }
             .liquidGlassButtonStyle(isProminent: activeMode == .bot)
-            
-            Button(action: { activeMode = .localPassAndPlay; resetMatchBoard() }) {
+
+            Button {
+                activeMode = .localPassAndPlay
+                game.matchMode = .localPassAndPlay
+                game.humanPiece = "X"   // Two-player: X always goes first, no choice needed
+                startFreshGame()
+            } label: {
                 Label("Two Players", systemImage: "person.2")
                     .frame(maxWidth: .infinity)
             }
@@ -141,125 +247,245 @@ struct ContentView: View {
         .padding()
         .liquidGlassStyle(cornerRadius: 20)
     }
-    
-    private func MatrixGameBoard(sideLength: CGFloat) -> some View {
-        VStack(spacing: 12) {
+
+    // MARK: - Score Bar
+    private var scoreBar: some View {
+        HStack {
+            VStack(spacing: 4) {
+                Text("X")
+                    .font(.system(.caption, design: .rounded).bold())
+                    .foregroundColor(.blue)
+                Text("\(game.scoreX)")
+                    .font(.system(.title2, design: .rounded).bold())
+                    .foregroundColor(.primary)
+                    .contentTransition(.numericText())
+                    .animation(.spring(response: 0.4), value: game.scoreX)
+            }
+            .frame(maxWidth: .infinity)
+
+            Rectangle()
+                .frame(width: 1, height: 36)
+                .foregroundColor(.secondary.opacity(0.3))
+
+            VStack(spacing: 4) {
+                Text("DRAWS")
+                    .font(.system(.caption, design: .rounded).bold())
+                    .foregroundColor(.secondary)
+                Text("\(game.drawCount)")
+                    .font(.system(.title2, design: .rounded).bold())
+                    .foregroundColor(.secondary)
+                    .contentTransition(.numericText())
+                    .animation(.spring(response: 0.4), value: game.drawCount)
+            }
+            .frame(maxWidth: .infinity)
+
+            Rectangle()
+                .frame(width: 1, height: 36)
+                .foregroundColor(.secondary.opacity(0.3))
+
+            VStack(spacing: 4) {
+                Text("O")
+                    .font(.system(.caption, design: .rounded).bold())
+                    .foregroundColor(.orange)
+                Text("\(game.scoreO)")
+                    .font(.system(.title2, design: .rounded).bold())
+                    .foregroundColor(.primary)
+                    .contentTransition(.numericText())
+                    .animation(.spring(response: 0.4), value: game.scoreO)
+            }
+            .frame(maxWidth: .infinity)
+        }
+        .padding(.vertical, 10)
+        .padding(.horizontal, 16)
+        .liquidGlassStyle(cornerRadius: 16)
+    }
+
+    // MARK: - Turn Indicator
+    private var turnIndicator: some View {
+        HStack(spacing: 8) {
+            if !game.isGameOver {
+                Circle()
+                    .fill(game.currentToken == "X" ? Color.blue : Color.orange)
+                    .frame(width: 10, height: 10)
+                    .scaleEffect(pulseActive ? 1.4 : 1.0)
+                    .animation(
+                        .easeInOut(duration: 0.6).repeatForever(autoreverses: true),
+                        value: pulseActive
+                    )
+                Text(game.turnOwnerLabel)
+                    .font(.system(.subheadline, design: .rounded).weight(.medium))
+                    .foregroundColor(.secondary)
+            } else if let msg = game.resultMessage {
+                Text(msg)
+                    .font(.system(.headline, design: .rounded).bold())
+                    .foregroundColor(.primary)
+                    .transition(.scale.combined(with: .opacity))
+            }
+        }
+        .animation(.spring(response: 0.4), value: game.isGameOver)
+        .onAppear { pulseActive = true }
+        .onChange(of: game.currentToken) { pulseActive = true }
+    }
+
+    // MARK: - Game Board
+    private func gameBoard(sideLength: CGFloat) -> some View {
+        VStack(spacing: 10) {
             ForEach(0..<3, id: \.self) { row in
-                HStack(spacing: 12) {
+                HStack(spacing: 10) {
                     ForEach(0..<3, id: \.self) { col in
                         let index = row * 3 + col
-                        Button(action: { handleCellTap(at: index) }) {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                                    .fill(Color.secondary.opacity(0.1))
-                                if board[index] == "X" {
-                                    Text("X").font(.system(size: 42, weight: .bold, design: .rounded)).foregroundColor(.blue)
-                                } else if board[index] == "O" {
-                                    Text("O").font(.system(size: 42, weight: .bold, design: .rounded)).foregroundColor(.orange)
-                                }
-                            }
-                            .aspectRatio(1.0, contentMode: .fit)
-                        }
-                        .buttonStyle(.plain)
-                        .disabled(!board[index].isEmpty || winMessage != nil || !isYourTurn)
+                        cellView(index: index)
                     }
                 }
             }
         }
-        .padding(16)
+        .padding(14)
         .liquidGlassStyle(cornerRadius: 28)
         .frame(width: sideLength, height: sideLength)
     }
-    
-    private var LiquidActionControls: some View {
-        VStack(spacing: 16) {
-            if let winMessage = winMessage {
-                Text(winMessage).font(.headline)
+
+    @ViewBuilder
+    private func cellView(index: Int) -> some View {
+        let piece       = game.board[index]
+        let isWinCell   = game.winningLine?.contains(index) ?? false
+        let isDisabled  = !piece.isEmpty || game.isGameOver ||
+                          (activeMode == .bot && game.currentToken == game.botPiece) ||
+                          (activeMode == .online && game.currentToken != game.humanPiece)
+
+        Button {
+            game.humanTapped(index: index)
+        } label: {
+            ZStack {
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .fill(
+                        isWinCell
+                            ? (piece == "X" ? Color.blue.opacity(0.25) : Color.orange.opacity(0.25))
+                            : Color.secondary.opacity(0.1)
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                            .strokeBorder(
+                                isWinCell
+                                    ? (piece == "X" ? Color.blue : Color.orange)
+                                    : Color.clear,
+                                lineWidth: 2.5
+                            )
+                    )
+                    .shadow(
+                        color: isWinCell
+                            ? (piece == "X" ? .blue.opacity(0.5) : .orange.opacity(0.5))
+                            : .clear,
+                        radius: isWinCell ? 8 : 0
+                    )
+
+                if piece == "X" {
+                    Text("X")
+                        .font(.system(size: 40, weight: .bold, design: .rounded))
+                        .foregroundColor(.blue)
+                        .transition(.scale.combined(with: .opacity))
+                } else if piece == "O" {
+                    Text("O")
+                        .font(.system(size: 40, weight: .bold, design: .rounded))
+                        .foregroundColor(.orange)
+                        .transition(.scale.combined(with: .opacity))
+                }
             }
-            HStack(spacing: 12) {
-                Button(action: {
+            .aspectRatio(1.0, contentMode: .fit)
+        }
+        .buttonStyle(.plain)
+        .disabled(isDisabled)
+        .animation(.spring(response: 0.3, dampingFraction: 0.6), value: piece)
+        .animation(.easeInOut(duration: 0.4), value: isWinCell)
+    }
+
+    // MARK: - Action Controls
+    private var actionControls: some View {
+        VStack(spacing: 12) {
+            HStack(spacing: 10) {
+                Button {
                     gameManager.presentMatchmakerInterface()
-                }) {
+                } label: {
                     Label("Play Online", systemImage: "person.2.fill")
                         .frame(maxWidth: .infinity)
                 }
                 .liquidGlassButtonStyle()
-                
-                Button(action: resetMatchBoard) {
+                .disabled(!gameManager.isPlayerAuthenticated)
+
+                Button {
+                    if activeMode == .localPassAndPlay {
+                        // Two-player: no piece choice, just reset
+                        startFreshGame()
+                    } else if game.isGameOver || game.board.allSatisfy({ $0.isEmpty }) {
+                        startFreshGame()
+                    } else {
+                        showPiecePicker = true
+                    }
+                } label: {
                     Label("New Game", systemImage: "arrow.counterclockwise")
                         .frame(maxWidth: .infinity)
                 }
                 .liquidGlassButtonStyle(isProminent: true)
             }
+
+            if game.scoreX > 0 || game.scoreO > 0 {
+                Button {
+                    game.resetScores()
+                } label: {
+                    Label("Reset Scores", systemImage: "xmark.circle")
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
+                }
+                .buttonStyle(.plain)
+            }
         }
         .padding()
         .liquidGlassStyle(cornerRadius: 20)
     }
-    
-    private func handleCellTap(at index: Int) {
-        board[index] = localToken
-        processMatrixState(for: localToken)
-        if activeMode == .bot {
-            isYourTurn = false
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) { executeBotMove() }
-        } else if activeMode == .localPassAndPlay {
-            localToken = (localToken == "X") ? "O" : "X"
+
+    // MARK: - Setup
+    private func setupGame() {
+        game.onlineManager = gameManager
+        game.matchMode     = activeMode
+        game.botLevel      = difficultyManager.selectedLevel
+        difficultyManager.fetchDifficulty()
+        setupOnlineMoveListener()
+
+        if let ver = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String,
+           lastTrackedVersion != ver {
+            showWhatsNew        = true
+            lastTrackedVersion  = ver
         }
     }
-    
-    private func executeBotMove() {
-        guard winMessage == nil && board.contains("") else { return }
-        let botToken = (localToken == "X") ? "O" : "X"
-        if difficultyManager.selectedLevel >= 4, let defensiveBlockMove = findStrategicCell(for: localToken) {
-            board[defensiveBlockMove] = botToken
-            processMatrixState(for: botToken)
-            isYourTurn = true
-            return
+
+    private func setupOnlineMoveListener() {
+        gameManager.onMoveReceived = { index in
+            game.receiveOnlineMove(index: index)
         }
-        let openCells = board.enumerated().filter { $0.element.isEmpty }.map { $0.offset }
-        if let randomChoice = openCells.randomElement() {
-            board[randomChoice] = botToken
-            processMatrixState(for: botToken)
-            isYourTurn = true
+        gameManager.onOpponentDisconnected = {
+            game.opponentDisconnected = true
         }
-    }
-    
-    private func findStrategicCell(for token: String) -> Int? {
-        let lines = [(0,1,2), (3,4,5), (6,7,8), (0,3,6), (1,4,7), (2,5,8), (0,4,8), (2,4,6)]
-        for (a, b, c) in lines {
-            let cells = [board[a], board[b], board[c]]
-            if cells.filter({ $0 == token }).count == 2 && cells.contains("") {
-                if board[a].isEmpty { return a }
-                if board[b].isEmpty { return b }
-                if board[c].isEmpty { return c }
-            }
+        gameManager.onMatchStarted = { isFirst in
+            game.humanPiece  = isFirst ? "X" : "O"
+            game.currentToken = "X"
+            game.matchMode   = .online
+            game.startNewGame(keepPiece: true)
         }
-        return nil
-    }
-    
-    private func processMatrixState(for token: String) {
-        if checkWinCondition(for: token) {
-            winMessage = "MATRIX RESOLVED: \(token) WINS"
-        } else if !board.contains("") {
-            winMessage = "QUANTUM STALEMATE DETECTED"
+        gameManager.onResetReceived = {
+            game.startNewGame(keepPiece: true)
         }
     }
-    
-    private func checkWinCondition(for player: String) -> Bool {
-        let lines = [(0,1,2), (3,4,5), (6,7,8), (0,3,6), (1,4,7), (2,5,8), (0,4,8), (2,4,6)]
-        for (a, b, c) in lines {
-            if board[a] == player && board[b] == player && board[c] == player {
-                return true
-            }
-        }
-        return false
+
+    private func startFreshGame() {
+        game.matchMode = activeMode
+        game.botLevel  = difficultyManager.selectedLevel
+        game.startNewGame(keepPiece: true)
     }
-    
-    private func setupIncomingMoveListener() {}
-    private func resetMatchBoard() {
-        board = Array(repeating: "", count: 9)
-        winMessage = nil
-        isYourTurn = true
-        localToken = "X"
+
+    private func endOnlineMatch() {
+        gameManager.currentMatch?.disconnect()
+        gameManager.currentMatch = nil
+        activeMode    = .bot
+        game.matchMode = .bot
+        game.startNewGame()
     }
 }

@@ -3,23 +3,38 @@ import GameKit
 import SwiftUI
 import Combine
 
-class OnlineGameManager: NSObject, ObservableObject, GKMatchmakerViewControllerDelegate, GKMatchDelegate {
+// MARK: - Move packet types sent over GKMatch data channel
+private enum PacketType: UInt8 {
+    case move  = 1
+    case reset = 2
+}
+
+class OnlineGameManager: NSObject, ObservableObject,
+                         GKMatchmakerViewControllerDelegate,
+                         GKMatchDelegate {
+
+    // MARK: - Published state
     @Published var isPlayerAuthenticated: Bool = false
-    @Published var localPlayerName: String = "Guest"
+    @Published var localPlayerName: String     = "Guest"
     @Published var authenticationError: String? = nil
-    
-    // Multiplayer Connection States
-    @Published var currentMatch: GKMatch? = nil
-    @Published var matchInfoMessage: String = "READY FOR NET LINK INITIALIZATION"
-    
-    // Dynamic move packet router callback link to UI
+    @Published var currentMatch: GKMatch?      = nil
+    @Published var matchInfoMessage: String    = "READY FOR NET LINK INITIALIZATION"
+
+    // MARK: - Callbacks → wired from ContentView
     var onMoveReceived: ((Int) -> Void)?
-    
+    var onOpponentDisconnected: (() -> Void)?
+    var onMatchStarted: ((_ isFirstPlayer: Bool) -> Void)?
+    var onResetReceived: (() -> Void)?
+
+    // First-player flag (whoever sees the matchmaker first gets X)
+    private var isFirstPlayer: Bool = true
+
     override init() {
         super.init()
         authenticateLocalPlayer()
     }
-    
+
+    // MARK: - Game Center Authentication
     func authenticateLocalPlayer() {
         let localPlayer = GKLocalPlayer.local
         localPlayer.authenticateHandler = { [weak self] viewController, error in
@@ -28,146 +43,149 @@ class OnlineGameManager: NSObject, ObservableObject, GKMatchmakerViewControllerD
                     self?.presentAuthentication(vc)
                 } else if localPlayer.isAuthenticated {
                     self?.isPlayerAuthenticated = true
-                    self?.localPlayerName = localPlayer.displayName
-                    self?.authenticationError = nil
-                    print("Game Center sandbox profile secure: \(localPlayer.displayName)")
+                    self?.localPlayerName       = localPlayer.displayName
+                    self?.authenticationError   = nil
                 } else {
-                    self?.isPlayerAuthenticated = false
-                    self?.authenticationError = error?.localizedDescription ?? "Unknown Game Center Error"
+                    self?.isPlayerAuthenticated  = false
+                    self?.authenticationError    = error?.localizedDescription ?? "Unknown Game Center Error"
                 }
             }
         }
     }
-    
-    // MARK: - Game Center Dashboard Score Reporting Interface
+
+    // MARK: - Game Center Leaderboard
     func reportScoreToLeaderboard(wins: Int) {
         guard isPlayerAuthenticated else { return }
-        
-        // This identifier maps directly to your configuration settings block inside App Store Connect / Xcode
-        let leaderboardID = "com.seaus.neogrid.total_wins"
-        
-        GKLeaderboard.submitScore(wins, context: 0, player: GKLocalPlayer.local, leaderboardIDs: [leaderboardID]) { error in
+        GKLeaderboard.submitScore(wins, context: 0, player: GKLocalPlayer.local,
+                                  leaderboardIDs: ["com.seaus.neogrid.total_wins"]) { error in
             if let error = error {
-                print("Failed to sync score matrix to dashboard: \(error.localizedDescription)")
-            } else {
-                print("Game Center leaderboard successfully updated to: \(wins) wins")
+                print("Leaderboard sync failed: \(error.localizedDescription)")
             }
         }
     }
-    
-    // MARK: - Achievement Progression Pipeline (Dashboard Interface Hook)
+
+    // MARK: - Game Center Achievement
     func reportWinAchievement(currentStreakCount: Int) {
         guard isPlayerAuthenticated else { return }
-        
-        let achievementID = "com.seaus.neogrid.win_streak"
-        let achievement = GKAchievement(identifier: achievementID)
-        
-        let targetWins = 3.0
-        let percentage = (Double(currentStreakCount) / targetWins) * 100.0
-        
-        achievement.percentComplete = min(percentage, 100.0)
-        achievement.showsCompletionBanner = true // Triggers Apple's native system card banner popup
-        
+        let achievement = GKAchievement(identifier: "com.seaus.neogrid.win_streak")
+        achievement.percentComplete   = min((Double(currentStreakCount) / 3.0) * 100.0, 100.0)
+        achievement.showsCompletionBanner = true
         GKAchievement.report([achievement]) { error in
             if let error = error {
-                print("Failed to dispatch achievement sync stream: \(error.localizedDescription)")
-            } else {
-                print("Game Center achievement system matrix updated: \(achievement.percentComplete)%")
+                print("Achievement sync failed: \(error.localizedDescription)")
             }
         }
     }
-    
-    // MARK: - Native Multiplatform Matchmaker Trigger
+
+    // MARK: - Present Matchmaker
     func presentMatchmakerInterface() {
         guard isPlayerAuthenticated else { return }
-        
         let request = GKMatchRequest()
-        request.minPlayers = 2
-        request.maxPlayers = 2
+        request.minPlayers            = 2
+        request.maxPlayers            = 2
         request.defaultNumberOfPlayers = 2
-        
+
         guard let mmvc = GKMatchmakerViewController(matchRequest: request) else { return }
         mmvc.matchmakerDelegate = self
-        
+        presentViewController(mmvc)
+    }
+
+    // MARK: - Send Move
+    func sendGameMove(cellIndex: Int) {
+        guard let match = currentMatch else { return }
+        // Packet: [type, index]
+        let packet = Data([PacketType.move.rawValue, UInt8(cellIndex)])
+        try? match.sendData(toAllPlayers: packet, with: .reliable)
+    }
+
+    // MARK: - Send Reset
+    func sendReset() {
+        guard let match = currentMatch else { return }
+        let packet = Data([PacketType.reset.rawValue])
+        try? match.sendData(toAllPlayers: packet, with: .reliable)
+    }
+
+    // MARK: - GKMatchmakerViewControllerDelegate
+    func matchmakerViewController(_ viewController: GKMatchmakerViewController,
+                                  didFind match: GKMatch) {
+        dismissViewController(viewController)
+        self.currentMatch  = match
+        match.delegate     = self
+        // The player who triggered the matchmaker is "first" (gets X)
+        isFirstPlayer      = true
+        DispatchQueue.main.async {
+            self.matchInfoMessage = "Match found! Game starting…"
+            self.onMatchStarted?(self.isFirstPlayer)
+        }
+    }
+
+    func matchmakerViewControllerWasCancelled(_ viewController: GKMatchmakerViewController) {
+        dismissViewController(viewController)
+    }
+
+    func matchmakerViewController(_ viewController: GKMatchmakerViewController,
+                                  didFailWithError error: Error) {
+        dismissViewController(viewController)
+        DispatchQueue.main.async {
+            self.matchInfoMessage = "Matchmaking error: \(error.localizedDescription)"
+        }
+    }
+
+    // MARK: - GKMatchDelegate — incoming data
+    func match(_ match: GKMatch, didReceive data: Data, fromRemotePlayer player: GKPlayer) {
+        guard let typeByte = data.first, let type = PacketType(rawValue: typeByte) else { return }
+        DispatchQueue.main.async {
+            switch type {
+            case .move:
+                if data.count >= 2 {
+                    self.onMoveReceived?(Int(data[1]))
+                }
+            case .reset:
+                self.onResetReceived?()
+            }
+        }
+    }
+
+    // MARK: - GKMatchDelegate — connection state
+    func match(_ match: GKMatch, player: GKPlayer,
+               didChange state: GKPlayerConnectionState) {
+        if state == .disconnected {
+            DispatchQueue.main.async {
+                self.onOpponentDisconnected?()
+            }
+        }
+    }
+
+    // MARK: - Helpers
+    private func presentViewController(_ vc: AnyObject) {
         #if os(iOS) || os(tvOS) || os(visionOS)
-        if let windowScene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
-            if let rootVC = windowScene.windows.first(where: { $0.isKeyWindow })?.rootViewController {
-                if UIDevice.current.userInterfaceIdiom == .pad { mmvc.modalPresentationStyle = .formSheet }
-                rootVC.present(mmvc, animated: true)
+        if let uivc = vc as? UIViewController {
+            if let scene = UIApplication.shared.connectedScenes
+                .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene,
+               let root = scene.windows.first(where: { $0.isKeyWindow })?.rootViewController {
+                if UIDevice.current.userInterfaceIdiom == .pad {
+                    uivc.modalPresentationStyle = .formSheet
+                }
+                root.present(uivc, animated: true)
             }
         }
         #elseif os(macOS)
-        if let mainWindow = NSApplication.shared.windows.first(where: { $0.isKeyWindow }) {
-            mainWindow.contentViewController?.presentAsSheet(mmvc)
+        if let nsvc = vc as? NSViewController,
+           let main = NSApplication.shared.windows.first(where: { $0.isKeyWindow }) {
+            main.contentViewController?.presentAsSheet(nsvc)
         }
         #endif
     }
-    
-    // MARK: - GKMatchmakerViewControllerDelegate Interface Linkage
-    func matchmakerViewController(_ viewController: GKMatchmakerViewController, didFind match: GKMatch) {
-        dismissMatchmaker(viewController)
-        self.currentMatch = match
-        match.delegate = self
-        
-        DispatchQueue.main.async {
-            self.matchInfoMessage = "QUANTUM TUNNEL SECURED. MATCH START!"
-        }
-    }
-    
-    func matchmakerViewControllerWasCancelled(_ viewController: GKMatchmakerViewController) {
-        dismissMatchmaker(viewController)
-    }
-    
-    func matchmakerViewController(_ viewController: GKMatchmakerViewController, didFailWithError error: Error) {
-        dismissMatchmaker(viewController)
-        DispatchQueue.main.async {
-            self.matchInfoMessage = "TUNNEL CONFIGURATION ERROR: \(error.localizedDescription)"
-        }
-    }
-    
-    private func dismissMatchmaker(_ vc: AnyObject) {
+
+    private func dismissViewController(_ vc: AnyObject) {
         #if os(iOS) || os(tvOS) || os(visionOS)
         if let uivc = vc as? UIViewController { uivc.dismiss(animated: true) }
         #elseif os(macOS)
         if let nsvc = vc as? NSViewController { nsvc.presentingViewController?.dismiss(nsvc) }
         #endif
     }
-    
-    // MARK: - Network Package Dispatch Logic
-    func sendGameMove(cellIndex: Int) {
-        guard let match = currentMatch else { return }
-        let packetData = Data([UInt8(cellIndex)])
-        
-        do {
-            try match.sendData(toAllPlayers: packetData, with: .reliable)
-        } catch {
-            print("Failed to stream binary turn packet payload: \(error)")
-        }
-    }
-    
-    // MARK: - GKMatchDelegate Stream Interceptor
-    func match(_ match: GKMatch, didReceive data: Data, fromRemotePlayer player: GKPlayer) {
-        if let positionIndex = data.first {
-            DispatchQueue.main.async {
-                self.onMoveReceived?(Int(positionIndex))
-            }
-        }
-    }
-    
+
     private func presentAuthentication(_ vc: AnyObject) {
-        #if os(iOS) || os(tvOS) || os(visionOS)
-        if let uiViewController = vc as? UIViewController {
-            let connectedScenes = UIApplication.shared.connectedScenes
-            if let windowScene = connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
-                windowScene.windows.first(where: { $0.isKeyWindow })?.rootViewController?.present(uiViewController, animated: true)
-            }
-        }
-        #elseif os(macOS)
-        if let nsViewController = vc as? NSViewController {
-            if let mainWindow = NSApplication.shared.windows.first(where: { $0.isKeyWindow }) {
-                mainWindow.contentViewController?.presentAsSheet(nsViewController)
-            }
-        }
-        #endif
+        presentViewController(vc)
     }
 }
