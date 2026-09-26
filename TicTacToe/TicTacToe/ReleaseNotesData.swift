@@ -18,22 +18,15 @@ struct ReleaseNotesRegistry {
 
     static let latestNotes: [FeatureGroup] = [
         FeatureGroup(
-            sectionTitle: "UPDATE HINTS",
+            sectionTitle: "WHAT'S NEW",
             items: [
-                FeatureItem(emoji: "🧠", tintColor: .purple,
-                            text: "Unbeatable Bot: Tier 5 \"Nemesis\" now runs a full minimax engine with alpha-beta pruning. It is very hard to beat."),
-                FeatureItem(emoji: "🎨", tintColor: .blue,
-                            text: "Piece Picker: Choose X or O before every game. X always goes first."),
-                FeatureItem(emoji: "🏆", tintColor: .orange,
-                            text: "Live Score Tracker: X wins, O wins, and draws are tracked across your session with animated counters."),
-                FeatureItem(emoji: "✨", tintColor: .yellow,
-                            text: "Win Animation: The winning three cells glow and highlight the moment the game ends."),
-                FeatureItem(emoji: "🎯", tintColor: .green,
-                            text: "Turn Indicator: A pulsing dot shows whose move it is at all times.")
+                FeatureItem(emoji: "🆕", tintColor: .purple,
+                            text: "Added a feature to reset the game board when changing bot difficulty. This ensures a fresh start and prevents any confusion during gameplay."),
             ]
         ),
+        
         FeatureGroup(
-            sectionTitle: "WHAT'S NEW",
+            sectionTitle: "UPDATE HINTS",
             items: [
                 FeatureItem(emoji: "🔧", tintColor: .purple,
                             text: "Update 3.7.2 is going to fix a bug where the 'Your turn' indicator dot would sometimes move diagonally in the first game and that it will automatically reset the game when changing bot difficultys.")
