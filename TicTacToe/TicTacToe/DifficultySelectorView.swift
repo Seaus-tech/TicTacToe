@@ -1,14 +1,16 @@
 import SwiftUI
 
-// Using a generic parameter 'M' guarantees compliance across strict xcproj indexing limits
+// Tier names — personality matters
+private let tierNames = ["Rookie", "Cadet", "Tactician", "Veteran", "Nemesis"]
+private let tierColors: [Color] = [.green, .teal, .blue, .purple, .red]
+
 struct DifficultySelectorView<M: ObservableObject>: View {
     @ObservedObject var difficultyManager: M
     let levels = Array(1...5)
-    
-    // Explicit type-safe callback mapping layer
+
     var saveAction: (Int) -> Void
     var selectedLevel: Int
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
@@ -18,29 +20,40 @@ struct DifficultySelectorView<M: ObservableObject>: View {
                     .foregroundColor(.secondary)
                     .tracking(1.2)
                 Spacer()
-                Text("Tier \(selectedLevel)")
+                Text(tierName(for: selectedLevel))
                     .font(.subheadline.monospacedDigit())
                     .fontWeight(.semibold)
-                    .foregroundColor(.accentColor)
+                    .foregroundColor(tierColors[selectedLevel - 1])
+                    .animation(.spring(response: 0.3), value: selectedLevel)
             }
-            
+
             HStack(spacing: 8) {
                 ForEach(levels, id: \.self) { tier in
-                    Button(action: {
+                    Button {
                         saveAction(tier)
-                    }) {
-                        Text("\(tier)")
-                            .font(.subheadline)
-                            .fontWeight(.bold)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 32)
+                    } label: {
+                        VStack(spacing: 2) {
+                            Text("\(tier)")
+                                .font(.subheadline.bold())
+                            Text(tierName(for: tier))
+                                .font(.system(size: 9, weight: .medium, design: .rounded))
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.6)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 44)
                     }
                     .liquidGlassButtonStyle(isProminent: selectedLevel == tier)
-                    .tint(selectedLevel == tier ? .blue : .secondary)
+                    .tint(selectedLevel == tier ? tierColors[tier - 1] : .secondary)
                 }
             }
         }
         .padding()
         .liquidGlassStyle(cornerRadius: 20)
+    }
+
+    private func tierName(for level: Int) -> String {
+        guard level >= 1 && level <= tierNames.count else { return "Unknown" }
+        return tierNames[level - 1]
     }
 }
