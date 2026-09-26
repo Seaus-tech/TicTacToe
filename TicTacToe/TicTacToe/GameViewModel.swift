@@ -120,6 +120,12 @@ class GameViewModel: ObservableObject {
         winStreak = 0
     }
 
+    func resetGameBoardState() {
+            // Clear out your active session match grids cleanly
+            self.resetScores()
+            print("⚡ Matchboard arrays purged and reset cleanly.")
+        }
+    
     // MARK: - Cell Tap (Human)
     func humanTapped(index: Int) {
         guard canPlace(at: index) else { return }

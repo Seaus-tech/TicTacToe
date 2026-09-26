@@ -1,6 +1,6 @@
 import SwiftUI
 import GameKit
-
+// Deprecated
 struct AuthView: View {
     // Access the global game manager we injected in TicTacToeApp.swift
     @EnvironmentObject var gameManager: OnlineGameManager

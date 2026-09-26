@@ -1,5 +1,6 @@
 import SwiftUI
 import GameKit
+import Combine
 
 enum MatchMode {
     case online
@@ -128,7 +129,11 @@ struct ContentView: View {
                             difficultyManager.saveDifficultyToCloud(level: tier)
                             game.botLevel = tier
                         },
-                        selectedLevel: difficultyManager.selectedLevel
+                        selectedLevel: difficultyManager.selectedLevel,
+                        resetAction: {
+                            // Triggers a brand-new match on the board while preserving your career score counts perfectly
+                            game.startNewGame(keepPiece: false)
+                        }
                     )
                 }
                 Spacer(minLength: 0)
@@ -173,12 +178,17 @@ struct ContentView: View {
                         difficultyManager.saveDifficultyToCloud(level: tier)
                         game.botLevel = tier
                     },
-                    selectedLevel: difficultyManager.selectedLevel
+                    selectedLevel: difficultyManager.selectedLevel,
+                    resetAction: {
+                        // Triggers a brand-new match on the board while preserving your career score counts perfectly
+                        game.startNewGame(keepPiece: false)
+                    }
                 )
                 .padding(.horizontal, 4)
             }
             scoreBar
             turnIndicator
+                .transaction { $0.animation = nil }
             gameBoard(sideLength: boardSide)
             actionControls
         }

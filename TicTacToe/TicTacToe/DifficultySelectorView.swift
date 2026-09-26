@@ -10,6 +10,8 @@ struct DifficultySelectorView<M: ObservableObject>: View {
 
     var saveAction: (Int) -> Void
     var selectedLevel: Int
+    // Added the hook property signature for the board reset mechanic
+    var resetAction: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -31,6 +33,8 @@ struct DifficultySelectorView<M: ObservableObject>: View {
                 ForEach(levels, id: \.self) { tier in
                     Button {
                         saveAction(tier)
+                        // Trigger the canvas wipe sequence immediately on button click
+                        resetAction()
                     } label: {
                         VStack(spacing: 2) {
                             Text("\(tier)")
