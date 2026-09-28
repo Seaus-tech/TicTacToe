@@ -1,11 +1,3 @@
-{
-  "mcpServers": {
-    "xcode": {
-      "command": "xcrun",
-      "args": [
-        "mcpbridge"
-      ],
-      "env": {}
-    }
-  }
-}
+version https://git-lfs.github.com/spec/v1
+oid sha256:3edd936abf8e915dd9b6b16299d955218aad83aeb1605a4ae9edaf550b9d8652
+size 133
