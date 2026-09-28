@@ -1,3 +1,6 @@
+version https://git-lfs.github.com/spec/v1
+oid sha256:9b0b73243aa03837382707cb76e580fc57b543619818cbf839cb16356fc8309e
+size 108
 *.swift !text !filter !merge !diff
 *.js !text !filter !merge !diff
 *.json !text !filter !merge !diff
