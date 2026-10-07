@@ -1,78 +1,75 @@
 import SwiftUI
 
-// MARK: - Adaptive colour helper
-extension Color {
-    /// Creates a colour that switches between light and dark mode values.
-    init(light: Color, dark: Color) {
-        self.init(uiOrNSColor: .init(
-            light: light.uiOrNSColor,
-            dark:  dark.uiOrNSColor
-        ))
-    }
-
-    #if os(macOS)
-    private var uiOrNSColor: NSColor {
-        NSColor(self)
-    }
-    private init(uiOrNSColor: NSColor) {
-        self.init(nsColor: uiOrNSColor)
-    }
-    #else
-    private var uiOrNSColor: UIColor {
-        UIColor(self)
-    }
-    private init(uiOrNSColor: UIColor) {
-        self.init(uiColor: uiOrNSColor)
-    }
-    #endif
-}
-
-#if os(macOS)
-private extension NSColor {
-    convenience init(light: NSColor, dark: NSColor) {
-        self.init(name: nil) { appearance in
-            appearance.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua ? dark : light
-        }
-    }
-}
-#else
-private extension UIColor {
-    convenience init(light: UIColor, dark: UIColor) {
-        self.init { traitCollection in
-            traitCollection.userInterfaceStyle == .dark ? dark : light
-        }
-    }
-}
-#endif
-
-// MARK: - Glass card and button styles
+// MARK: - TRUE Liquid Glass Layout Engine
 extension View {
+    
+    /// Applies a true native Liquid Glass refraction coat to the view.
+    /// - Parameter cornerRadius: The bounding radius of the glass layer.
     @ViewBuilder
     func liquidGlassStyle(cornerRadius: CGFloat = 16) -> some View {
         if #available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *) {
-            glassEffect(.regular, in: .rect(cornerRadius: cornerRadius))
+            // .interactive() introduces motion specular highlights and touch warp reflections
+            self.glassEffect(.regular.interactive(), in: .rect(cornerRadius: cornerRadius))
         } else {
-            background(.regularMaterial, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
-            .overlay {
-                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                    .strokeBorder(.primary.opacity(0.1), lineWidth: 1)
+            // Clean legacy fallback that emulates lighting angle highlights
+            self.background(.regularMaterial, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                        .strokeBorder(
+                            LinearGradient(
+                                colors: [.white.opacity(0.3), .clear, .black.opacity(0.15)],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 1.5
+                        )
+                }
+        }
+    }
+    
+    /// Applies the liquid glass button modifier engine.
+    func liquidGlassButtonStyle(isProminent: Bool = false) -> some View {
+        self.modifier(GlassButtonCompatibilityWrapper(isProminent: isProminent))
+    }
+}
+
+// MARK: - Liquid Morphing Container Wrapper
+/// A layout wrapper that forces children glass shapes to blend and morph like true liquid.
+struct LiquidGlassGroup<Content: View>: View {
+    var spacing: CGFloat = 8
+    @ViewBuilder var content: () -> Content
+    
+    var body: some View {
+        if #available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *) {
+            GlassEffectContainer(spacing: spacing) {
+                content()
+            }
+        } else {
+            ZStack {
+                content()
             }
         }
     }
+}
 
-    @ViewBuilder
-    func liquidGlassButtonStyle(isProminent: Bool = false) -> some View {
+// MARK: - Compile-Safe Style Isolation Wrapper
+private struct GlassButtonCompatibilityWrapper: ViewModifier {
+    let isProminent: Bool
+
+    func body(content: Content) -> some View {
         if #available(iOS 26, macOS 26, tvOS 26, visionOS 26, watchOS 26, *) {
+            #if canImport(SwiftUI)
             if isProminent {
-                buttonStyle(GlassProminentButtonStyle())
+                content.buttonStyle(GlassProminentButtonStyle())
             } else {
-                buttonStyle(GlassButtonStyle())
+                content.buttonStyle(GlassButtonStyle())
             }
+            #endif
         } else {
             if isProminent {
-                buttonStyle(BorderedProminentButtonStyle())
+                content.buttonStyle(BorderedProminentButtonStyle())
             } else {
-                buttonStyle(BorderedButtonStyle())
+                content.buttonStyle(BorderedButtonStyle())
             }
         }
     }

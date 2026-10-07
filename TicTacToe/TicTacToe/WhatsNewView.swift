@@ -71,7 +71,7 @@ struct WhatsNewView: View {
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 14)
                     }
-                    .liquidGlassButtonStyle(isProminent: true)
+                    .buttonStyle(BorderedProminentButtonStyle())
                     .padding(.horizontal, 24)
                     .padding(.bottom, 24)
                     .padding(.top, 16)
@@ -90,7 +90,12 @@ struct VStyleContainer<Content: View>: View {
         #if os(macOS)
         content.background(VisualEffectView().ignoresSafeArea())
         #else
-        content.background(Color(light: Color(white: 1.0), dark: Color(white: 0.11)).ignoresSafeArea())
+        // Create the light and dark colors cleanly first
+        let lightColor = Color(white: 1.0)
+        let darkColor = Color(white: 0.11)
+
+        // Pass those pre-made Color objects into your custom initializer
+        content.background(Color(light: lightColor, dark: darkColor).ignoresSafeArea())
         #endif
     }
 }
@@ -105,5 +110,49 @@ struct VisualEffectView: NSViewRepresentable {
         return view
     }
     func updateNSView(_ nsView: NSVisualEffectView, context: Context) {}
+}
+#endif
+// MARK: - Adaptive color helper extension
+extension Color {
+    /// Creates a color that switches between light and dark mode values.
+    init(light: Color, dark: Color) {
+        self.init(uiOrNSColor: .init(
+            light: light.uiOrNSColor,
+            dark:  dark.uiOrNSColor
+        ))
+    }
+
+    #if os(macOS)
+    private var uiOrNSColor: NSColor {
+        NSColor(self)
+    }
+    private init(uiOrNSColor: NSColor) {
+        self.init(nsColor: uiOrNSColor)
+    }
+    #else
+    private var uiOrNSColor: UIColor {
+        UIColor(self)
+    }
+    private init(uiOrNSColor: UIColor) {
+        self.init(uiColor: uiOrNSColor)
+    }
+    #endif
+}
+
+#if os(macOS)
+private extension NSColor {
+    convenience init(light: NSColor, dark: NSColor) {
+        self.init(name: nil) { appearance in
+            appearance.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua ? dark : light
+        }
+    }
+}
+#else
+private extension UIColor {
+    convenience init(light: UIColor, dark: UIColor) {
+        self.init { traitCollection in
+            traitCollection.userInterfaceStyle == .dark ? dark : light
+        }
+    }
 }
 #endif

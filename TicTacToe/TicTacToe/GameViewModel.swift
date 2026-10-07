@@ -2,47 +2,38 @@ import SwiftUI
 import AVFoundation
 import Combine
 
-// MARK: - Game Result
 enum GameResult {
-    case win(String)   // token that won
+    case win(String)
     case draw
     case ongoing
 }
 
-// MARK: - GameViewModel
 @MainActor
 class GameViewModel: ObservableObject {
 
-    // Board state
     @Published var board: [String] = Array(repeating: "", count: 9)
-    @Published var currentToken: String = "X"       // whose turn it is
-    @Published var humanPiece: String = "X"         // piece the human chose
+    @Published var currentToken: String = "X"
+    @Published var humanPiece: String = "X"
     @Published var gameResult: GameResult = .ongoing
     @Published var winningLine: [Int]? = nil
 
-    // Session scores
     @Published var scoreX: Int     = 0
     @Published var scoreO: Int     = 0
     @Published var drawCount: Int  = 0
 
-    // Career / streak
     @Published var winStreak: Int        = 0
     @Published var totalCareerWins: Int  = 0
 
-    // Piece-pick sheet
     @Published var showPiecePicker: Bool = false
-
-    // Online opponent disconnect
     @Published var opponentDisconnected: Bool = false
 
-    // Active match mode (set by ContentView before each game)
     var matchMode: MatchMode = .bot
     var botLevel: Int = 1
+    var activeGameMode: GameMode = .classic
+    private var placementHistory: [Int] = []
 
-    // Reference back to online manager so we can send moves
     weak var onlineManager: OnlineGameManager?
 
-    // Audio
     private var tapPlayer: AVAudioPlayer?
     private var winPlayer: AVAudioPlayer?
     private var drawPlayer: AVAudioPlayer?
@@ -51,7 +42,6 @@ class GameViewModel: ObservableObject {
         setupAudio()
     }
 
-    // MARK: - Audio Setup
     private func setupAudio() {
         tapPlayer  = makePlayer(for: "tap")
         winPlayer  = makePlayer(for: "win")
@@ -67,7 +57,6 @@ class GameViewModel: ObservableObject {
         return nil
     }
 
-    // MARK: - Derived helpers
     var botPiece: String { humanPiece == "X" ? "O" : "X" }
     var isGameOver: Bool {
         if case .ongoing = gameResult { return false }
@@ -77,10 +66,18 @@ class GameViewModel: ObservableObject {
     var resultMessage: String? {
         switch gameResult {
         case .win(let t):
+            if activeGameMode == .inverse {
+                let actualWinner = (t == "X") ? "O" : "X"
+                switch matchMode {
+                case .bot:              return actualWinner == humanPiece ? "You Win! 🎉 (Inverse)" : "Bot Wins! (Inverse)"
+                case .localPassAndPlay: return "\(actualWinner) Wins! 🎉 (Inverse)"
+                case .online:           return actualWinner == humanPiece ? "You Win! 🎉 (Inverse)" : "Opponent Wins! (Inverse)"
+                }
+            }
             switch matchMode {
-            case .bot:       return t == humanPiece ? "You Win! 🎉" : "Bot Wins!"
+            case .bot:              return t == humanPiece ? "You Win! 🎉" : "Bot Wins!"
             case .localPassAndPlay: return "\(t) Wins! 🎉"
-            case .online:    return t == humanPiece ? "You Win! 🎉" : "Opponent Wins!"
+            case .online:           return t == humanPiece ? "You Win! 🎉" : "Opponent Wins!"
             }
         case .draw:    return "It's a Draw!"
         case .ongoing: return nil
@@ -95,15 +92,14 @@ class GameViewModel: ObservableObject {
         }
     }
 
-    // MARK: - New Game
     func startNewGame(keepPiece: Bool = true) {
-        board              = Array(repeating: "", count: 9)
-        winningLine        = nil
-        gameResult         = .ongoing
+        board                = Array(repeating: "", count: 9)
+        placementHistory.removeAll()
+        winningLine          = nil
+        gameResult           = .ongoing
         opponentDisconnected = false
-        currentToken       = "X"
+        currentToken         = "X"
 
-        // If bot goes first (human chose O), trigger immediately
         if matchMode == .bot && currentToken == botPiece {
             triggerBotMove()
         }
@@ -121,19 +117,29 @@ class GameViewModel: ObservableObject {
     }
 
     func resetGameBoardState() {
-            // Clear out your active session match grids cleanly
-            self.resetScores()
-            print("⚡ Matchboard arrays purged and reset cleanly.")
-        }
+        self.resetScores()
+        print("⚡ Matchboard arrays purged and reset cleanly.")
+    }
     
-    // MARK: - Cell Tap (Human)
     func humanTapped(index: Int) {
-        guard canPlace(at: index) else { return }
+        var finalIndex = index
+        
+        if activeGameMode == .gravityDrop {
+            let column = index % 3
+            let columnIndices = [column + 6, column + 3, column]
+            if let emptyIndex = columnIndices.first(where: { board[$0].isEmpty }) {
+                finalIndex = emptyIndex
+            } else {
+                return
+            }
+        }
+        
+        guard canPlace(at: finalIndex) else { return }
         guard currentToken == humanPiece || matchMode == .localPassAndPlay else { return }
         place(token: currentToken, at: index)
 
         if matchMode == .online {
-            onlineManager?.sendGameMove(cellIndex: index)
+            onlineManager?.sendGameMove(cellIndex: finalIndex)
         }
 
         if case .ongoing = gameResult {
@@ -146,17 +152,27 @@ class GameViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Incoming online move
     func receiveOnlineMove(index: Int) {
-        guard canPlace(at: index) else { return }
+        var finalIndex = index
+        
+        if activeGameMode == .gravityDrop {
+            let column = index % 3
+            let columnIndices = [column + 6, column + 3, column]
+            if let emptyIndex = columnIndices.first(where: { board[$0].isEmpty }) {
+                finalIndex = emptyIndex
+            } else {
+                return
+            }
+        }
+        
+        guard canPlace(at: finalIndex) else { return }
         let opponentPiece = humanPiece == "X" ? "O" : "X"
-        place(token: opponentPiece, at: index)
+        place(token: opponentPiece, at: finalIndex)
         if case .ongoing = gameResult {
             currentToken = humanPiece
         }
     }
 
-    // MARK: - Bot Move
     private func triggerBotMove() {
         guard case .ongoing = gameResult else { return }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) { [weak self] in
@@ -169,15 +185,25 @@ class GameViewModel: ObservableObject {
         guard board.contains("") else { return }
 
         if let cell = AILogic.computeMove(board: board, level: botLevel, aiPiece: botPiece) {
-            place(token: botPiece, at: cell)
+            var finalBotIndex = cell
+            
+            if activeGameMode == .gravityDrop {
+                let column = cell % 3
+                let columnIndices = [column + 6, column + 3, column]
+                if let emptyIndex = columnIndices.first(where: { board[$0].isEmpty }) {
+                    finalBotIndex = emptyIndex
+                } else {
+                    return
+                }
+            }
+            place(token: botPiece, at: finalBotIndex)
         }
-        // Only hand back to the human if the game is still going
+        
         if case .ongoing = gameResult {
             currentToken = humanPiece
         }
     }
 
-    // MARK: - Core placement
     private func canPlace(at index: Int) -> Bool {
         guard index >= 0 && index < 9 else { return false }
         guard board[index].isEmpty else { return false }
@@ -187,7 +213,18 @@ class GameViewModel: ObservableObject {
 
     private func place(token: String, at index: Int) {
         board[index] = token
+        placementHistory.append(index)
         playTap()
+
+        if activeGameMode == .quantumFading {
+            let activePlayerMoves = placementHistory.filter { board[$0] == token }
+            if activePlayerMoves.count > 3 {
+                if let oldestIndex = activePlayerMoves.first {
+                    board[oldestIndex] = ""
+                    placementHistory.removeAll(where: { $0 == oldestIndex })
+                }
+            }
+        }
 
         let result = evaluate(token: token)
         gameResult = result
@@ -195,26 +232,36 @@ class GameViewModel: ObservableObject {
         switch result {
         case .win(let winner):
             winningLine = findWinningLine(for: winner)
-            updateScores(winner: winner)
-            playWin()
-            hapticNotification(type: 0)
-            reportToGameCenter(winner: winner)
-
+            if activeGameMode == .inverse {
+                let actualWinner = (winner == "X") ? "O" : "X"
+                updateScores(winner: actualWinner)
+                if actualWinner == humanPiece {
+                    playWin()
+                    hapticNotification(type: 0)
+                    reportToGameCenter(winner: actualWinner)
+                } else {
+                    playDraw()
+                    hapticNotification(type: 1)
+                }
+            } else {
+                updateScores(winner: winner)
+                playWin()
+                hapticNotification(type: 0)
+                reportToGameCenter(winner: winner)
+            }
         case .draw:
             updateScores(winner: nil)
             playDraw()
             hapticNotification(type: 1)
-
         case .ongoing:
             hapticImpact()
         }
     }
 
-    // MARK: - Win evaluation
     static let winPatterns: [[Int]] = [
-        [0, 1, 2], [3, 4, 5], [6, 7, 8],   // rows
-        [0, 3, 6], [1, 4, 7], [2, 5, 8],   // columns
-        [0, 4, 8], [2, 4, 6]               // diagonals
+        [0, 1, 2], [3, 4, 5], [6, 7, 8],
+        [0, 3, 6], [1, 4, 7], [2, 5, 8],
+        [0, 4, 8], [2, 4, 6]
     ]
 
     private func evaluate(token: String) -> GameResult {
@@ -233,12 +280,11 @@ class GameViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Scores & Streaks
     private func updateScores(winner: String?) {
         if let w = winner {
             if w == "X" { scoreX += 1 } else { scoreO += 1 }
             if w == humanPiece {
-                winStreak      += 1
+                winStreak       += 1
                 totalCareerWins += 1
             } else {
                 winStreak = 0
@@ -249,14 +295,12 @@ class GameViewModel: ObservableObject {
         }
     }
 
-    // MARK: - Game Center reporting
     private func reportToGameCenter(winner: String) {
         guard winner == humanPiece else { return }
         onlineManager?.reportScoreToLeaderboard(wins: totalCareerWins)
         onlineManager?.reportWinAchievement(currentStreakCount: winStreak)
     }
 
-    // MARK: - Sound
     private func playTap() {
         tapPlayer?.stop(); tapPlayer?.currentTime = 0; tapPlayer?.play()
     }
@@ -267,18 +311,21 @@ class GameViewModel: ObservableObject {
         drawPlayer?.stop(); drawPlayer?.currentTime = 0; drawPlayer?.play()
     }
 
-    // MARK: - Haptics
     private func hapticImpact() {
         #if os(iOS)
-        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        let generator = UIImpactFeedbackGenerator(style: .medium)
+        generator.impactOccurred()
         #endif
     }
-
+    
     private func hapticNotification(type: Int) {
-        // type: 0 = success, 1 = warning
         #if os(iOS)
-        let fbType: UINotificationFeedbackGenerator.FeedbackType = type == 0 ? .success : .warning
-        UINotificationFeedbackGenerator().notificationOccurred(fbType)
+        let generator = UINotificationFeedbackGenerator()
+        if type == 0 {
+            generator.notificationOccurred(.success)
+        } else {
+            generator.notificationOccurred(.warning)
+        }
         #endif
     }
 }

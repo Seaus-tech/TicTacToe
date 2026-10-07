@@ -20,13 +20,17 @@ struct PiecePickerSheet: View {
                 pieceButton("O", color: .orange)
             }
 
-            Button(action: onConfirm) {
-                Text("Start Game")
-                    .fontWeight(.bold)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
+            Group {
+                Button(action: onConfirm) {
+                    Text("Start Game")
+                        .fontWeight(.bold)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 14)
+                }
             }
-            .liquidGlassButtonStyle(isProminent: true)
+            .liquidGlassButtonStyle(isProminent: true) // Moved onto the wrapper container
+            .padding(.horizontal, 32)
+            .padding(.bottom, 32)
             .padding(.horizontal, 32)
             .padding(.bottom, 32)
         }
