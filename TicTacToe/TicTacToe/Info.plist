@@ -1,3 +1,27 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:b050b8331de9585b6157e25ef7c4dd23ebe3f9221c74358638a50c447b6b7376
-size 761
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>GCSupportsControllerUserInteraction</key>
+    <true/>
+    <key>GCSupportedGameControllers</key>
+    <array>
+        <dict>
+            <key>ProfileName</key>
+            <string>ExtendedGamepad</string>
+        </dict>
+        <dict>
+            <key>ProfileName</key>
+            <string>DirectionalGamepad</string>
+        </dict>
+        <dict>
+            <key>ProfileName</key>
+            <string>SpatialGamepad</string>
+        </dict>
+        <dict>
+            <key>ProfileName</key>
+            <string>MicroGamepad</string>
+        </dict>
+    </array>
+</dict>
+</plist>

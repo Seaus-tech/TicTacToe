@@ -1,3 +1,8 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:67a4aebf89406f2ba6c7c632ed893dff750f737ec16380d6b9d2f9fdbb57937a
-size 130
+{
+  "name": "neogrid-tools",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "notes": "node generate_notes.js"
+  }
+}

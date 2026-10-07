@@ -1,3 +1,10 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:ec37dc8a7a9cdaf8328a741486dd5f2626b9898b626c7a4da75db9d8320e1b19
-size 184
+{
+    "534u54uru5": {
+        "displayName": "534u54uru5",
+        "password": "23Stu#1092860"
+    },
+    "test": {
+        "displayName": "Test",
+        "password": "TESTING"
+    }
+}

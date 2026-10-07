@@ -1,3 +1,39 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:8304c8b39c32994b0fad8c27e9254fa255db65e3e4766f996760136d6961fdc1
-size 2131
+Deploying secure gaming server topology...
+⚡ NEO-NET Core Switchboard + Account Persistence engine running on port 8080...
+👤 Unauthenticated connection stream established.
+🔌 Connection line dropped for client: [Unauthenticated user]
+👤 Unauthenticated connection stream established.
+🔌 Connection line dropped for client: [Unauthenticated user]
+👤 Unauthenticated connection stream established.
+🔒 Failed authorization challenge for username string: [534u54uru5]
+🔌 Connection line dropped for client: [Unauthenticated user]
+👤 Unauthenticated connection stream established.
+🔒 Failed authorization challenge for username string: [534u54uru5]
+🔌 Connection line dropped for client: [Unauthenticated user]
+👤 Unauthenticated connection stream established.
+📝 Created new account profile: [534u54uru5]
+🔌 Connection line dropped for client: [534u54uru5]
+👤 Unauthenticated connection stream established.
+🔓 User authenticated successfully: [534u54uru5]
+🔌 Connection line dropped for client: [534u54uru5]
+👤 Unauthenticated connection stream established.
+🔓 User authenticated successfully: [534u54uru5]
+🔌 Connection line dropped for client: [534u54uru5]
+👤 Unauthenticated connection stream established.
+🔓 User authenticated successfully: [534u54uru5]
+🔌 Connection line dropped for client: [534u54uru5]
+👤 Unauthenticated connection stream established.
+📝 Created new account profile: [Test]
+🔌 Connection line dropped for client: [Test]
+👤 Unauthenticated connection stream established.
+⚠️ Blocked redundant registration profile signature for: [534u54uru5]
+🔌 Connection line dropped for client: [Unauthenticated user]
+👤 Unauthenticated connection stream established.
+🔓 User authenticated successfully: [534u54uru5]
+👤 Unauthenticated connection stream established.
+🔓 User authenticated successfully: [Test]
+🔌 Connection line dropped for client: [534u54uru5]
+🔌 Connection line dropped for client: [Test]
+👤 Unauthenticated connection stream established.
+🔓 User authenticated successfully: [Test]
+🔌 Connection line dropped for client: [Test]
