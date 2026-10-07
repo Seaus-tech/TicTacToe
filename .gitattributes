@@ -1,3 +1,14 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:9b0b73243aa03837382707cb76e580fc57b543619818cbf839cb16356fc8309e
-size 108
+# Force Xcode project JSON layouts to merge as standard text code
+*.xcproj text eol=lf
+*.xcworkspace text eol=lf
+*.sharedschemes text eol=lf
+*.xcstrings text eol=lf
+
+# Setup global text normalization
+* text=auto
+
+# Guard binary deployment targets (Keep these as pure data)
+*.dmg binary
+*.pkg binary
+*.app binary
+*.zip binary
