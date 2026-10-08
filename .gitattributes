@@ -1,14 +1,14 @@
-# Force Xcode project JSON layouts to merge as standard text code
+# Track only installer packages and distribution archives via Git LFS
+*.dmg filter=lfs diff=lfs merge=lfs -text
+*.pkg filter=lfs diff=lfs merge=lfs -text
+*.zip filter=lfs diff=lfs merge=lfs -text
+*.tar.gz filter=lfs diff=lfs merge=lfs -text
+
+# Explicitly ensure all code and project configs remain standard text
+*.swift text eol=lf
+*.js text eol=lf
+*.json text eol=lf
 *.xcproj text eol=lf
 *.xcworkspace text eol=lf
-*.sharedschemes text eol=lf
-*.xcstrings text eol=lf
-
-# Setup global text normalization
-* text=auto
-
-# Guard binary deployment targets (Keep these as pure data)
-*.dmg binary
-*.pkg binary
-*.app binary
-*.zip binary
+.gitignore text eol=lf
+.gitattributes text eol=lf
