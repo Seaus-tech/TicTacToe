@@ -28,13 +28,13 @@ enum GameMode: String, CaseIterable, Identifiable {
     var subtitle: String {
         switch self {
         case .classic:
-            return "Strategic depth: Standard. Perfect for testing your core skills."
+            return "Perfect for testing your core skills."
         case .quantumFading:
-            return "Strategic depth: High. Endgames never become stale static loops."
+            return "Endgames never become stale static loops."
         case .inverse:
-            return "Strategic depth: Medium. Forces you to think completely backwards."
+            return "Forces you to think completely backwards."
         case .gravityDrop:
-            return "Strategic depth: High. Modifies column physics and board control rules."
+            return "Modifies column physics and board control rules."
         }
     }
 }
