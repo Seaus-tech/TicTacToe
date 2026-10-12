@@ -1,0 +1,131 @@
+{
+  "" : {
+    "const-values" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketIO-primary.swiftconstvalues",
+    "dependencies" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketIO-primary.d",
+    "diagnostics" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketIO-primary.dia",
+    "emit-module-dependencies" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketIO-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketIO-primary-emit-module.dia",
+    "pch" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketIO-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketIO-primary.swiftdeps"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/Source/SocketIO/Ack/SocketAckEmitter.swift" : {
+    "index-unit-output-path" : "/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketAckEmitter.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketAckEmitter.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketAckEmitter.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/Source/SocketIO/Ack/SocketAckManager.swift" : {
+    "index-unit-output-path" : "/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketAckManager.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketAckManager.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketAckManager.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/Source/SocketIO/Client/SocketAnyEvent.swift" : {
+    "index-unit-output-path" : "/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketAnyEvent.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketAnyEvent.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketAnyEvent.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/Source/SocketIO/Client/SocketEventHandler.swift" : {
+    "index-unit-output-path" : "/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketEventHandler.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketEventHandler.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketEventHandler.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/Source/SocketIO/Client/SocketIOClient.swift" : {
+    "index-unit-output-path" : "/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketIOClient.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketIOClient.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketIOClient.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/Source/SocketIO/Client/SocketIOClientConfiguration.swift" : {
+    "index-unit-output-path" : "/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketIOClientConfiguration.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketIOClientConfiguration.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketIOClientConfiguration.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/Source/SocketIO/Client/SocketIOClientOption.swift" : {
+    "index-unit-output-path" : "/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketIOClientOption.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketIOClientOption.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketIOClientOption.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/Source/SocketIO/Client/SocketIOClientSpec.swift" : {
+    "index-unit-output-path" : "/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketIOClientSpec.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketIOClientSpec.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketIOClientSpec.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/Source/SocketIO/Client/SocketIOStatus.swift" : {
+    "index-unit-output-path" : "/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketIOStatus.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketIOStatus.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketIOStatus.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/Source/SocketIO/Client/SocketRawView.swift" : {
+    "index-unit-output-path" : "/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketRawView.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketRawView.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketRawView.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/Source/SocketIO/Engine/SocketEngine.swift" : {
+    "index-unit-output-path" : "/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketEngine.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketEngine.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketEngine.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/Source/SocketIO/Engine/SocketEngineClient.swift" : {
+    "index-unit-output-path" : "/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketEngineClient.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketEngineClient.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketEngineClient.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/Source/SocketIO/Engine/SocketEnginePacketType.swift" : {
+    "index-unit-output-path" : "/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketEnginePacketType.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketEnginePacketType.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketEnginePacketType.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/Source/SocketIO/Engine/SocketEnginePollable.swift" : {
+    "index-unit-output-path" : "/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketEnginePollable.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketEnginePollable.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketEnginePollable.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/Source/SocketIO/Engine/SocketEngineSpec.swift" : {
+    "index-unit-output-path" : "/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketEngineSpec.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketEngineSpec.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketEngineSpec.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/Source/SocketIO/Engine/SocketEngineWebsocket.swift" : {
+    "index-unit-output-path" : "/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketEngineWebsocket.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketEngineWebsocket.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketEngineWebsocket.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/Source/SocketIO/Manager/SocketManager.swift" : {
+    "index-unit-output-path" : "/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketManager.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketManager.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketManager.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/Source/SocketIO/Manager/SocketManagerSpec.swift" : {
+    "index-unit-output-path" : "/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketManagerSpec.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketManagerSpec.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketManagerSpec.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/Source/SocketIO/Parse/SocketPacket.swift" : {
+    "index-unit-output-path" : "/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketPacket.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketPacket.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketPacket.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/Source/SocketIO/Parse/SocketParsable.swift" : {
+    "index-unit-output-path" : "/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketParsable.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketParsable.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketParsable.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/Source/SocketIO/Util/SocketExtensions.swift" : {
+    "index-unit-output-path" : "/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketExtensions.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketExtensions.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketExtensions.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/Source/SocketIO/Util/SocketLogger.swift" : {
+    "index-unit-output-path" : "/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketLogger.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketLogger.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketLogger.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/Source/SocketIO/Util/SocketStringReader.swift" : {
+    "index-unit-output-path" : "/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketStringReader.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketStringReader.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketStringReader.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/Source/SocketIO/Util/SocketTypes.swift" : {
+    "index-unit-output-path" : "/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketTypes.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketTypes.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/socket.io-client-swift/build/SocketIO.build/Release/SocketIO-t.build/Objects-normal/x86_64/SocketTypes.o"
+  }
+}

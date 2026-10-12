@@ -1,0 +1,8 @@
+{
+    "sweetpad.build.destination": {
+        "id": "macos-My Mac",
+        "type": "macOS"
+    },
+    "sweetpad.build.scheme": "TicTacToe",
+    "sweetpad.build.xcodeWorkspacePath": "TicTacToe.xcworkspace"
+}
