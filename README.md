@@ -5,10 +5,10 @@
 </p>
 
 <p align="center>
-  <img src="https://img.shields.io/badge/Platform-iOS%20%7C%20macOS%20%7C%20tvOS%20%7C%20visionOS-blue?style=flat-square&logo=apple" alt="Platforms" />
+  <img src="https://img.shields.io/badge/Platform-Windows%20%7C%20Apple%20platforms-blue?style=flat-square" alt="Platforms" />
   <img src="https://img.shields.io/badge/Language-Swift-F54A46?style=flat-square&logo=swift" alt="Swift" />
-  <img src="https://img.shields.io/badge/Framework-SwiftUI-F54A46?style=flat-square&logo=swift" alt="SwiftUI" />
-  <img src="https://img.shields.io/badge/Server-Node.js%20%7C%20WebSocket-339933?style=flat-square&logo=node.js" alt="Node.js" />
+  <img src="https://img.shields.io/badge/Framework-SwiftCrossUI%20%7C%20SwiftUI-F54A46?style=flat-square&logo=swift" alt="SwiftCrossUI and SwiftUI" />
+  <img src="https://img.shields.io/badge/Windows%20fallback-Node.js%20%7C%20WebSocket-339933?style=flat-square&logo=node.js" alt="Windows-only Node.js fallback" />
 </p>
 
 ---
@@ -20,7 +20,7 @@
 - [Screenshots](#screenshots)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
-- [Running the Server](#running-the-server)
+- [Windows-only Multiplayer Fallback](#windows-only-multiplayer-fallback)
 - [Controls](#controls)
 - [Architecture](#architecture)
 - [Repository Structure](#repository-structure)
@@ -29,7 +29,7 @@
 
 ## Overview
 
-NEO-GRID is a futuristic Tic-Tac-Toe game supporting full cross-platform operations across iOS, macOS, tvOS, and visionOS. It features a strategic local AI engine and real-time multiplayer online mode powered by a custom WebSocket configuration.
+NEO-GRID is a futuristic Tic-Tac-Toe game with a native SwiftUI/GameKit client for Apple platforms and a SwiftCrossUI/WinUI desktop client for Windows. Both clients provide local play against the AI or another person. Online matchmaking uses GameKit on Apple platforms.
 
 ## Features
 
@@ -37,7 +37,7 @@ NEO-GRID is a futuristic Tic-Tac-Toe game supporting full cross-platform operati
 |------|-------------|
 | 🟩 **Single Player** | Algorithmic defensive-offensive evaluation core with customizable difficulty (Easy, Medium, Hard) |
 | 🟦 **Local Double Player** | Native shared-device multiplayer with adaptive focus tracking |
-| 🟪 **Quantum Online Mode** | Custom WebSocket tunnel layer for instant move relays |
+| 🟪 **Online Multiplayer** | Game Center matchmaking and move relay on Apple platforms |
 
 ## Screenshots
 
@@ -45,72 +45,63 @@ NEO-GRID is a futuristic Tic-Tac-Toe game supporting full cross-platform operati
 
 ## Prerequisites
 
-- Xcode 15.0 or later
-- iOS 17.0+ / macOS 14.0+ / tvOS 17.0+ / visionOS 1.0+
-- Node.js 18+ for the multiplayer server
+- Windows 10/11: Swift 6.0 or later, Visual Studio 2022 C++ build tools, and Windows SDK
+- Xcode 15.0 or later for native Apple builds
+- iOS 17.0+ / macOS 14.0+ / tvOS 17.0+ / visionOS 1.0+ for Apple builds
+- Node.js 18+ and npm for the Windows-only multiplayer fallback
 
 ## Installation
 
-```bash
-# Clone the repository
-git clone https://github.com/Seaus-tech/TicTacToe.git
+### Windows
+
+The Windows desktop app is written in Swift and uses SwiftCrossUI's native WinUI backend. Install the official Swift Windows toolchain, Visual Studio C++ build tools, and Windows SDK. Open a Visual Studio Developer PowerShell/Command Prompt for the same target architecture as the Swift toolchain, then run:
+
+```powershell
 cd TicTacToe
-
-# Open in Xcode
-open TicTacToe.xcodeproj
+.\build_windows.ps1
 ```
 
-## Running the Server
+The helper forwards the Visual Studio/Windows SDK headers from `INCLUDE` to SwiftPM's C/C++ dependencies (including the WinUI interop and zlib targets). Use `-BuildOnly` to compile without launching. For a release build, run `.\build_windows.ps1 -Configuration release -BuildOnly`; after a successful build, the helper prints the exact executable path. SwiftPM selects the Windows backend through `DefaultBackend`. The Windows target reuses the game AI and provides computer and local two-player modes. GameKit-backed online matchmaking, achievements, and score reporting are available only in the unchanged Apple SwiftUI app.
 
-To run the online multiplayer layer locally:
+### Apple platforms
 
-```bash
-# Enter server directory
-cd Server
+Open `TicTacToe/TicTacToe.xcodeproj` in Xcode and build for a supported Apple platform.
 
-# Install runtime socket dependencies
-npm install ws
+## Windows-only Multiplayer Fallback
 
-# Start the connection switchboard
-node server.js
-```
-
-Or use the automated launch script:
-
-```bash
-./launch_server.sh
-```
+Apple builds continue to use GameKit and do not use Node.js. The repository retains a legacy Node.js WebSocket server for Windows-only development; it is separate from the Windows Swift UI client and is not used by Apple builds. To run that server from the repository root, use `.\start_windows.ps1` in PowerShell. The script installs the declared dependency if needed and starts the server on port 8080. The server refuses to run on macOS or Linux.
 
 ## Controls
 
 | Mode | Control |
 |------|---------|
-| All Platforms | Tap to place X or O |
-| Online Mode | Connect to server and tap to move |
+| Apple platforms | Tap or click to place X or O; online matchmaking uses GameKit |
+| Windows desktop | Click to place X or O in computer or local two-player mode |
 
 ## Architecture
 
 ### Client App
 
-Written completely in native Swift and SwiftUI using modern programmatic state hooks (`@StateObject`, `@Published`) to handle cross-platform screen updates smoothly.
+The native Apple client uses SwiftUI and GameKit. The Windows desktop client is also written in Swift and uses SwiftCrossUI's WinUI backend; it shares the AI logic and supports computer and local two-player games. Game Center authentication, achievements, and matchmaking remain Apple-only.
 
-### Game Server
+### Multiplayer
 
-A lightweight, decoupled Node.js network switchboard that handles concurrent socket requests and routes data payloads between remote network nodes with zero configuration files.
+Apple builds use GameKit directly. The Windows Swift client currently supports local play; the retained Node.js service is a Windows-only legacy development tool and is not yet connected to that client.
 
 ## Repository Structure
 
 ```
 TicTacToe/
-├── TicTacToe/              # SwiftUI client source
-│   ├── ContentView.swift   # Main game view
-│   ├── Models.swift        # Game logic and state
-│   └── Views/              # Additional UI components
-├── Server/                 # Node.js WebSocket server
-│   └── server.js           # Main server script
-├── launch_server.sh        # Automated server launcher
-├── users.json              # User data store
-└── README.md               # This file
+├── TicTacToe/                 # SwiftUI Apple app and SwiftCrossUI Windows app
+│   ├── TicTacToeApp.swift
+│   ├── WindowsContentView.swift
+│   ├── AILogic.swift
+│   └── build_windows.ps1       # Windows SDK-aware build/run helper
+├── server.js                  # Node.js WebSocket server
+├── start_windows.ps1          # Windows-only legacy server launcher
+├── package.json               # Windows legacy server dependency
+├── users.json                 # User data store
+└── README.md                  # This file
 ```
 
 ## Roadmap

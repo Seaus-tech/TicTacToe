@@ -60,3 +60,6 @@
 */fastlane/Preview.html
 */fastlane/screenshots/**/*.png
 */fastlane/test_output
+
+# Windows-only Node.js multiplayer fallback
+node_modules/

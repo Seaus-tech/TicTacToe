@@ -3,6 +3,13 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "start": "node server.js",
     "notes": "node generate_notes.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.3"
+  },
+  "devDependencies": {
+    "eslint": "^10.13.0"
   }
 }

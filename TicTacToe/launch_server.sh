@@ -1,5 +1,16 @@
 #!/bin/bash
 
+case "$(uname -s)" in
+    MINGW*|MSYS*|CYGWIN*)
+        SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+        exec powershell.exe -NoProfile -File "$SCRIPT_DIR/../start_windows.ps1"
+        ;;
+    *)
+        echo "This legacy multiplayer fallback is Windows-only. Apple builds use GameKit." >&2
+        exit 1
+        ;;
+esac
+
 # Ensure the script doesn't stop if a command returns a minor warning
 set +e
 

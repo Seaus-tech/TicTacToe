@@ -7,7 +7,10 @@ let package = Package(
         .executable(name: "TicTacToe", targets: ["TicTacToeTarget"])
     ],
     dependencies: [
-        .package(url: "https://github.com/moreSwift/swift-cross-ui", branch: "main")
+        .package(
+            url: "https://github.com/moreSwift/swift-cross-ui",
+            .upToNextMinor(from: "0.2.0")
+        )
     ],
     targets: [
         .executableTarget(
@@ -16,17 +19,30 @@ let package = Package(
                 .product(name: "SwiftCrossUI", package: "swift-cross-ui"),
                 .product(name: "DefaultBackend", package: "swift-cross-ui")
             ],
-            path: ".", // Points to the root directory where Package.swift lives
+            path: "TicTacToe",
             exclude: [
-                "TicTacToe.xcodeproj", 
-                "TicTacToe/AppIcon.icon", 
-                "TicTacToe/Info.plist", 
-                "TicTacToe/TicTacToe.entitlements",
-                "launch_server.sh",
-                "server_launch_debug.log",
-                "server_output.log"
+                ".DS_Store",
+                "AppIcon.icon",
+                "AuthView.swift",
+                "BotDifficultyManager.swift",
+                "ContentView.swift",
+                "DifficultySelectorView.swift",
+                "GameViewModel.swift",
+                "Info.plist",
+                "modes.swift",
+                "OnlineGameManager.swift",
+                "PiecePickerSheet.swift",
+                "Player.swift",
+                "ReleaseNotesData.swift",
+                "TicTacToe.entitlements",
+                "View+Glass.swift",
+                "WhatsNewView.swift"
             ],
-            sources: ["TicTacToe"] // Restricts compile scanning strictly to your source folder
+            sources: [
+                "TicTacToeApp.swift",
+                "WindowsContentView.swift",
+                "AILogic.swift"
+            ]
         )
     ]
 )
