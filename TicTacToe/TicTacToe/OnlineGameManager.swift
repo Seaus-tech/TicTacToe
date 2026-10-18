@@ -1,6 +1,12 @@
 import Foundation
 import GameKit
+#if canImport(SwiftUI)
 import SwiftUI
+#else
+import SwiftCrossUI
+import DefaultBackend
+#endif
+
 import Combine
 
 // MARK: - Move packet types sent over GKMatch data channel

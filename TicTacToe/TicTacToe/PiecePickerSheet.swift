@@ -1,4 +1,9 @@
+#if canImport(SwiftUI)
 import SwiftUI
+#else
+import SwiftCrossUI
+import DefaultBackend
+#endif
 
 struct PiecePickerSheet: View {
     @Binding var humanPiece: String

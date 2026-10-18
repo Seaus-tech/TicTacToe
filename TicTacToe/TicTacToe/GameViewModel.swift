@@ -1,4 +1,10 @@
+#if canImport(SwiftUI)
 import SwiftUI
+#else
+import SwiftCrossUI
+import DefaultBackend
+#endif
+
 import AVFoundation
 import Combine
 

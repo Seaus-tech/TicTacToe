@@ -1,4 +1,9 @@
+#if canImport(SwiftUI)
 import SwiftUI
+#else
+import SwiftCrossUI
+import DefaultBackend
+#endif
 
 @main
 struct TicTacToeApp: App {

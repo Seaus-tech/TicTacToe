@@ -1,4 +1,9 @@
+#if canImport(SwiftUI)
 import SwiftUI
+#else
+import SwiftCrossUI
+import DefaultBackend
+#endif
 
 // Tier names — personality matters
 private let tierNames = ["Rookie", "Cadet", "Tactician", "Veteran", "Nemesis"]
