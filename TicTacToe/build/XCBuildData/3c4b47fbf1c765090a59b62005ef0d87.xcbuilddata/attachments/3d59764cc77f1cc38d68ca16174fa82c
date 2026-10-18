@@ -1,0 +1,16 @@
+{
+  "" : {
+    "const-values" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/lottie-spm/build/Lottie.build/Release/_LottieStub-t.build/Objects-normal/arm64/_LottieStub-primary.swiftconstvalues",
+    "dependencies" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/lottie-spm/build/Lottie.build/Release/_LottieStub-t.build/Objects-normal/arm64/_LottieStub-primary.d",
+    "diagnostics" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/lottie-spm/build/Lottie.build/Release/_LottieStub-t.build/Objects-normal/arm64/_LottieStub-primary.dia",
+    "emit-module-dependencies" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/lottie-spm/build/Lottie.build/Release/_LottieStub-t.build/Objects-normal/arm64/_LottieStub-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/lottie-spm/build/Lottie.build/Release/_LottieStub-t.build/Objects-normal/arm64/_LottieStub-primary-emit-module.dia",
+    "pch" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/lottie-spm/build/Lottie.build/Release/_LottieStub-t.build/Objects-normal/arm64/_LottieStub-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/lottie-spm/build/Lottie.build/Release/_LottieStub-t.build/Objects-normal/arm64/_LottieStub-primary.swiftdeps"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/lottie-spm/Sources/_LottieStub/Stub.swift" : {
+    "index-unit-output-path" : "/Lottie.build/Release/_LottieStub-t.build/Objects-normal/arm64/Stub.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/lottie-spm/build/Lottie.build/Release/_LottieStub-t.build/Objects-normal/arm64/Stub.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/lottie-spm/build/Lottie.build/Release/_LottieStub-t.build/Objects-normal/arm64/Stub.o"
+  }
+}

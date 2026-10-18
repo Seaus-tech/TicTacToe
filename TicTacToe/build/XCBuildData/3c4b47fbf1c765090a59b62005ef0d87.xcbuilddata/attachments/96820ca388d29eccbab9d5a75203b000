@@ -1,0 +1,41 @@
+{
+  "" : {
+    "const-values" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-numerics/build/swift-numerics.build/Release/IntegerUtilities-t.build/Objects-normal/x86_64/IntegerUtilities-primary.swiftconstvalues",
+    "dependencies" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-numerics/build/swift-numerics.build/Release/IntegerUtilities-t.build/Objects-normal/x86_64/IntegerUtilities-primary.d",
+    "diagnostics" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-numerics/build/swift-numerics.build/Release/IntegerUtilities-t.build/Objects-normal/x86_64/IntegerUtilities-primary.dia",
+    "emit-module-dependencies" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-numerics/build/swift-numerics.build/Release/IntegerUtilities-t.build/Objects-normal/x86_64/IntegerUtilities-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-numerics/build/swift-numerics.build/Release/IntegerUtilities-t.build/Objects-normal/x86_64/IntegerUtilities-primary-emit-module.dia",
+    "pch" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-numerics/build/swift-numerics.build/Release/IntegerUtilities-t.build/Objects-normal/x86_64/IntegerUtilities-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-numerics/build/swift-numerics.build/Release/IntegerUtilities-t.build/Objects-normal/x86_64/IntegerUtilities-primary.swiftdeps"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-numerics/Sources/IntegerUtilities/DivideWithRounding.swift" : {
+    "index-unit-output-path" : "/swift-numerics.build/Release/IntegerUtilities-t.build/Objects-normal/x86_64/DivideWithRounding.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-numerics/build/swift-numerics.build/Release/IntegerUtilities-t.build/Objects-normal/x86_64/DivideWithRounding.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-numerics/build/swift-numerics.build/Release/IntegerUtilities-t.build/Objects-normal/x86_64/DivideWithRounding.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-numerics/Sources/IntegerUtilities/GCD.swift" : {
+    "index-unit-output-path" : "/swift-numerics.build/Release/IntegerUtilities-t.build/Objects-normal/x86_64/GCD.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-numerics/build/swift-numerics.build/Release/IntegerUtilities-t.build/Objects-normal/x86_64/GCD.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-numerics/build/swift-numerics.build/Release/IntegerUtilities-t.build/Objects-normal/x86_64/GCD.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-numerics/Sources/IntegerUtilities/Rotate.swift" : {
+    "index-unit-output-path" : "/swift-numerics.build/Release/IntegerUtilities-t.build/Objects-normal/x86_64/Rotate.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-numerics/build/swift-numerics.build/Release/IntegerUtilities-t.build/Objects-normal/x86_64/Rotate.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-numerics/build/swift-numerics.build/Release/IntegerUtilities-t.build/Objects-normal/x86_64/Rotate.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-numerics/Sources/IntegerUtilities/RoundingRule.swift" : {
+    "index-unit-output-path" : "/swift-numerics.build/Release/IntegerUtilities-t.build/Objects-normal/x86_64/RoundingRule.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-numerics/build/swift-numerics.build/Release/IntegerUtilities-t.build/Objects-normal/x86_64/RoundingRule.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-numerics/build/swift-numerics.build/Release/IntegerUtilities-t.build/Objects-normal/x86_64/RoundingRule.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-numerics/Sources/IntegerUtilities/SaturatingArithmetic.swift" : {
+    "index-unit-output-path" : "/swift-numerics.build/Release/IntegerUtilities-t.build/Objects-normal/x86_64/SaturatingArithmetic.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-numerics/build/swift-numerics.build/Release/IntegerUtilities-t.build/Objects-normal/x86_64/SaturatingArithmetic.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-numerics/build/swift-numerics.build/Release/IntegerUtilities-t.build/Objects-normal/x86_64/SaturatingArithmetic.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-numerics/Sources/IntegerUtilities/ShiftWithRounding.swift" : {
+    "index-unit-output-path" : "/swift-numerics.build/Release/IntegerUtilities-t.build/Objects-normal/x86_64/ShiftWithRounding.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-numerics/build/swift-numerics.build/Release/IntegerUtilities-t.build/Objects-normal/x86_64/ShiftWithRounding.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-numerics/build/swift-numerics.build/Release/IntegerUtilities-t.build/Objects-normal/x86_64/ShiftWithRounding.o"
+  }
+}

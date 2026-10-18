@@ -1,0 +1,151 @@
+{
+  "" : {
+    "const-values" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Algorithms-primary.swiftconstvalues",
+    "dependencies" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Algorithms-primary.d",
+    "diagnostics" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Algorithms-primary.dia",
+    "emit-module-dependencies" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Algorithms-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Algorithms-primary-emit-module.dia",
+    "pch" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Algorithms-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Algorithms-primary.swiftdeps"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/Sources/Algorithms/AdjacentPairs.swift" : {
+    "index-unit-output-path" : "/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/AdjacentPairs.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/AdjacentPairs.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/AdjacentPairs.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/Sources/Algorithms/Chain.swift" : {
+    "index-unit-output-path" : "/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Chain.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Chain.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Chain.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/Sources/Algorithms/Chunked.swift" : {
+    "index-unit-output-path" : "/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Chunked.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Chunked.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Chunked.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/Sources/Algorithms/Combinations.swift" : {
+    "index-unit-output-path" : "/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Combinations.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Combinations.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Combinations.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/Sources/Algorithms/Compacted.swift" : {
+    "index-unit-output-path" : "/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Compacted.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Compacted.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Compacted.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/Sources/Algorithms/Cycle.swift" : {
+    "index-unit-output-path" : "/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Cycle.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Cycle.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Cycle.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/Sources/Algorithms/EitherSequence.swift" : {
+    "index-unit-output-path" : "/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/EitherSequence.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/EitherSequence.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/EitherSequence.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/Sources/Algorithms/EndsWith.swift" : {
+    "index-unit-output-path" : "/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/EndsWith.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/EndsWith.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/EndsWith.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/Sources/Algorithms/FirstNonNil.swift" : {
+    "index-unit-output-path" : "/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/FirstNonNil.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/FirstNonNil.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/FirstNonNil.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/Sources/Algorithms/FlattenCollection.swift" : {
+    "index-unit-output-path" : "/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/FlattenCollection.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/FlattenCollection.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/FlattenCollection.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/Sources/Algorithms/Grouped.swift" : {
+    "index-unit-output-path" : "/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Grouped.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Grouped.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Grouped.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/Sources/Algorithms/Indexed.swift" : {
+    "index-unit-output-path" : "/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Indexed.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Indexed.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Indexed.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/Sources/Algorithms/Intersperse.swift" : {
+    "index-unit-output-path" : "/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Intersperse.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Intersperse.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Intersperse.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/Sources/Algorithms/Joined.swift" : {
+    "index-unit-output-path" : "/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Joined.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Joined.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Joined.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/Sources/Algorithms/Keyed.swift" : {
+    "index-unit-output-path" : "/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Keyed.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Keyed.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Keyed.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/Sources/Algorithms/MinMax.swift" : {
+    "index-unit-output-path" : "/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/MinMax.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/MinMax.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/MinMax.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/Sources/Algorithms/Partition.swift" : {
+    "index-unit-output-path" : "/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Partition.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Partition.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Partition.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/Sources/Algorithms/Permutations.swift" : {
+    "index-unit-output-path" : "/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Permutations.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Permutations.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Permutations.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/Sources/Algorithms/Product.swift" : {
+    "index-unit-output-path" : "/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Product.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Product.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Product.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/Sources/Algorithms/RandomSample.swift" : {
+    "index-unit-output-path" : "/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/RandomSample.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/RandomSample.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/RandomSample.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/Sources/Algorithms/Reductions.swift" : {
+    "index-unit-output-path" : "/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Reductions.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Reductions.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Reductions.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/Sources/Algorithms/Rotate.swift" : {
+    "index-unit-output-path" : "/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Rotate.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Rotate.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Rotate.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/Sources/Algorithms/Split.swift" : {
+    "index-unit-output-path" : "/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Split.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Split.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Split.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/Sources/Algorithms/Stride.swift" : {
+    "index-unit-output-path" : "/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Stride.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Stride.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Stride.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/Sources/Algorithms/Suffix.swift" : {
+    "index-unit-output-path" : "/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Suffix.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Suffix.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Suffix.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/Sources/Algorithms/Trim.swift" : {
+    "index-unit-output-path" : "/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Trim.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Trim.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Trim.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/Sources/Algorithms/Unique.swift" : {
+    "index-unit-output-path" : "/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Unique.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Unique.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Unique.o"
+  },
+  "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/Sources/Algorithms/Windows.swift" : {
+    "index-unit-output-path" : "/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Windows.o",
+    "llvm-bc" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Windows.bc",
+    "object" : "/Users/YashB/Library/Developer/Xcode/DerivedData/TicTacToe-aogpytcbrhycwwhddilvuwbcrqnu/SourcePackages/checkouts/swift-algorithms/build/swift-algorithms.build/Release/Algorithms-t.build/Objects-normal/x86_64/Windows.o"
+  }
+}
