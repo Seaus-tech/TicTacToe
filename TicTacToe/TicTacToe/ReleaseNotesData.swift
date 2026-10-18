@@ -22,6 +22,8 @@ struct ReleaseNotesRegistry {
             items: [
                 FeatureItem(emoji: "🆕", tintColor: .purple,
                             text: "Added a feature to reset the game board when changing bot difficulty. This ensures a fresh start and prevents any confusion during gameplay."),
+                FeatureItem(emoji: "🆕", tintColor: .purple,
+                            text: "Made it so that when changing bot difficulties screen auto resets."),
             ]
         ),
         
@@ -29,7 +31,7 @@ struct ReleaseNotesRegistry {
             sectionTitle: "UPDATE HINTS",
             items: [
                 FeatureItem(emoji: "🔧", tintColor: .purple,
-                            text: "Update 3.7.2 is going to fix a bug where the 'Your turn' indicator dot would sometimes move diagonally in the first game and that it will automatically reset the game when changing bot difficultys.")
+                            text: "Update 3.7.2 is going to fix a bug where the 'Your turn' indicator dot would move diagonally in the first game.")
             ]
         ),
         FeatureGroup(

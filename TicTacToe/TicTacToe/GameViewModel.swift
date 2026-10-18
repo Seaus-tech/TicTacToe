@@ -326,6 +326,6 @@ class GameViewModel: ObservableObject {
         } else {
             generator.notificationOccurred(.warning)
         }
-        #endif
+        #endif // os(iOS)
     }
 }
