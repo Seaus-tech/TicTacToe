@@ -63,6 +63,8 @@ cd TicTacToe
 
 The helper forwards the Visual Studio/Windows SDK headers from `INCLUDE` to SwiftPM's C/C++ dependencies (including the WinUI interop and zlib targets). Use `-BuildOnly` to compile without launching. For a release build, run `.\build_windows.ps1 -Configuration release -BuildOnly`; after a successful build, the helper prints the exact executable path. SwiftPM selects the Windows backend through `DefaultBackend`. The Windows target reuses the game AI and provides computer and local two-player modes. GameKit-backed online matchmaking, achievements, and score reporting are available only in the unchanged Apple SwiftUI app.
 
+If Smart App Control blocks SwiftPM's temporary manifest executables on your PC, the repository's **Windows Swift build** GitHub Actions workflow builds the app on a hosted Windows runner instead. It runs on pushes and pull requests that change the Swift package, or manually from the Actions tab. This validates compilation only; it does not launch the desktop UI on your PC.
+
 ### Apple platforms
 
 Open `TicTacToe/TicTacToe.xcodeproj` in Xcode and build for a supported Apple platform.

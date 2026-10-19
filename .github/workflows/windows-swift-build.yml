@@ -1,0 +1,17 @@
+name: Windows Swift build
+
+on:
+  push: {paths: ["TicTacToe/**", ".github/workflows/windows-swift-build.yml"]}
+  pull_request: {paths: ["TicTacToe/**", ".github/workflows/windows-swift-build.yml"]}
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  build: {name: Build Windows app, runs-on: windows-2022, steps: [
+  {name: Check out repository, uses: actions/checkout@v4},
+  {name: Set up MSVC and Windows SDK, uses: ilammy/msvc-dev-cmd@v1, with: {arch: amd64}},
+  {name: Install Swift, shell: pwsh, run: 'winget install --id Swift.Toolchain --exact --source winget --accept-source-agreements --accept-package-agreements --silent; if ($LASTEXITCODE -ne 0) { throw "Swift toolchain installation failed with exit code $LASTEXITCODE." }; $machinePath = [Environment]::GetEnvironmentVariable("Path", "Machine"); $userPath = [Environment]::GetEnvironmentVariable("Path", "User"); $env:Path = "$env:Path;$machinePath;$userPath"; swift --version; if ($LASTEXITCODE -ne 0) { throw "Swift is not available after installation (exit code $LASTEXITCODE)." }'},
+  {name: Resolve dependencies and build, shell: pwsh, working-directory: TicTacToe, run: '$includeDirectories = $env:INCLUDE -split ";" | Where-Object { $_ -and (Test-Path -LiteralPath $_) }; if (-not $includeDirectories) { throw "The MSVC/Windows SDK include paths were not configured." }; $compilerArguments = @(); foreach ($includeDirectory in $includeDirectories) { $compilerArguments += @("-Xcc", "-I$includeDirectory") }; swift package resolve; if ($LASTEXITCODE -ne 0) { throw "Swift package resolution failed with exit code $LASTEXITCODE." }; swift build -c release -j 1 @compilerArguments; if ($LASTEXITCODE -ne 0) { throw "Windows Swift build failed with exit code $LASTEXITCODE." }'}
+  ]}
