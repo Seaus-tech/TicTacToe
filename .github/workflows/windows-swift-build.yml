@@ -1,3 +1,5 @@
+- name: Install winget
+  uses: Cyberboss/install-winget@v1
 name: Windows Swift build
 
 on:
