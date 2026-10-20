@@ -82,9 +82,15 @@ jobs:
             $compilerArguments += @('-Xcc', "-I$includeDirectory")
           }
 
-          swift package resolve
+          Write-Host "SDKROOT: $env:SDKROOT"
+          swift -print-target-info
           if ($LASTEXITCODE -ne 0) {
-            throw "Swift package resolution failed with exit code $LASTEXITCODE."
+            throw "Swift target-info check failed with exit code $LASTEXITCODE."
+          }
+
+          swift package resolve -v
+          if ($LASTEXITCODE -ne 0) {
+            throw "Verbose Swift package resolution failed with exit code $LASTEXITCODE."
           }
 
           swift build -c release -j 1 @compilerArguments
