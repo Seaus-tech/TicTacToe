@@ -17,11 +17,8 @@ permissions:
 jobs:
   build:
     name: Build Windows app
-    runs-on: windows-2022
+    runs-on: windows-2025
     steps:
-      - name: Install WinGet
-        uses: Cyberboss/install-winget@v1
-
       - name: Check out repository
         uses: actions/checkout@v4
 
@@ -29,6 +26,7 @@ jobs:
         uses: ilammy/msvc-dev-cmd@v1
         with:
           arch: amd64
+          sdk: 10.0.26100.0
 
       - name: Install Swift with WinGet
         shell: pwsh
@@ -53,6 +51,13 @@ jobs:
           if ($LASTEXITCODE -ne 0) {
             throw "Swift version check failed with exit code $LASTEXITCODE."
           }
+
+          $sdkRoot = Join-Path $env:LOCALAPPDATA "Programs\Swift\Platforms\6.4.1\Windows.platform\Developer\SDKs\Windows.sdk"
+          if (-not (Test-Path -LiteralPath $sdkRoot)) {
+            throw "Swift's Windows SDK was not found at $sdkRoot."
+          }
+          $env:SDKROOT = $sdkRoot
+          Add-Content -Path $env:GITHUB_ENV -Value "SDKROOT=$sdkRoot"
 
           $smokeTest = Join-Path $env:RUNNER_TEMP "swift-stdlib-smoke-test.swift"
           Set-Content -Path $smokeTest -Value 'print("Swift standard library check passed")' -Encoding ascii
