@@ -1,3 +1,5 @@
+#if os(Windows)
+
 import SwiftCrossUI
 import DefaultBackend
 
@@ -119,3 +121,4 @@ struct WindowsContentView: View {
 		status = "Your turn (X)"
 	}
 }
+#endif // os(Windows)
