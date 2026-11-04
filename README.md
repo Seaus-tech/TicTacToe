@@ -94,16 +94,88 @@ Apple builds use GameKit directly. The Windows Swift client currently supports l
 
 ```
 TicTacToe/
-├── TicTacToe/                 # SwiftUI Apple app and SwiftCrossUI Windows app
-│   ├── TicTacToeApp.swift
-│   ├── WindowsContentView.swift
-│   ├── AILogic.swift
-│   └── build_windows.ps1       # Windows SDK-aware build/run helper
-├── server.js                  # Node.js WebSocket server
-├── start_windows.ps1          # Windows-only legacy server launcher
-├── package.json               # Windows legacy server dependency
-├── users.json                 # User data store
-└── README.md                  # This file
+.
+├── .github
+│   └── workflows
+│       └── windows-swift-build.yml
+├── .kiro
+│   └── settings
+│       └── mcp.json
+├── DMG
+│   └── TicTacToe3.7.2beta.dmg
+├── TicTacToe
+│   ├── .swiftpm
+│   │   ├── configuration
+│   │   └── xcode
+│   │       └── package.xcworkspace
+│   │           └── contents.xcworkspacedata
+│   ├── .vscode
+│   │   ├── launch.json
+│   │   └── settings.json
+│   ├── Tests
+│   │   └── TicTacToeTests
+│   │       └── TicTacToeTests.swift
+│   ├── TicTacToe
+│   │   ├── .vscode
+│   │   │   └── settings.json
+│   │   ├── AppIcon.icon
+│   │   │   ├── Assets
+│   │   │   │   ├── 1_Neon_Grid_Background.svg
+│   │   │   │   ├── 2_Grid_Lines.svg
+│   │   │   │   └── 3_Neon_Glyphs.svg
+│   │   │   └── icon.json
+│   │   ├── AILogic.swift
+│   │   ├── AuthView.deprecated.swift
+│   │   ├── BotDifficultyManager.swift
+│   │   ├── ContentView.swift
+│   │   ├── DifficultySelectorView.swift
+│   │   ├── GameViewModel.swift
+│   │   ├── HowToPlayView.swift
+│   │   ├── Info.plist
+│   │   ├── modes.swift
+│   │   ├── OnlineGameManager.swift
+│   │   ├── PiecePickerSheet.swift
+│   │   ├── Player.swift
+│   │   ├── ReleaseNotesData.swift
+│   │   ├── TicTacToe.entitlements
+│   │   ├── TicTacToeApp.swift
+│   │   ├── View+Glass.swift
+│   │   ├── WhatsNewView.swift
+│   │   └── WindowsContentView.swift
+│   ├── TicTacToe.xcodeproj
+│   │   ├── project.xcworkspace
+│   │   │   ├── xcshareddata
+│   │   │   │   └── swiftpm
+│   │   │   │       ├── configuration
+│   │   │   │       └── Package.resolved
+│   │   │   └── contents.xcworkspacedata
+│   │   ├── xcshareddata
+│   │   │   └── xcschemes
+│   │   │       └── TicTacToe.xcscheme
+│   │   └── project.xcproj
+│   ├── .gitignore
+│   ├── 1_Neon_Grid_Background.svg
+│   ├── 2_Grid_Lines.svg
+│   ├── 3_Neon_Glyphs.svg
+│   ├── build_windows.ps1
+│   ├── buildServer.json
+│   ├── launch_server.sh
+│   ├── Package.resolved
+│   └── Package.swift
+├── .gitattributes
+├── .gitignore
+├── .workmux.yaml
+├── generate_notes.js
+├── launch_server.sh
+├── package-lock.json
+├── package.json
+├── prompt_input.txt
+├── README.md
+├── server.js
+├── start_windows.ps1
+└── users.json
+
+25 directories, 55 files
 ```
 
 ## Roadmap
