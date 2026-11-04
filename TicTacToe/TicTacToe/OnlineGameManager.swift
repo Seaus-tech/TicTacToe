@@ -17,7 +17,8 @@ private enum PacketType: UInt8 {
 
 class OnlineGameManager: NSObject, ObservableObject,
                          GKMatchmakerViewControllerDelegate,
-                         GKMatchDelegate {
+                         GKMatchDelegate,
+                         GKGameCenterControllerDelegate {
 
     // MARK: - Published state
     @Published var isPlayerAuthenticated: Bool = false
@@ -68,6 +69,21 @@ class OnlineGameManager: NSObject, ObservableObject,
                 print("Leaderboard sync failed: \(error.localizedDescription)")
             }
         }
+    }
+
+    func presentLeaderboard() {
+        guard isPlayerAuthenticated else {
+            matchInfoMessage = "Sign in to Game Center to view the leaderboard."
+            return
+        }
+
+        let viewController = GKGameCenterViewController(state: .leaderboards)
+        viewController.gameCenterDelegate = self
+        presentViewController(viewController)
+    }
+
+    func gameCenterViewControllerDidFinish(_ gameCenterViewController: GKGameCenterViewController) {
+        dismissViewController(gameCenterViewController)
     }
 
     // MARK: - Game Center Achievement

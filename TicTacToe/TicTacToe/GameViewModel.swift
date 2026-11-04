@@ -37,6 +37,24 @@ class GameViewModel: ObservableObject {
     var botLevel: Int = 1
     var activeGameMode: GameMode = .classic
     private var placementHistory: [Int] = []
+    private var moveHistory: [TurnSnapshot] = []
+    private var scoreRevision = 0
+    private var botMoveWorkItem: DispatchWorkItem?
+
+    private struct TurnSnapshot {
+        let board: [String]
+        let currentToken: String
+        let gameResult: GameResult
+        let winningLine: [Int]?
+        let placementHistory: [Int]
+        let scoreX: Int
+        let scoreO: Int
+        let drawCount: Int
+        let winStreak: Int
+        let totalCareerWins: Int
+        let scoreRevision: Int
+        let token: String
+    }
 
     weak var onlineManager: OnlineGameManager?
 
@@ -45,6 +63,7 @@ class GameViewModel: ObservableObject {
     private var drawPlayer: AVAudioPlayer?
 
     init() {
+        totalCareerWins = UserDefaults.standard.integer(forKey: "totalCareerWins")
         setupAudio()
     }
 
@@ -67,6 +86,19 @@ class GameViewModel: ObservableObject {
     var isGameOver: Bool {
         if case .ongoing = gameResult { return false }
         return true
+    }
+
+    var canUndo: Bool {
+        guard matchMode != .online else { return false }
+        if matchMode == .bot {
+            return moveHistory.contains { $0.token == humanPiece }
+        }
+        return !moveHistory.isEmpty
+    }
+
+    var replayBoards: [[String]] {
+        guard !moveHistory.isEmpty else { return [] }
+        return moveHistory.map(\.board) + [board]
     }
 
     var resultMessage: String? {
@@ -99,6 +131,9 @@ class GameViewModel: ObservableObject {
     }
 
     func startNewGame(keepPiece: Bool = true) {
+        botMoveWorkItem?.cancel()
+        botMoveWorkItem = nil
+        moveHistory.removeAll()
         board                = Array(repeating: "", count: 9)
         placementHistory.removeAll()
         winningLine          = nil
@@ -116,6 +151,7 @@ class GameViewModel: ObservableObject {
     }
 
     func resetScores() {
+        scoreRevision += 1
         scoreX    = 0
         scoreO    = 0
         drawCount = 0
@@ -125,6 +161,35 @@ class GameViewModel: ObservableObject {
     func resetGameBoardState() {
         self.resetScores()
         print("⚡ Matchboard arrays purged and reset cleanly.")
+    }
+
+    func undoMove() {
+        guard canUndo, !moveHistory.isEmpty else { return }
+        botMoveWorkItem?.cancel()
+        botMoveWorkItem = nil
+
+        let undoesBotTurn = matchMode == .bot
+            && moveHistory.last?.token == botPiece
+            && moveHistory.count > 1
+            && moveHistory[moveHistory.count - 2].token == humanPiece
+        let undoCount = undoesBotTurn ? 2 : 1
+        let snapshot = moveHistory[moveHistory.count - undoCount]
+        moveHistory.removeLast(undoCount)
+
+        board = snapshot.board
+        currentToken = snapshot.currentToken
+        gameResult = snapshot.gameResult
+        winningLine = snapshot.winningLine
+        placementHistory = snapshot.placementHistory
+
+        if scoreRevision == snapshot.scoreRevision {
+            scoreX = snapshot.scoreX
+            scoreO = snapshot.scoreO
+            drawCount = snapshot.drawCount
+            winStreak = snapshot.winStreak
+            totalCareerWins = snapshot.totalCareerWins
+            UserDefaults.standard.set(totalCareerWins, forKey: "totalCareerWins")
+        }
     }
     
     func humanTapped(index: Int) {
@@ -142,7 +207,7 @@ class GameViewModel: ObservableObject {
         
         guard canPlace(at: finalIndex) else { return }
         guard currentToken == humanPiece || matchMode == .localPassAndPlay else { return }
-        place(token: currentToken, at: index)
+        place(token: currentToken, at: finalIndex)
 
         if matchMode == .online {
             onlineManager?.sendGameMove(cellIndex: finalIndex)
@@ -181,9 +246,13 @@ class GameViewModel: ObservableObject {
 
     private func triggerBotMove() {
         guard case .ongoing = gameResult else { return }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.45) { [weak self] in
+        botMoveWorkItem?.cancel()
+        let workItem = DispatchWorkItem { [weak self] in
+            self?.botMoveWorkItem = nil
             self?.executeBotMove()
         }
+        botMoveWorkItem = workItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.45, execute: workItem)
     }
 
     private func executeBotMove() {
@@ -218,6 +287,20 @@ class GameViewModel: ObservableObject {
     }
 
     private func place(token: String, at index: Int) {
+        moveHistory.append(TurnSnapshot(
+            board: board,
+            currentToken: currentToken,
+            gameResult: gameResult,
+            winningLine: winningLine,
+            placementHistory: placementHistory,
+            scoreX: scoreX,
+            scoreO: scoreO,
+            drawCount: drawCount,
+            winStreak: winStreak,
+            totalCareerWins: totalCareerWins,
+            scoreRevision: scoreRevision,
+            token: token
+        ))
         board[index] = token
         placementHistory.append(index)
         playTap()
@@ -292,6 +375,7 @@ class GameViewModel: ObservableObject {
             if w == humanPiece {
                 winStreak       += 1
                 totalCareerWins += 1
+                UserDefaults.standard.set(totalCareerWins, forKey: "totalCareerWins")
             } else {
                 winStreak = 0
             }
