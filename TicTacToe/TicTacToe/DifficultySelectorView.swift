@@ -1,4 +1,9 @@
+#if canImport(SwiftUI)
 import SwiftUI
+#else
+import SwiftCrossUI
+import DefaultBackend
+#endif
 
 // Tier names — personality matters
 private let tierNames = ["Rookie", "Cadet", "Tactician", "Veteran", "Nemesis"]
@@ -16,16 +21,13 @@ struct DifficultySelectorView<M: ObservableObject>: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack {
-                Text("BOT DIFFICULTY")
-                    .font(.system(.caption, design: .rounded))
-                    .fontWeight(.bold)
-                    .foregroundColor(.secondary)
-                    .tracking(1.2)
+                Text("Difficulty")
+                    .font(.headline)
+                    .foregroundStyle(.primary)
                 Spacer()
                 Text(tierName(for: selectedLevel))
-                    .font(.subheadline.monospacedDigit())
-                    .fontWeight(.semibold)
-                    .foregroundColor(tierColors[selectedLevel - 1])
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(tierColors[selectedLevel - 1])
                     .animation(.spring(response: 0.3), value: selectedLevel)
             }
 
@@ -40,7 +42,7 @@ struct DifficultySelectorView<M: ObservableObject>: View {
                             Text("\(tier)")
                                 .font(.subheadline.bold())
                             Text(tierName(for: tier))
-                                .font(.system(size: 9, weight: .medium, design: .rounded))
+                                .font(.caption2)
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.6)
                         }

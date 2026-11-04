@@ -1,0 +1,6 @@
+{
+    "sweetpad.build.destination": {
+        "id": "macos-My Mac",
+        "type": "macOS"
+    }
+}

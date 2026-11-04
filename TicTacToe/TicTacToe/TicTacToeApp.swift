@@ -1,4 +1,6 @@
+#if canImport(SwiftUI)
 import SwiftUI
+import Combine
 
 @main
 struct TicTacToeApp: App {
@@ -17,3 +19,16 @@ struct TicTacToeApp: App {
         #endif
     }
 }
+#else
+import SwiftCrossUI
+import DefaultBackend
+
+@main
+struct TicTacToeApp: App {
+    var body: some Scene {
+        WindowGroup("NEO-GRID") {
+            WindowsContentView()
+        }
+    }
+}
+#endif

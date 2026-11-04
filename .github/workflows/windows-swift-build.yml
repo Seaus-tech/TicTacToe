@@ -1,0 +1,99 @@
+name: Windows Swift build
+
+on:
+  push:
+    paths:
+      - "TicTacToe/**"
+      - ".github/workflows/windows-swift-build.yml"
+  pull_request:
+    paths:
+      - "TicTacToe/**"
+      - ".github/workflows/windows-swift-build.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build Windows app
+    runs-on: windows-2025
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up MSVC and Windows SDK
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: amd64
+          sdk: 10.0.26100.0
+
+      - name: Install Swift with WinGet
+        shell: pwsh
+        run: |
+          winget install --id Swift.Toolchain --exact --version 6.4.1 --source winget --accept-source-agreements --accept-package-agreements --silent --disable-interactivity
+          if ($LASTEXITCODE -ne 0) {
+            throw "Swift installation failed with exit code $LASTEXITCODE."
+          }
+
+          $toolchainRoot = Join-Path $env:LOCALAPPDATA "Programs\Swift\Toolchains"
+          $swift = Get-ChildItem -Path $toolchainRoot -Filter swift.exe -Recurse -File |
+            Where-Object { $_.FullName -match "\\usr\\bin\\swift\.exe$" } |
+            Select-Object -First 1
+          if (-not $swift) {
+            throw "WinGet installed Swift but swift.exe was not found under $toolchainRoot."
+          }
+
+          $swiftDirectory = $swift.Directory.FullName
+          $env:Path = "$swiftDirectory;$env:Path"
+          Add-Content -Path $env:GITHUB_PATH -Value $swiftDirectory
+          & $swift.FullName --version
+          if ($LASTEXITCODE -ne 0) {
+            throw "Swift version check failed with exit code $LASTEXITCODE."
+          }
+
+          $sdkRoot = Join-Path $env:LOCALAPPDATA "Programs\Swift\Platforms\6.4.1\Windows.platform\Developer\SDKs\Windows.sdk"
+          if (-not (Test-Path -LiteralPath $sdkRoot)) {
+            throw "Swift's Windows SDK was not found at $sdkRoot."
+          }
+          $env:SDKROOT = $sdkRoot
+          Add-Content -Path $env:GITHUB_ENV -Value "SDKROOT=$sdkRoot"
+
+          $smokeTest = Join-Path $env:RUNNER_TEMP "swift-stdlib-smoke-test.swift"
+          Set-Content -Path $smokeTest -Value 'print("Swift standard library check passed")' -Encoding ascii
+          & (Join-Path $swiftDirectory "swiftc.exe") -typecheck $smokeTest
+          if ($LASTEXITCODE -ne 0) {
+            throw "Swift could not load its standard library for the Windows target (exit code $LASTEXITCODE)."
+          }
+
+      - name: Resolve dependencies and build
+        shell: pwsh
+        working-directory: TicTacToe
+        run: |
+          $includeDirectories = $env:INCLUDE -split ';' | Where-Object {
+            $_ -and (Test-Path -LiteralPath $_)
+          }
+          if (-not $includeDirectories) {
+            throw 'The MSVC/Windows SDK include paths were not configured.'
+          }
+
+          $compilerArguments = @()
+          foreach ($includeDirectory in $includeDirectories) {
+            $compilerArguments += @('-Xcc', "-I$includeDirectory")
+          }
+
+          Write-Host "SDKROOT: $env:SDKROOT"
+          swift -print-target-info
+          if ($LASTEXITCODE -ne 0) {
+            throw "Swift target-info check failed with exit code $LASTEXITCODE."
+          }
+
+          swift package resolve -v
+          if ($LASTEXITCODE -ne 0) {
+            throw "Verbose Swift package resolution failed with exit code $LASTEXITCODE."
+          }
+
+          swift build -c release -j 1 @compilerArguments
+          if ($LASTEXITCODE -ne 0) {
+            throw "Windows Swift build failed with exit code $LASTEXITCODE."
+          }

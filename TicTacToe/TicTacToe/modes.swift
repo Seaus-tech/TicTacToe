@@ -1,5 +1,10 @@
 // MARK: - File 1: Modes.swift
+#if canImport(SwiftUI)
 import SwiftUI
+#else
+import SwiftCrossUI
+import DefaultBackend
+#endif
 
 /// Defines the available gameplay rule variations for NEO-GRID
 enum GameMode: String, CaseIterable, Identifiable {

@@ -1,0 +1,86 @@
+{
+  "" : {
+    "const-values" : "/Users/YashB/Seaus/TicTacToe/TicTacToe/build/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/TicTacToe-primary.swiftconstvalues",
+    "dependencies" : "/Users/YashB/Seaus/TicTacToe/TicTacToe/build/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/TicTacToe-primary.d",
+    "diagnostics" : "/Users/YashB/Seaus/TicTacToe/TicTacToe/build/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/TicTacToe-primary.dia",
+    "emit-module-dependencies" : "/Users/YashB/Seaus/TicTacToe/TicTacToe/build/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/TicTacToe-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/YashB/Seaus/TicTacToe/TicTacToe/build/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/TicTacToe-primary-emit-module.dia",
+    "pch" : "/Users/YashB/Seaus/TicTacToe/TicTacToe/build/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/TicTacToe-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/YashB/Seaus/TicTacToe/TicTacToe/build/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/TicTacToe-primary.swiftdeps"
+  },
+  "/Users/YashB/Seaus/TicTacToe/TicTacToe/TicTacToe/AILogic.swift" : {
+    "index-unit-output-path" : "/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/AILogic.o",
+    "llvm-bc" : "/Users/YashB/Seaus/TicTacToe/TicTacToe/build/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/AILogic.bc",
+    "object" : "/Users/YashB/Seaus/TicTacToe/TicTacToe/build/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/AILogic.o"
+  },
+  "/Users/YashB/Seaus/TicTacToe/TicTacToe/TicTacToe/AuthView.swift" : {
+    "index-unit-output-path" : "/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/AuthView.o",
+    "llvm-bc" : "/Users/YashB/Seaus/TicTacToe/TicTacToe/build/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/AuthView.bc",
+    "object" : "/Users/YashB/Seaus/TicTacToe/TicTacToe/build/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/AuthView.o"
+  },
+  "/Users/YashB/Seaus/TicTacToe/TicTacToe/TicTacToe/BotDifficultyManager.swift" : {
+    "index-unit-output-path" : "/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/BotDifficultyManager.o",
+    "llvm-bc" : "/Users/YashB/Seaus/TicTacToe/TicTacToe/build/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/BotDifficultyManager.bc",
+    "object" : "/Users/YashB/Seaus/TicTacToe/TicTacToe/build/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/BotDifficultyManager.o"
+  },
+  "/Users/YashB/Seaus/TicTacToe/TicTacToe/TicTacToe/ContentView.swift" : {
+    "index-unit-output-path" : "/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/ContentView.o",
+    "llvm-bc" : "/Users/YashB/Seaus/TicTacToe/TicTacToe/build/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/ContentView.bc",
+    "object" : "/Users/YashB/Seaus/TicTacToe/TicTacToe/build/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/ContentView.o"
+  },
+  "/Users/YashB/Seaus/TicTacToe/TicTacToe/TicTacToe/DifficultySelectorView.swift" : {
+    "index-unit-output-path" : "/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/DifficultySelectorView.o",
+    "llvm-bc" : "/Users/YashB/Seaus/TicTacToe/TicTacToe/build/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/DifficultySelectorView.bc",
+    "object" : "/Users/YashB/Seaus/TicTacToe/TicTacToe/build/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/DifficultySelectorView.o"
+  },
+  "/Users/YashB/Seaus/TicTacToe/TicTacToe/TicTacToe/GameViewModel.swift" : {
+    "index-unit-output-path" : "/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/GameViewModel.o",
+    "llvm-bc" : "/Users/YashB/Seaus/TicTacToe/TicTacToe/build/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/GameViewModel.bc",
+    "object" : "/Users/YashB/Seaus/TicTacToe/TicTacToe/build/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/GameViewModel.o"
+  },
+  "/Users/YashB/Seaus/TicTacToe/TicTacToe/TicTacToe/OnlineGameManager.swift" : {
+    "index-unit-output-path" : "/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/OnlineGameManager.o",
+    "llvm-bc" : "/Users/YashB/Seaus/TicTacToe/TicTacToe/build/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/OnlineGameManager.bc",
+    "object" : "/Users/YashB/Seaus/TicTacToe/TicTacToe/build/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/OnlineGameManager.o"
+  },
+  "/Users/YashB/Seaus/TicTacToe/TicTacToe/TicTacToe/PiecePickerSheet.swift" : {
+    "index-unit-output-path" : "/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/PiecePickerSheet.o",
+    "llvm-bc" : "/Users/YashB/Seaus/TicTacToe/TicTacToe/build/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/PiecePickerSheet.bc",
+    "object" : "/Users/YashB/Seaus/TicTacToe/TicTacToe/build/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/PiecePickerSheet.o"
+  },
+  "/Users/YashB/Seaus/TicTacToe/TicTacToe/TicTacToe/Player.swift" : {
+    "index-unit-output-path" : "/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/Player.o",
+    "llvm-bc" : "/Users/YashB/Seaus/TicTacToe/TicTacToe/build/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/Player.bc",
+    "object" : "/Users/YashB/Seaus/TicTacToe/TicTacToe/build/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/Player.o"
+  },
+  "/Users/YashB/Seaus/TicTacToe/TicTacToe/TicTacToe/ReleaseNotesData.swift" : {
+    "index-unit-output-path" : "/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/ReleaseNotesData.o",
+    "llvm-bc" : "/Users/YashB/Seaus/TicTacToe/TicTacToe/build/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/ReleaseNotesData.bc",
+    "object" : "/Users/YashB/Seaus/TicTacToe/TicTacToe/build/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/ReleaseNotesData.o"
+  },
+  "/Users/YashB/Seaus/TicTacToe/TicTacToe/TicTacToe/TicTacToeApp.swift" : {
+    "index-unit-output-path" : "/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/TicTacToeApp.o",
+    "llvm-bc" : "/Users/YashB/Seaus/TicTacToe/TicTacToe/build/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/TicTacToeApp.bc",
+    "object" : "/Users/YashB/Seaus/TicTacToe/TicTacToe/build/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/TicTacToeApp.o"
+  },
+  "/Users/YashB/Seaus/TicTacToe/TicTacToe/TicTacToe/View+Glass.swift" : {
+    "index-unit-output-path" : "/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/View+Glass.o",
+    "llvm-bc" : "/Users/YashB/Seaus/TicTacToe/TicTacToe/build/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/View+Glass.bc",
+    "object" : "/Users/YashB/Seaus/TicTacToe/TicTacToe/build/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/View+Glass.o"
+  },
+  "/Users/YashB/Seaus/TicTacToe/TicTacToe/TicTacToe/WhatsNewView.swift" : {
+    "index-unit-output-path" : "/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/WhatsNewView.o",
+    "llvm-bc" : "/Users/YashB/Seaus/TicTacToe/TicTacToe/build/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/WhatsNewView.bc",
+    "object" : "/Users/YashB/Seaus/TicTacToe/TicTacToe/build/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/WhatsNewView.o"
+  },
+  "/Users/YashB/Seaus/TicTacToe/TicTacToe/TicTacToe/modes.swift" : {
+    "index-unit-output-path" : "/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/modes.o",
+    "llvm-bc" : "/Users/YashB/Seaus/TicTacToe/TicTacToe/build/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/modes.bc",
+    "object" : "/Users/YashB/Seaus/TicTacToe/TicTacToe/build/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/modes.o"
+  },
+  "/Users/YashB/Seaus/TicTacToe/TicTacToe/build/TicTacToe.build/Release/TicTacToe.build/DerivedSources/GeneratedAssetSymbols.swift" : {
+    "index-unit-output-path" : "/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "llvm-bc" : "/Users/YashB/Seaus/TicTacToe/TicTacToe/build/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/GeneratedAssetSymbols.bc",
+    "object" : "/Users/YashB/Seaus/TicTacToe/TicTacToe/build/TicTacToe.build/Release/TicTacToe.build/Objects-normal/arm64/GeneratedAssetSymbols.o"
+  }
+}

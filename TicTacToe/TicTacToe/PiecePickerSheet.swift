@@ -1,4 +1,9 @@
+#if canImport(SwiftUI)
 import SwiftUI
+#else
+import SwiftCrossUI
+import DefaultBackend
+#endif
 
 struct PiecePickerSheet: View {
     @Binding var humanPiece: String
@@ -8,8 +13,8 @@ struct PiecePickerSheet: View {
         VStack(spacing: 32) {
             VStack(spacing: 6) {
                 Text("Choose Your Piece")
-                    .font(.system(.title2, design: .rounded).bold())
-                Text("X always goes first")
+                    .font(.title2.weight(.semibold))
+                Text("Choose X or O for this game.")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
             }
@@ -28,9 +33,7 @@ struct PiecePickerSheet: View {
                         .padding(.vertical, 14)
                 }
             }
-            .liquidGlassButtonStyle(isProminent: true) // Moved onto the wrapper container
-            .padding(.horizontal, 32)
-            .padding(.bottom, 32)
+            .liquidGlassButtonStyle(isProminent: true)
             .padding(.horizontal, 32)
             .padding(.bottom, 32)
         }
@@ -60,7 +63,7 @@ struct PiecePickerSheet: View {
                     Text(piece)
                         .font(.system(size: 56, weight: .bold, design: .rounded))
                         .foregroundColor(color)
-                    Text(piece == "X" ? "Goes First" : "Goes Second")
+                    Text(piece == "X" ? "First move" : "Second move")
                         .font(.caption.bold())
                         .foregroundColor(.secondary)
                 }

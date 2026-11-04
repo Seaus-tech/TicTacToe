@@ -1,0 +1,4 @@
+module IntegerUtilities {
+header "IntegerUtilities-Swift.h"
+export *
+}

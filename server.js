@@ -1,9 +1,16 @@
-const http = require('http');
-const WebSocket = require('ws');
-const fs = require('fs');
-const path = require('path');
+import http from 'node:http';
+import { WebSocketServer, WebSocket } from 'ws';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-// Location of our persistent player database file
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+if (process.platform !== 'win32') {
+    console.error('This legacy multiplayer fallback is Windows-only. Apple builds use GameKit.');
+    process.exit(1);
+}
+
 const USER_DATABASE_FILE = path.join(__dirname, 'users.json');
 
 // Helper function to safely read user file
@@ -29,13 +36,12 @@ function saveUserDatabase(database) {
     }
 }
 
-// Create core HTTP health checker node
 const server = http.createServer((req, res) => {
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.end('⚡ NEO-NET Core Account Hub Online\n');
+    res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
+    res.end('NEO-GRID multiplayer server online\n');
 });
 
-const wss = new WebSocket.Server({ server });
+const wss = new WebSocketServer({ server });
 let waitingPlayer = null;
 
 console.log('Deploying secure gaming server topology...');
@@ -160,6 +166,8 @@ wss.on('connection', (ws) => {
     });
 });
 
-server.listen(8080, '0.0.0.0', () => {
-    console.log('⚡ NEO-NET Core Switchboard + Account Persistence engine running on port 8080...');
+const port = Number(process.env.PORT) || 8080;
+const host = process.env.HOST || '0.0.0.0';
+server.listen(port, host, () => {
+    console.log(`NEO-GRID multiplayer server listening on ${host}:${port}`);
 });
