@@ -141,7 +141,7 @@
         "CODE_SIGN_STYLE": "Automatic",
         "CURRENT_PROJECT_VERSION": "1",
         "DEAD_CODE_STRIPPING": "YES",
-        "DEVELOPMENT_TEAM": "25X4VXN3L2",
+        "DEVELOPMENT_TEAM": "",
         "DRIVERKIT_DEPLOYMENT_TARGET": "$(RECOMMENDED_DRIVERKIT_DEPLOYMENT_TARGET)",
         "ENABLE_APP_SANDBOX": "NO",
         "ENABLE_HARDENED_RUNTIME": "YES",
@@ -267,6 +267,6 @@
     "SWIFT_COMPILATION_MODE[config=Release]": "wholemodule",
     "SWIFT_OPTIMIZATION_LEVEL[config=Debug]": "-Onone",
   },
-  "last-upgrade": "27.2",
+  "last-upgrade": "27.3",
   "last-swift-update": "26.5",
 }
