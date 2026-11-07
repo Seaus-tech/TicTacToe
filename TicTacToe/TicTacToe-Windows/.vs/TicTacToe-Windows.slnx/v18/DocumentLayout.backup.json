@@ -1,0 +1,45 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\yashb_k529spf\\source\\repos\\TicTacToe\\TicTacToe\\TicTacToe-Windows\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{D12EC702-1392-403A-AFC5-962C198A1850}|C:\\Users\\yashb_k529spf\\source\\repos\\TicTacToe{71FA44A6-DD4C-456F-B91F-1A03C40087F5}|C:\\Users\\yashb_k529spf\\source\\repos\\TicTacToe\\TicTacToe\\TicTacToe-Windows\\GameEngine.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D12EC702-1392-403A-AFC5-962C198A1850}|C:\\Users\\yashb_k529spf\\source\\repos\\TicTacToe{71FA44A6-DD4C-456F-B91F-1A03C40087F5}|solutionrelative:GameEngine.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 2,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "GameEngine.cs",
+              "DocumentMoniker": "C:\\Users\\yashb_k529spf\\source\\repos\\TicTacToe\\TicTacToe\\TicTacToe-Windows\\GameEngine.cs",
+              "RelativeDocumentMoniker": "GameEngine.cs",
+              "ToolTip": "C:\\Users\\yashb_k529spf\\source\\repos\\TicTacToe\\TicTacToe\\TicTacToe-Windows\\GameEngine.cs",
+              "RelativeToolTip": "GameEngine.cs",
+              "ViewState": "AgIAAF4AAAAAAAAAAAAuwIIAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-11-05T03:57:57.03Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="TicTacToe-Avalonia.Android/TicTacToe-Avalonia.Android.fsproj" />
+  <Project Path="TicTacToe-Avalonia.Browser/TicTacToe-Avalonia.Browser.fsproj" />
+  <Project Path="TicTacToe-Avalonia.Desktop/TicTacToe-Avalonia.Desktop.fsproj" />
+  <Project Path="TicTacToe-Avalonia.iOS/TicTacToe-Avalonia.iOS.fsproj" />
+  <Project Path="TicTacToe-Avalonia/TicTacToe-Avalonia.fsproj" />
+</Solution>

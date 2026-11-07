@@ -1,0 +1,106 @@
+﻿namespace TicTacToe_Avalonia.ViewModels
+
+open System.Collections.ObjectModel
+open System.Windows.Input
+open CommunityToolkit.Mvvm.ComponentModel
+open CommunityToolkit.Mvvm.Input
+open TicTacToe_Avalonia
+
+type GridCell(index: int) =
+    inherit ViewModelBase()
+    let mutable value = ""
+    let mutable cellColor = "#FFFFFF"
+
+    member this.Index = index
+    member this.Value 
+        with get() = value
+        and set(v) = 
+            value <- v
+            this.OnPropertyChanged("Value")
+            
+    member this.CellColor
+        with get() = cellColor
+        and set(v) = 
+            cellColor <- v
+            this.OnPropertyChanged("CellColor")
+
+type MainViewModel() as this =
+    inherit ViewModelBase()
+    
+    let engine = GameEngine()
+    let gridCells = ObservableCollection<GridCell>()
+    let mutable statusMessage = "YOUR TURN (X)"
+    let mutable difficultyIndex = 2 // Hard by default
+
+    do 
+        for i in 0 .. 8 do
+            gridCells.Add(GridCell(i))
+
+    let updateUIFromEngine() =
+        for i in 0 .. 8 do
+            match engine.Board.[i] with
+            | Player.X -> 
+                gridCells.[i].Value <- "X"
+                gridCells.[i].CellColor <- "#00FFFF"
+            | Player.O -> 
+                gridCells.[i].Value <- "O"
+                gridCells.[i].CellColor <- "#FF00FF"
+            | Player.None -> 
+                gridCells.[i].Value <- ""
+                gridCells.[i].CellColor <- "#FFFFFF"
+
+        if engine.IsGameOver then
+            match engine.Winner with
+            | Player.X -> statusMessage <- "PLAYER X WINS!"
+            | Player.O -> statusMessage <- "CYBER-AI O WINS!"
+            | Player.None -> statusMessage <- "MATRIX DRAW!"
+        else
+            match engine.CurrentTurn with
+            | Player.X -> statusMessage <- "YOUR TURN (X)"
+            | Player.O -> statusMessage <- "AI THINKING (O)..."
+
+        this.OnPropertyChanged("StatusMessage")
+
+    let executeCellClick (index: obj) =
+        let idx = System.Convert.ToInt32(index)
+        if not engine.IsGameOver && engine.CurrentTurn = Player.X then
+            if engine.MakeMove(idx) then
+                updateUIFromEngine()
+                
+                if not engine.IsGameOver then
+                    async {
+                        do! Async.Sleep 400
+                        let aiMove = engine.GetAIMove()
+                        if aiMove <> -1 then
+                            engine.MakeMove(aiMove) |> ignore
+                            updateUIFromEngine()
+                    } |> Async.Start
+
+    let executeReset() =
+        engine.ResetGame()
+        updateUIFromEngine()
+
+    member this.GridCells = gridCells
+    
+    member this.StatusMessage 
+        with get() = statusMessage
+        and set(v) = 
+            statusMessage <- v
+            this.OnPropertyChanged("StatusMessage")
+
+    member this.DifficultyIndex
+        with get() = difficultyIndex
+        and set(value) = 
+            difficultyIndex <- value
+            engine.Difficulty <- 
+                match value with
+                | 0 -> GameDifficulty.Easy
+                | 1 -> GameDifficulty.Medium
+                | _ -> GameDifficulty.Hard
+            this.OnPropertyChanged("DifficultyIndex")
+
+    member this.CellClickCommand : ICommand = 
+        Upcast (RelayCommand<obj>(executeCellClick))
+
+    member this.ResetCommand : ICommand = 
+        Upcast (RelayCommand(executeReset))

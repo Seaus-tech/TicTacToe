@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "TicTacToe-Windows (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "TicTacToe-Windows (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

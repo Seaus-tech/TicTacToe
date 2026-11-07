@@ -1,0 +1,86 @@
+﻿namespace TicTacToe_Avalonia
+
+open System
+
+type Player = None | X | O
+type GameDifficulty = Easy | Medium | Hard
+
+type GameEngine() =
+    let mutable board = Array.create 9 Player.None
+    let mutable currentTurn = Player.X
+    let mutable difficulty = GameDifficulty.Hard
+    let mutable isGameOver = false
+    let mutable winner = Player.None
+    let rand = Random()
+
+    let winningLines = [|
+        [|0; 1; 2|]; [|3; 4; 5|]; [|6; 7; 8|] // Rows
+        [|0; 3; 6|]; [|1; 4; 7|]; [|2; 5; 8|] // Columns
+        [|0; 4; 8|]; [|2; 4; 6|]             // Diagonals
+    |]
+
+    let checkWinCondition (b: Player array) (p: Player) =
+        winningLines |> Array.exists (fun line -> line |> Array.forall (fun idx -> b.[idx] = p))
+
+    let getAvailableMoves (b: Player array) =
+        [0 .. 8] |> List.filter (fun idx -> b.[idx] = Player.None)
+
+    let simulateMoveAndCheckWin (b: Player array) idx player =
+        let testBoard = Array.copy b
+        testBoard.[idx] <- player
+        checkWinCondition testBoard player
+
+    member this.Board = board
+    member this.CurrentTurn = currentTurn
+    member this.IsGameOver = isGameOver
+    member this.Winner = winner
+    
+    member this.Difficulty 
+        with get() = difficulty
+        and set(value) = difficulty <- value
+
+    member this.ResetGame() =
+        board <- Array.create 9 Player.None
+        currentTurn <- Player.X
+        isGameOver <- false
+        winner <- Player.None
+
+    member this.MakeMove(index: int) =
+        if index < 0 || index > 8 || board.[index] <> Player.None || isGameOver then 
+            false
+        else
+            board.[index] <- currentTurn
+            if checkWinCondition board currentTurn then
+                winner <- currentTurn
+                isGameOver <- true
+            elif board |> Array.forall (fun p -> p <> Player.None) then
+                winner <- Player.None // Draw
+                isGameOver <- true
+            else
+                currentTurn <- if currentTurn = Player.X then Player.O else Player.X
+            true
+
+    member this.GetAIMove() =
+        let moves = getAvailableMoves board
+        if List.isEmpty moves then -1
+        else
+            match difficulty with
+            | GameDifficulty.Easy -> 
+                moves.[rand.Next(moves.Length)]
+            | GameDifficulty.Medium when rand.Next(0, 2) = 0 -> 
+                moves.[rand.Next(moves.Length)]
+            | _ ->
+                let winMove = moves |> List.tryFind (fun m -> simulateMoveAndCheckWin board m currentTurn)
+                match winMove with
+                | Some m -> m
+                | None ->
+                    let opponent = if currentTurn = Player.X then Player.O else Player.X
+                    let blockMove = moves |> List.tryFind (fun m -> simulateMoveAndCheckWin board m opponent)
+                    match blockMove with
+                    | Some m -> m
+                    | None ->
+                        if List.contains 4 moves then 4
+                        else
+                            let corners = moves |> List.filter (fun m -> [0; 2; 6; 8] |> List.contains m)
+                            if not (List.isEmpty corners) then corners.[rand.Next(corners.Length)]
+                            else moves.[rand.Next(moves.Length)]

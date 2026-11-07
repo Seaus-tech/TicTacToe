@@ -1,0 +1,277 @@
+﻿namespace TicTacToe_Avalonia.ViewModels
+
+open System
+open System.Collections.ObjectModel
+open System.Windows.Input
+open Avalonia.Threading
+open CommunityToolkit.Mvvm.ComponentModel
+open CommunityToolkit.Mvvm.Input
+open TicTacToe_Avalonia
+
+type GridCell(index: int) =
+    inherit ViewModelBase()
+    let mutable value = ""
+    let mutable cellColor = "#356FE5"
+    let mutable isEnabled = true
+    let mutable isWinningCell = false
+    let mutable isDarkMode = false
+
+    member this.Index = index
+    member this.Value
+        with get() = value
+        and set(newValue) =
+            if value <> newValue then
+                value <- newValue
+                this.OnPropertyChanged("Value")
+
+    member this.CellColor
+        with get() = cellColor
+        and set(newValue) =
+            if cellColor <> newValue then
+                cellColor <- newValue
+                this.OnPropertyChanged("CellColor")
+
+    member this.IsEnabled
+        with get() = isEnabled
+        and set(newValue) =
+            if isEnabled <> newValue then
+                isEnabled <- newValue
+                this.OnPropertyChanged("IsEnabled")
+
+    member this.IsWinningCell
+        with get() = isWinningCell
+        and set(newValue) =
+            if isWinningCell <> newValue then
+                isWinningCell <- newValue
+                this.OnPropertyChanged("IsWinningCell")
+                this.OnPropertyChanged("CellBorderColor")
+                this.OnPropertyChanged("CellBorderThickness")
+
+    member this.IsDarkMode
+        with get() = isDarkMode
+        and set(newValue) =
+            if isDarkMode <> newValue then
+                isDarkMode <- newValue
+                this.OnPropertyChanged("CellBorderColor")
+
+    member this.CellBorderColor =
+        if isWinningCell then (if isDarkMode then "#83AAFF" else "#356FE5")
+        elif isDarkMode then "#414854"
+        else "#E1E5ED"
+
+    member this.CellBorderThickness =
+        if isWinningCell then "3" else "1"
+
+type MainViewModel() as this =
+    inherit ViewModelBase()
+
+    let engine = GameEngine()
+    let gridCells = ObservableCollection<GridCell>()
+    let mutable statusMessage = "Your turn"
+    let mutable selectedSection = "Play"
+    let mutable difficultyIndex = 0
+    let mutable modeIndex = 0
+    let mutable scoreX = 0
+    let mutable scoreO = 0
+    let mutable drawCount = 0
+    let mutable winStreak = 0
+    let mutable scoredCurrentGame = false
+    let mutable isDarkMode = false
+
+    do
+        for index in 0 .. 8 do
+            gridCells.Add(GridCell(index))
+
+    let notifyScores () =
+        this.OnPropertyChanged("ScoreX")
+        this.OnPropertyChanged("ScoreO")
+        this.OnPropertyChanged("DrawCount")
+        this.OnPropertyChanged("WinStreak")
+
+    let updateUIFromEngine () =
+        let winningLine = engine.WinningLine
+
+        for index in 0 .. 8 do
+            let cell = gridCells.[index]
+            match engine.Board.[index] with
+            | Player.X ->
+                cell.Value <- "X"
+                cell.CellColor <- if isDarkMode then "#83AAFF" else "#356FE5"
+            | Player.O ->
+                cell.Value <- "O"
+                cell.CellColor <- if isDarkMode then "#FFB15C" else "#C96A0A"
+            | Player.None ->
+                cell.Value <- ""
+                cell.CellColor <- if isDarkMode then "#83AAFF" else "#356FE5"
+
+            cell.IsWinningCell <- winningLine |> List.contains index
+            cell.IsDarkMode <- isDarkMode
+            cell.IsEnabled <- not engine.IsGameOver && (modeIndex <> 0 || engine.CurrentTurn = Player.X)
+
+        if engine.IsGameOver && not scoredCurrentGame then
+            scoredCurrentGame <- true
+            match engine.Winner with
+            | Player.X ->
+                scoreX <- scoreX + 1
+                winStreak <- winStreak + 1
+            | Player.O ->
+                scoreO <- scoreO + 1
+                winStreak <- 0
+            | Player.None ->
+                drawCount <- drawCount + 1
+                winStreak <- 0
+            notifyScores ()
+
+        if engine.IsGameOver then
+            statusMessage <-
+                match engine.Winner, modeIndex with
+                | Player.X, 0 -> "You Win!"
+                | Player.O, 0 -> "Bot Wins!"
+                | Player.X, _ -> "X Wins!"
+                | Player.O, _ -> "O Wins!"
+                | Player.None, _ -> "It's a Draw!"
+        else
+            statusMessage <-
+                match engine.CurrentTurn, modeIndex with
+                | Player.X, 0 -> "Your turn"
+                | Player.O, 0 -> "Bot thinking…"
+                | Player.X, _ -> "X's turn"
+                | Player.O, _ -> "O's turn"
+                | Player.None, _ -> "Game over"
+
+        this.OnPropertyChanged("StatusMessage")
+        this.OnPropertyChanged("CanUndo")
+
+    let resetGame () =
+        engine.ResetGame()
+        scoredCurrentGame <- false
+        updateUIFromEngine ()
+
+    let executeCellClick (index: obj) =
+        let cellIndex = Convert.ToInt32(index)
+        if not engine.IsGameOver && (modeIndex <> 0 || engine.CurrentTurn = Player.X) then
+            if engine.MakeMove(cellIndex) then
+                updateUIFromEngine ()
+
+                if modeIndex = 0 && not engine.IsGameOver then
+                    async {
+                        do! Async.Sleep 400
+                        Dispatcher.UIThread.Post(Action(fun () ->
+                            if modeIndex = 0 && not engine.IsGameOver && engine.CurrentTurn = Player.O then
+                                let aiMove = engine.GetAIMove()
+                                if aiMove >= 0 then
+                                    engine.MakeMove(aiMove) |> ignore
+                                    updateUIFromEngine ()))
+                    }
+                    |> Async.Start
+
+    let executeUndo () =
+        if engine.CanUndo then
+            engine.UndoMove(undoBotTurn = (modeIndex = 0))
+            scoredCurrentGame <- false
+            updateUIFromEngine ()
+
+    let executeResetScores () =
+        scoreX <- 0
+        scoreO <- 0
+        drawCount <- 0
+        winStreak <- 0
+        notifyScores ()
+
+    let setSection section =
+        selectedSection <- section
+        this.OnPropertyChanged("SelectedSection")
+        this.OnPropertyChanged("SectionTitle")
+        this.OnPropertyChanged("IsPlaySection")
+        this.OnPropertyChanged("IsOptionsSection")
+        this.OnPropertyChanged("IsScoreSection")
+        this.OnPropertyChanged("PlayNavigationBackground")
+        this.OnPropertyChanged("OptionsNavigationBackground")
+        this.OnPropertyChanged("ScoreNavigationBackground")
+
+    member this.GridCells = gridCells
+
+    member this.StatusMessage = statusMessage
+    member this.SectionTitle =
+        match selectedSection with
+        | "Options" -> "Game Options"
+        | "Score" -> "Score"
+        | _ -> "Tic Tac Toe"
+    member this.SelectedSection = selectedSection
+    member this.IsPlaySection = selectedSection = "Play"
+    member this.IsOptionsSection = selectedSection = "Options"
+    member this.IsScoreSection = selectedSection = "Score"
+    member this.PlayNavigationBackground = if selectedSection = "Play" then (if isDarkMode then "#343D50" else "#DCE7FA") else "Transparent"
+    member this.OptionsNavigationBackground = if selectedSection = "Options" then (if isDarkMode then "#343D50" else "#DCE7FA") else "Transparent"
+    member this.ScoreNavigationBackground = if selectedSection = "Score" then (if isDarkMode then "#343D50" else "#DCE7FA") else "Transparent"
+    member this.IsDarkMode = isDarkMode
+    member this.ThemeButtonText = if isDarkMode then "Use Light Mode" else "Use Dark Mode"
+    member this.MainBackgroundColor = if isDarkMode then "#17191F" else "#F6F7FB"
+    member this.SidebarBackgroundColor = if isDarkMode then "#20232B" else "#EFF2F7"
+    member this.SurfaceColor = if isDarkMode then "#252932" else "#FFFFFF"
+    member this.BoardBackgroundColor = if isDarkMode then "#3A414D" else "#D8DEE8"
+    member this.CellBackgroundColor = if isDarkMode then "#252932" else "#FFFFFF"
+    member this.BorderColor = if isDarkMode then "#3A414D" else "#DDE2EA"
+    member this.PrimaryTextColor = if isDarkMode then "#F2F4F8" else "#202431"
+    member this.SecondaryTextColor = if isDarkMode then "#B3BBC8" else "#606A7A"
+    member this.AccentColor = if isDarkMode then "#83AAFF" else "#356FE5"
+    member this.OColor = if isDarkMode then "#FFB15C" else "#C96A0A"
+    member this.IsBotMode = modeIndex = 0
+    member this.ScoreX = scoreX
+    member this.ScoreO = scoreO
+    member this.DrawCount = drawCount
+    member this.WinStreak = winStreak
+    member this.CanUndo = engine.CanUndo
+
+    member this.ModeIndex
+        with get() = modeIndex
+        and set(value) =
+            if modeIndex <> value then
+                modeIndex <- if value = 1 then 1 else 0
+                this.OnPropertyChanged("ModeIndex")
+                this.OnPropertyChanged("IsBotMode")
+                resetGame ()
+
+    member this.DifficultyIndex
+        with get() = difficultyIndex
+        and set(value) =
+            let newIndex = max 0 (min 4 value)
+            if difficultyIndex <> newIndex then
+                difficultyIndex <- newIndex
+                engine.Difficulty <-
+                    match newIndex with
+                    | 0 -> GameDifficulty.Rookie
+                    | 1 -> GameDifficulty.Cadet
+                    | 2 -> GameDifficulty.Tactician
+                    | 3 -> GameDifficulty.Veteran
+                    | _ -> GameDifficulty.Nemesis
+                this.OnPropertyChanged("DifficultyIndex")
+                if modeIndex = 0 then resetGame ()
+
+    member this.CellClickCommand: ICommand =
+        RelayCommand<obj>(executeCellClick) :> ICommand
+
+    member this.NewGameCommand: ICommand =
+        RelayCommand(Action(fun () -> resetGame ())) :> ICommand
+
+    member this.UndoCommand: ICommand =
+        RelayCommand(Action executeUndo) :> ICommand
+
+    member this.ResetScoresCommand: ICommand =
+        RelayCommand(Action executeResetScores) :> ICommand
+
+    member this.ToggleThemeCommand: ICommand =
+        RelayCommand(Action(fun () ->
+            isDarkMode <- not isDarkMode
+            [ "IsDarkMode"; "ThemeButtonText"; "MainBackgroundColor"; "SidebarBackgroundColor"; "SurfaceColor"; "BoardBackgroundColor"; "CellBackgroundColor"; "BorderColor"; "PrimaryTextColor"; "SecondaryTextColor"; "AccentColor"; "OColor"; "PlayNavigationBackground"; "OptionsNavigationBackground"; "ScoreNavigationBackground" ]
+            |> List.iter this.OnPropertyChanged
+            updateUIFromEngine ())) :> ICommand
+
+    member this.ShowPlayCommand: ICommand =
+        RelayCommand(Action(fun () -> setSection "Play")) :> ICommand
+
+    member this.ShowOptionsCommand: ICommand =
+        RelayCommand(Action(fun () -> setSection "Options")) :> ICommand
+
+    member this.ShowScoreCommand: ICommand =
+        RelayCommand(Action(fun () -> setSection "Score")) :> ICommand

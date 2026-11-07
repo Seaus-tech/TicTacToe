@@ -1,0 +1,96 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:TicTacToe_Avalonia.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="550"
+             x:Class="TicTacToe_Avalonia.Views.MainView"
+             x:DataType="vm:MainViewModel"
+             Background="#0A0B10">
+
+	<Design.DataContext>
+		<!-- This only sets the DataContext for the previewer in an IDE,
+         to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.fs) -->
+		<vm:MainViewModel />
+	</Design.DataContext>
+
+	<Grid RowDefinitions="Auto, *, Auto" Margin="30">
+		<!-- Header / Title Section -->
+		<StackPanel Grid.Row="0" HorizontalAlignment="Center" Margin="0,0,0,20">
+			<TextBlock Text="NEO-GRID"
+					   FontSize="36"
+					   FontWeight="Bold"
+					   Foreground="#00FFFF"
+					   HorizontalAlignment="Center">
+				<TextBlock.Effect>
+					<DropShadowEffect Color="#00FFFF" BlurRadius="15" Opacity="0.8"/>
+				</TextBlock.Effect>
+			</TextBlock>
+			<TextBlock Text="{Binding StatusMessage}"
+					   FontSize="16"
+					   Foreground="#FF00FF"
+					   HorizontalAlignment="Center"
+					   Margin="0,5,0,0">
+				<TextBlock.Effect>
+					<DropShadowEffect Color="#FF00FF" BlurRadius="10" Opacity="0.6"/>
+				</TextBlock.Effect>
+			</TextBlock>
+		</StackPanel>
+
+		<!-- 3x3 Tic-Tac-Toe Playing Grid -->
+		<ItemsControl Grid.Row="1" ItemsSource="{Binding GridCells}">
+			<ItemsControl.ItemsPanel>
+				<ItemsPanelTemplate>
+					<UniformGrid Rows="3" Columns="3" Margin="10"/>
+				</ItemsPanelTemplate>
+			</ItemsControl.ItemsPanel>
+			<ItemsControl.ItemTemplate>
+				<DataTemplate>
+					<Button Command="{Binding $parent[UserControl].DataContext.CellClickCommand}"
+							CommandParameter="{Binding Index}"
+							Margin="6"
+							CornerRadius="8"
+							Background="#121420"
+							BorderBrush="#3300FFFF"
+							BorderThickness="2"
+							HorizontalAlignment="Stretch"
+							VerticalAlignment="Stretch">
+						<Button.Styles>
+							<Style Selector="Button:pointerover">
+								<Setter Property="Background" Value="#1A1D30"/>
+								<Setter Property="BorderBrush" Value="#00FFFF"/>
+							</Style>
+						</Button.Styles>
+						<TextBlock Text="{Binding Value}"
+								   FontSize="32"
+								   FontWeight="Bold"
+								   Foreground="{Binding CellColor}"
+								   HorizontalAlignment="Center"
+								   VerticalAlignment="Center"/>
+					</Button>
+				</DataTemplate>
+			</ItemsControl.ItemTemplate>
+		</ItemsControl>
+
+		<!-- Bottom Game Settings / Controls -->
+		<StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Spacing="20" Margin="0,20,0,0">
+			<ComboBox SelectedIndex="{Binding DifficultyIndex}" Width="120" Background="#121420" BorderBrush="#FF00FF">
+				<ComboBoxItem Content="Easy"/>
+				<ComboBoxItem Content="Medium"/>
+				<ComboBoxItem Content="Hard"/>
+			</ComboBox>
+
+			<Button Content="RESET GAME"
+					Command="{Binding ResetCommand}"
+					Background="#FF00FF"
+					Foreground="White"
+					FontWeight="Bold"
+					Padding="15,8"
+					CornerRadius="5">
+				<Button.Effect>
+					<DropShadowEffect Color="#FF00FF" BlurRadius="12" Opacity="0.7"/>
+				</Button.Effect>
+			</Button>
+		</StackPanel>
+	</Grid>
+</UserControl>

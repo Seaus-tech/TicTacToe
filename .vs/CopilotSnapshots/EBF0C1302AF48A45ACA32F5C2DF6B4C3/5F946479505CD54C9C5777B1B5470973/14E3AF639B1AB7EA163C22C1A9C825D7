@@ -1,0 +1,84 @@
+﻿namespace TicTacToe_Avalonia.Views
+
+open Avalonia
+open Avalonia.Controls
+open Avalonia.Markup.Xaml
+
+type MainView() as this =
+    inherit UserControl()
+
+    do
+        this.InitializeComponent()
+        this.SizeChanged.Add(fun _ -> this.UpdateResponsiveLayout())
+        this.AttachedToVisualTree.Add(fun _ -> this.UpdateResponsiveLayout())
+
+    member private this.InitializeComponent() =
+        AvaloniaXamlLoader.Load(this)
+
+    member private this.UpdateResponsiveLayout() =
+        let compact = this.Bounds.Width < 760.0
+        let narrow = this.Bounds.Width < 500.0
+        let root = this.FindControl<Grid>("RootLayout")
+        let sidebar = this.FindControl<Border>("Sidebar")
+        let sidebarLayout = this.FindControl<Grid>("SidebarLayout")
+        let title = this.FindControl<TextBlock>("SidebarTitle")
+        let navigation = this.FindControl<StackPanel>("NavigationButtons")
+        let sessionScores = this.FindControl<StackPanel>("SessionScoresPanel")
+        let content = this.FindControl<Grid>("ContentLayout")
+        let pageTitle = this.FindControl<TextBlock>("PageTitle")
+        let headerNewGame = this.FindControl<Button>("HeaderNewGameButton")
+        let board = this.FindControl<Viewbox>("BoardViewbox")
+
+        if compact then
+            root.ColumnDefinitions <- ColumnDefinitions("*,*")
+            root.RowDefinitions <- RowDefinitions("Auto,*")
+            Grid.SetRow(sidebar, 0)
+            Grid.SetColumn(sidebar, 0)
+            Grid.SetColumnSpan(sidebar, 2)
+            sidebar.BorderThickness <- Thickness(0.0, 0.0, 0.0, 1.0)
+            sidebarLayout.RowDefinitions <- RowDefinitions("Auto,Auto,Auto")
+            sidebarLayout.Margin <- Thickness(12.0, 8.0, 12.0, 8.0)
+            title.IsVisible <- not narrow
+            title.FontSize <- 18.0
+            title.Margin <- Thickness(4.0, 0.0, 0.0, 8.0)
+            navigation.Orientation <- Orientation.Horizontal
+            navigation.Spacing <- 2.0
+            sessionScores.IsVisible <- false
+            Grid.SetRow(content, 1)
+            Grid.SetColumn(content, 0)
+            Grid.SetColumnSpan(content, 2)
+            content.Margin <- Thickness(14.0, 12.0, 14.0, 12.0)
+            pageTitle.FontSize <- 21.0
+            headerNewGame.IsVisible <- false
+            board.MaxWidth <- max 180.0 (min 520.0 (this.Bounds.Width - 40.0))
+        else
+            root.ColumnDefinitions <- ColumnDefinitions("232,*")
+            root.RowDefinitions <- RowDefinitions("*")
+            Grid.SetRow(sidebar, 0)
+            Grid.SetColumn(sidebar, 0)
+            Grid.SetColumnSpan(sidebar, 1)
+            sidebar.BorderThickness <- Thickness(0.0, 0.0, 1.0, 0.0)
+            sidebarLayout.RowDefinitions <- RowDefinitions("Auto,Auto,*")
+            sidebarLayout.Margin <- Thickness(20.0, 24.0, 20.0, 24.0)
+            title.IsVisible <- true
+            title.FontSize <- 23.0
+            title.Margin <- Thickness(4.0, 0.0, 0.0, 20.0)
+            navigation.Orientation <- Orientation.Vertical
+            navigation.Spacing <- 4.0
+            sessionScores.IsVisible <- true
+            Grid.SetRow(content, 0)
+            Grid.SetColumn(content, 1)
+            Grid.SetColumnSpan(content, 1)
+            content.Margin <- Thickness(32.0, 24.0, 32.0, 24.0)
+            pageTitle.FontSize <- 28.0
+            headerNewGame.IsVisible <- true
+            board.MaxWidth <- 520.0
+
+        this.FindControl<Grid>("PageHeader").Margin <- Thickness(0.0, 0.0, 0.0, if compact then 12.0 else 20.0)
+        navigation.Children
+        |> Seq.cast<Control>
+        |> Seq.iter (fun item ->
+            match item with
+            | :? Button as button -> button.Padding <- if compact then Thickness(8.0, 6.0) else Thickness(12.0, 9.0)
+            | _ -> ())
+        root.InvalidateMeasure()
